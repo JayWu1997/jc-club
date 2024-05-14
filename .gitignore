@@ -1,20 +1,54 @@
-# Build and Release Folders
-bin-debug/
-bin-release/
-[Oo]bj/
-[Bb]in/
+# Maven/Gradle相关
+靶向目录和构建输出
+**/target/
+/build/
+.gradle/
+/home/user/.gradle/
+.DS_Store
+*.iml
+*.idea/
+*.ipr
+*.iws
+out/
 
-# Other files and folders
+# IntelliJ IDEA相关
+.idea/
+*.iws
+.idea/workspace.xml
+.idea/tasks.xml
+*.iml
+
+# Eclipse相关
+.metadata/
 .settings/
+.classpath
+.project
 
-# Executables
-*.swf
-*.air
-*.ipa
-*.apk
+# JAR文件
+*.jar
+*.war
+*.ear
 
-.idea
+# 缓存文件
+.cache/
 
-# Project files, i.e. `.project`, `.actionScriptProperties` and `.flexProperties`
-# should NOT be excluded as they contain compiler settings and other important
-# information for Eclipse / Flash Builder.
+# 日志文件
+logs/
+logs/*.log
+
+# Spring Boot DevTools热部署生成的文件
+spring-boot-devtools/
+restart/
+tmp/
+
+# Docker临时文件
+.Dockerfile.lock
+
+# IDE配置文件
+*.json
+local.properties
+
+# 编译中间文件
+**/classes/
+**/test-classes/
+
