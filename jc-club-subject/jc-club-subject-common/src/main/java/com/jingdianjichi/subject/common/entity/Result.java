@@ -38,8 +38,15 @@ public class Result {
         return result;
     }
 
-    public static <T> Result fail(T data) {
+    public static <T> Result fail(String message) {
         Result result = fail();
+        result.setMessage(message);
+        return result;
+    }
+
+    public static <T> Result fail(String message, T data) {
+        Result result = fail();
+        result.setMessage(message);
         result.setData(data);
         return result;
     }
