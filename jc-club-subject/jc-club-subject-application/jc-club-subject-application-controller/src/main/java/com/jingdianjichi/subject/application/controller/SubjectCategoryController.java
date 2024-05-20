@@ -1,12 +1,15 @@
 package com.jingdianjichi.subject.application.controller;
 
 import com.alibaba.fastjson.JSON;
+import com.google.common.base.Preconditions;
 import com.jingdianjichi.subject.application.controller.convert.SubjectCategoryDTOConverter;
 import com.jingdianjichi.subject.application.controller.dto.SubjectCategoryDTO;
 import com.jingdianjichi.subject.common.entity.Result;
 import com.jingdianjichi.subject.domain.entity.SubjectCategoryBO;
 import com.jingdianjichi.subject.domain.service.SubjectCategoryDomainService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -33,9 +36,8 @@ public class SubjectCategoryController {
     public Result add(@RequestBody SubjectCategoryDTO subjectCategoryDTO) {
         try {
             // 数据校验
-            if (subjectCategoryDTO == null || subjectCategoryDTO.getCategoryName() == null || subjectCategoryDTO.getCategoryName().trim().isEmpty()) {
-                throw new IllegalArgumentException("主题类别信息不能为空");
-            }
+            Preconditions.checkArgument(!ObjectUtils.isEmpty(subjectCategoryDTO.getCategoryType()), "分类类型不能为空");
+            Preconditions.checkArgument(StringUtils.hasText(subjectCategoryDTO.getCategoryName()), "分类名称不能为空");
 
             // 日志记录优化：确保日志级别允许时才进行DTO序列化操作
             if(log.isInfoEnabled()) {
