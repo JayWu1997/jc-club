@@ -19,6 +19,15 @@ public interface SubjectCategoryService {
     SubjectCategory queryById(Long id);
 
     /**
+     * 根据类别名称查询主题类别。
+     *
+     * @param categoryName 要查询的主题类别的名称。
+     * @return 返回与给定类别名称匹配的主题类别对象。如果找不到匹配项，可能返回null。
+     */
+    SubjectCategory queryByCategoryName(String categoryName);
+
+
+    /**
      * 新增数据
      *
      * @param subjectCategory 实例对象

@@ -33,6 +33,17 @@ public class SubjectCategoryServiceImpl implements SubjectCategoryService {
     }
 
     /**
+     * 根据类别名称查询主题类别信息。
+     *
+     * @param categoryName 要查询的主题类别的名称。
+     * @return 返回与给定类别名称匹配的主题类别对象。如果没有找到匹配的类别，则返回null。
+     */
+    @Override
+    public SubjectCategory queryByCategoryName(String categoryName) {
+        return subjectCategoryDao.queryByCategoryName(categoryName);
+    }
+
+    /**
      * 新增数据
      *
      * @param subjectCategory 实例对象
