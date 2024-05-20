@@ -8,7 +8,7 @@ public class Result {
 
     private Boolean success;
 
-    private Integer code;
+    private String code;
 
     private String message;
 
