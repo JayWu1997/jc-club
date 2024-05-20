@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * 题目分类(SubjectCategory)表服务实现类
@@ -40,7 +41,11 @@ public class SubjectCategoryServiceImpl implements SubjectCategoryService {
      */
     @Override
     public SubjectCategory queryByCategoryName(String categoryName) {
-        return subjectCategoryDao.queryByCategoryName(categoryName);
+        SubjectCategory category = new SubjectCategory();
+        category.setCategoryName(categoryName);
+        category.setIsDeleted(0);
+        List<SubjectCategory> categoryList = subjectCategoryDao.queryByAll(category);
+        return categoryList.size() == 1 ? categoryList.get(0) : null;
     }
 
     /**
