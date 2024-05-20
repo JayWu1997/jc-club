@@ -1,4 +1,5 @@
 package com.jingdianjichi.subject.infra.basic.dao;
+import java.util.Date;
 
 import com.jingdianjichi.subject.infra.basic.entity.SubjectCategory;
 import org.apache.ibatis.annotations.Param;
@@ -23,14 +24,6 @@ public interface SubjectCategoryDao {
      * @return 实例对象
      */
     SubjectCategory queryById(Long id);
-
-    /**
-     * 根据类别名称查询主题类别。
-     *
-     * @param categoryName 要查询的主题类别的名称。
-     * @return 返回与给定类别名称匹配的主题类别对象。如果找不到匹配项，可能返回null。
-     */
-    SubjectCategory queryByCategoryName(@Param("categoryName")String categoryName);
 
     /**
      * 统计总行数
@@ -80,6 +73,14 @@ public interface SubjectCategoryDao {
      * @return 影响行数
      */
     int deleteById(Long id);
+
+    /**
+     * 查询所有主题类别。
+     *
+     * @param subjectCategory 一个主题类别对象，可以为空。如果提供，将按照该对象的属性进行查询过滤。
+     * @return 返回一个主题类别列表，可能为空。列表中包含所有匹配查询条件的主题类别对象。
+     */
+    List<SubjectCategory> queryByAll(SubjectCategory subjectCategory);
 
 }
 
