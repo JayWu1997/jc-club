@@ -6,15 +6,16 @@ import lombok.Getter;
 public enum ResultCodeEnum {
 
     SUCCESS("200", "成功"),
-    FAIL("500","失败");
+    FAIL("500","失败"),
+    PARAM_ERROR("5001", "参数错误");
 
-    public String code;
+    public final String code;
 
-    public String desc;
+    public final String message;
 
-    ResultCodeEnum(String code, String desc){
+    ResultCodeEnum(String code, String message){
         this.code = code;
-        this.desc = desc;
+        this.message = message;
     }
 
     public static ResultCodeEnum getByCode(String code) {

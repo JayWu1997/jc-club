@@ -16,25 +16,25 @@ public class Result {
 
     private String reqUuid;
 
-    public static Result ok() {
+    public static Result success() {
         Result result = new Result();
         result.setSuccess(true);
         result.setCode(ResultCodeEnum.SUCCESS.getCode());
-        result.setMessage(ResultCodeEnum.SUCCESS.getDesc());
+        result.setMessage(ResultCodeEnum.SUCCESS.getMessage());
         return result;
     }
 
-    public static <T> Result ok(T data) {
-        Result result = ok();
+    public static <T> Result success(T data) {
+        Result result = success();
         result.setData(data);
         return result;
     }
 
     public static Result fail() {
         Result result = new Result();
-        result.setSuccess(true);
+        result.setSuccess(false);
         result.setCode(ResultCodeEnum.FAIL.getCode());
-        result.setMessage(ResultCodeEnum.FAIL.getDesc());
+        result.setMessage(ResultCodeEnum.FAIL.getMessage());
         return result;
     }
 
