@@ -14,6 +14,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * 主题类别控制器类
@@ -34,7 +35,7 @@ public class SubjectCategoryController {
      * @return 返回操作结果，成功返回包含添加后主题类别信息的结果，失败返回空结果
      */
     @PostMapping("/add")
-    public Result add(@RequestBody SubjectCategoryDTO subjectCategoryDTO) {
+    public Result<SubjectCategoryDTO> add(@RequestBody SubjectCategoryDTO subjectCategoryDTO) {
         // 数据校验
         if (ObjectUtils.isEmpty(subjectCategoryDTO.getCategoryType())) {
             throw new BusinessException(ResultCodeEnum.PARAM_ERROR, "添加主题类别时，分类类型不能为空");
@@ -53,7 +54,7 @@ public class SubjectCategoryController {
         // 调用领域服务，执行添加操作，并返回处理后的BO
         subjectCategoryBO = subjectCategoryDomainService.add(subjectCategoryBO);
         // 将BO转换回DTO，封装到结果对象中返回
-        Result result = Result.success(SubjectCategoryDTOConverter.INSTANCE.convertBo2Dto(subjectCategoryBO));
+        Result<SubjectCategoryDTO> result = Result.success(SubjectCategoryDTOConverter.INSTANCE.convertBo2Dto(subjectCategoryBO));
 
         // 日志记录优化：确保日志级别允许时才进行DTO序列化操作
         if (log.isInfoEnabled()) {
