@@ -17,8 +17,8 @@ import javax.annotation.Resource;
 import java.util.List;
 
 /**
- * 主题类别控制器类
- * 这是一个用于管理主题类别的控制器类，提供了对主题类别相关操作的接口。
+ * 题目类别控制器类
+ * 这是一个用于管理题目类别的控制器类，提供了对主题类别相关操作的接口。
  */
 @RestController
 @RequestMapping("/subject/category")
@@ -61,6 +61,28 @@ public class SubjectCategoryController {
             log.info("SubjectCategoryController.add.successResult:{}", JSON.toJSON(result));
         }
 
+        return result;
+    }
+
+
+    /**
+     * 查询岗位信息，即顶层题目分类( parentId 为 0 的分类 )
+     * <p>
+     * 通过调用主题分类领域服务查询所有岗位信息，并将查询结果转换为DTO形式返回。
+     * 此接口用于前端获取岗位信息，以展示在相应的界面中。
+     * 
+     * @return Result<List<SubjectCategoryDTO>> 返回查询结果，包含岗位信息的列表。
+     */
+    @GetMapping("/queryPrimaryCategory")
+    public Result<List<SubjectCategoryDTO>> queryPrimaryCategory() {
+        // 调用领域服务查询所有岗位信息
+        List<SubjectCategoryBO> subjectCategoryBOList = subjectCategoryDomainService.queryPrimaryCategory();
+        // 将查询到的岗位信息BO转换为DTO，并包装在Result对象中返回
+        Result<List<SubjectCategoryDTO>> result = Result.success(SubjectCategoryDTOConverter.INSTANCE.convertBo2Dto(subjectCategoryBOList));
+        // 如果日志级别为INFO，则记录查询成功的结果
+        if (log.isInfoEnabled()) {
+            log.info("SubjectCategoryController.queryPrimaryCategory.successResult:{}", JSON.toJSON(result));
+        }
         return result;
     }
 }

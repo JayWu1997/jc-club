@@ -74,8 +74,8 @@ public class SubjectCategoryServiceImpl implements SubjectCategoryService {
      */
     @Override
     public SubjectCategory update(SubjectCategory subjectCategory) {
-        this.subjectCategoryDao.update(subjectCategory);
-        return this.queryById(subjectCategory.getId());
+        subjectCategoryDao.update(subjectCategory);
+        return queryById(subjectCategory.getId());
     }
 
     /**
@@ -87,5 +87,18 @@ public class SubjectCategoryServiceImpl implements SubjectCategoryService {
     @Override
     public boolean deleteById(Long id) {
         return this.subjectCategoryDao.deleteById(id) > 0;
+    }
+
+    /**
+     * 查询所有岗位
+     * @return 所有岗位信息
+     */
+    @Override
+    public List<SubjectCategory> queryPrimaryCategory() {
+        SubjectCategory subjectCategory = new SubjectCategory();
+        subjectCategory.setParentId(0L);
+        subjectCategory.setIsDeleted(0);
+
+        return subjectCategoryDao.queryByAll(subjectCategory);
     }
 }

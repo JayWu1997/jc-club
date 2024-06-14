@@ -5,6 +5,8 @@ import com.jingdianjichi.subject.infra.basic.entity.SubjectCategory;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
+import java.util.List;
+
 @Mapper
 public interface SubjectCategoryBOConverter {
 
@@ -13,4 +15,6 @@ public interface SubjectCategoryBOConverter {
     SubjectCategory convertBo2Entity(SubjectCategoryBO subjectCategoryBO);
 
     SubjectCategoryBO convertEntity2Bo(SubjectCategory subjectCategory);
+
+    List<SubjectCategoryBO> convertEntity2Bo(List<SubjectCategory> subjectCategory);
 }
