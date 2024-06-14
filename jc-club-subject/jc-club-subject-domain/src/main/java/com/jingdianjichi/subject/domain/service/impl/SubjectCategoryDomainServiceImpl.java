@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.Date;
+import java.util.List;
 
 @Service
 @Slf4j
@@ -49,6 +50,17 @@ public class SubjectCategoryDomainServiceImpl implements SubjectCategoryDomainSe
             log.info("SubjectCategoryDomainServiceImpl.add.result:{}", JSON.toJSON(result));
         }
         return result;
+    }
+
+    /**
+     * 查询所有岗位。
+     *
+     * @return 返回所有岗位。
+     */
+    @Override
+    public List<SubjectCategoryBO> queryPrimaryCategory() {
+        List<SubjectCategory> entityList = subjectCategoryService.queryPrimaryCategory();
+        return SubjectCategoryBOConverter.INSTANCE.convertEntity2Bo(entityList);
     }
 
 }
