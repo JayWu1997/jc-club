@@ -73,9 +73,8 @@ public class SubjectCategoryServiceImpl implements SubjectCategoryService {
      * @return 实例对象
      */
     @Override
-    public SubjectCategory update(SubjectCategory subjectCategory) {
-        subjectCategoryDao.update(subjectCategory);
-        return queryById(subjectCategory.getId());
+    public int update(SubjectCategory subjectCategory) {
+        return subjectCategoryDao.update(subjectCategory);
     }
 
     /**

@@ -29,39 +29,47 @@ public class SubjectCategoryController {
     private SubjectCategoryDomainService subjectCategoryDomainService;
 
     /**
-     * 添加主题类别信息
+     * 添加题目类别信息
      *
      * @param subjectCategoryDTO 主题类别数据传输对象，包含要添加的主题类别信息
      * @return 返回操作结果，成功返回包含添加后主题类别信息的结果，失败返回空结果
      */
     @PostMapping("/add")
     public Result<SubjectCategoryDTO> add(@RequestBody SubjectCategoryDTO subjectCategoryDTO) {
-        // 数据校验
-        if (ObjectUtils.isEmpty(subjectCategoryDTO.getCategoryType())) {
-            throw new BusinessException(ResultCodeEnum.PARAM_ERROR, "添加主题类别时，分类类型不能为空");
-        }
-        if (!StringUtils.hasText(subjectCategoryDTO.getCategoryName())) {
-            throw new BusinessException(ResultCodeEnum.PARAM_ERROR, "添加主题类别时，分类名称不能为空");
-        }
+        try {
+            // 数据校验
+            if (ObjectUtils.isEmpty(subjectCategoryDTO.getCategoryType())) {
+                throw new BusinessException(ResultCodeEnum.PARAM_ERROR, "添加题目类别时，分类类型不能为空");
+            }
+            if (!StringUtils.hasText(subjectCategoryDTO.getCategoryName())) {
+                throw new BusinessException(ResultCodeEnum.PARAM_ERROR, "添加题目类别时，分类名称不能为空");
+            }
 
-        // 日志记录优化：确保日志级别允许时才进行DTO序列化操作
-        if (log.isInfoEnabled()) {
-            log.info("SubjectCategoryController.add.dto:{}", JSON.toJSON(subjectCategoryDTO));
+            // 日志记录优化：确保日志级别允许时才进行DTO序列化操作
+            if (log.isInfoEnabled()) {
+                log.info("SubjectCategoryController.add.dto:{}", JSON.toJSON(subjectCategoryDTO));
+            }
+
+            // 转换DTO为BO，进行业务逻辑处理前的准备
+            SubjectCategoryBO subjectCategoryBO = SubjectCategoryDTOConverter.INSTANCE.convertDto2Bo(subjectCategoryDTO);
+            // 调用领域服务，执行添加操作，并返回处理后的BO
+            subjectCategoryBO = subjectCategoryDomainService.add(subjectCategoryBO);
+            // 将BO转换回DTO，封装到结果对象中返回
+            Result<SubjectCategoryDTO> result = Result.success(SubjectCategoryDTOConverter.INSTANCE.convertBo2Dto(subjectCategoryBO));
+
+            // 日志记录优化：确保日志级别允许时才进行DTO序列化操作
+            if (log.isInfoEnabled()) {
+                log.info("SubjectCategoryController.add.successResult:{}", JSON.toJSON(result));
+            }
+
+            return result;
+        } catch (BusinessException e) {
+            log.error(e.getMessage(), e);
+            return Result.fail(e.getMessage());
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            return Result.fail("添加题目分类失败！");
         }
-
-        // 转换DTO为BO，进行业务逻辑处理前的准备
-        SubjectCategoryBO subjectCategoryBO = SubjectCategoryDTOConverter.INSTANCE.convertDto2Bo(subjectCategoryDTO);
-        // 调用领域服务，执行添加操作，并返回处理后的BO
-        subjectCategoryBO = subjectCategoryDomainService.add(subjectCategoryBO);
-        // 将BO转换回DTO，封装到结果对象中返回
-        Result<SubjectCategoryDTO> result = Result.success(SubjectCategoryDTOConverter.INSTANCE.convertBo2Dto(subjectCategoryBO));
-
-        // 日志记录优化：确保日志级别允许时才进行DTO序列化操作
-        if (log.isInfoEnabled()) {
-            log.info("SubjectCategoryController.add.successResult:{}", JSON.toJSON(result));
-        }
-
-        return result;
     }
 
 
@@ -75,14 +83,53 @@ public class SubjectCategoryController {
      */
     @GetMapping("/queryPrimaryCategory")
     public Result<List<SubjectCategoryDTO>> queryPrimaryCategory() {
-        // 调用领域服务查询所有岗位信息
-        List<SubjectCategoryBO> subjectCategoryBOList = subjectCategoryDomainService.queryPrimaryCategory();
-        // 将查询到的岗位信息BO转换为DTO，并包装在Result对象中返回
-        Result<List<SubjectCategoryDTO>> result = Result.success(SubjectCategoryDTOConverter.INSTANCE.convertBo2Dto(subjectCategoryBOList));
-        // 如果日志级别为INFO，则记录查询成功的结果
-        if (log.isInfoEnabled()) {
-            log.info("SubjectCategoryController.queryPrimaryCategory.successResult:{}", JSON.toJSON(result));
+        try {
+            // 调用领域服务查询所有岗位信息
+            List<SubjectCategoryBO> subjectCategoryBOList = subjectCategoryDomainService.queryPrimaryCategory();
+            // 将查询到的岗位信息BO转换为DTO，并包装在Result对象中返回
+            Result<List<SubjectCategoryDTO>> result = Result.success(SubjectCategoryDTOConverter.INSTANCE.convertBo2Dto(subjectCategoryBOList));
+            // 如果日志级别为INFO，则记录查询成功的结果
+            if (log.isInfoEnabled()) {
+                log.info("SubjectCategoryController.queryPrimaryCategory.successResult:{}", JSON.toJSON(result));
+            }
+            return result;
+        } catch (BusinessException e) {
+            log.error(e.getMessage(), e);
+            return Result.fail(e.getMessage());
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            return Result.fail("查询岗位信息失败！");
         }
-        return result;
+    }
+
+    /**
+     * 更新分类信息
+     * @param subjectCategoryDTO dto
+     * @return 操作结果
+     */
+    @PostMapping("/update")
+    public Result update(@RequestBody SubjectCategoryDTO subjectCategoryDTO) {
+        try {
+            if (!StringUtils.hasText(subjectCategoryDTO.getCategoryName())) {
+                throw new BusinessException(ResultCodeEnum.PARAM_ERROR, "更新题目类别时，分类名称不能为空");
+            }
+
+            if (log.isInfoEnabled()) {
+                log.info("SubjectCategoryController.add.dto:{}", JSON.toJSON(subjectCategoryDTO));
+            }
+
+            Boolean isUpdateSucceed = subjectCategoryDomainService.update(SubjectCategoryDTOConverter.INSTANCE.convertDto2Bo(subjectCategoryDTO));
+            if (isUpdateSucceed != null && isUpdateSucceed) {
+                return Result.success("题目分类信息更新成功！");
+            } else {
+                return Result.fail("题目分类信息更新失败！");
+            }
+        } catch (BusinessException e) {
+            log.error(e.getMessage(), e);
+            return Result.fail(e.getMessage());
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            return Result.fail("更新题目分类信息失败！");
+        }
     }
 }

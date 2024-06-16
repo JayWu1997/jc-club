@@ -63,4 +63,15 @@ public class SubjectCategoryDomainServiceImpl implements SubjectCategoryDomainSe
         return SubjectCategoryBOConverter.INSTANCE.convertEntity2Bo(entityList);
     }
 
+    /**
+     * 更新题目分类信息
+     * @param subjectCategoryBO 待更新的主题类别信息，通过 categoryName 检索
+     * @return 成功返回 true， 否则返回 false
+     */
+    @Override
+    public Boolean update(SubjectCategoryBO subjectCategoryBO) {
+        int count = subjectCategoryService.update(SubjectCategoryBOConverter.INSTANCE.convertBo2Entity(subjectCategoryBO));
+        return count > 0;
+    }
+
 }
