@@ -1,6 +1,7 @@
 package com.jingdianjichi.subject.domain.service.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.jingdianjichi.subject.common.enums.IsDeletedEnum;
 import com.jingdianjichi.subject.common.enums.ResultCodeEnum;
 import com.jingdianjichi.subject.common.exception.BusinessException;
 import com.jingdianjichi.subject.domain.convert.SubjectCategoryBOConverter;
@@ -72,6 +73,19 @@ public class SubjectCategoryDomainServiceImpl implements SubjectCategoryDomainSe
     public Boolean update(SubjectCategoryBO subjectCategoryBO) {
         int count = subjectCategoryService.update(SubjectCategoryBOConverter.INSTANCE.convertBo2Entity(subjectCategoryBO));
         return count > 0;
+    }
+
+    /**
+     * 删除题目分类
+     * @param subjectCategoryBO 待删除的主题类别信息，通过 id 检索
+     * @return 成功返回 true， 否则返回 false
+     */
+    @Override
+    public Boolean delete(SubjectCategoryBO subjectCategoryBO) {
+        SubjectCategory subjectCategory = new SubjectCategory();
+        subjectCategory.setId(subjectCategoryBO.getId());
+        subjectCategory.setIsDeleted(IsDeletedEnum.DELETED.getCode());
+        return subjectCategoryService.update(subjectCategory) == 1;
     }
 
 }
