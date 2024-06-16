@@ -132,4 +132,30 @@ public class SubjectCategoryController {
             return Result.fail("更新题目分类信息失败！");
         }
     }
+
+    /**
+     * 删除题目分类
+     * @param subjectCategoryDTO dto
+     * @return 操作结果
+     */
+    @PostMapping("/delete")
+    public Result delete(@RequestBody SubjectCategoryDTO subjectCategoryDTO) {
+        try {
+            if (subjectCategoryDTO.getId() == null) {
+                throw new BusinessException(ResultCodeEnum.PARAM_ERROR, "删除题目类别时，分类 id 不能为空");
+            }
+            Boolean isDeleteSucceed = subjectCategoryDomainService.delete(SubjectCategoryDTOConverter.INSTANCE.convertDto2Bo(subjectCategoryDTO));
+            if (isDeleteSucceed) {
+                return Result.success("删除题目分类成功！");
+            } else {
+                return Result.fail("删除题目分类失败！");
+            }
+        } catch (BusinessException e) {
+            log.error(e.getMessage(), e);
+            return Result.fail(e.getMessage());
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            return Result.fail("删除题目分类信息失败！");
+        }
+    }
 }

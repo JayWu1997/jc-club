@@ -30,4 +30,11 @@ public interface SubjectCategoryDomainService {
      * @return 成功返回 true， 否则返回 false
      */
     Boolean update(SubjectCategoryBO subjectCategoryBO);
+
+    /**
+     * 删除题目分类
+     * @param subjectCategoryBO 待删除的主题类别信息，通过 id 检索
+     * @return 成功返回 true， 否则返回 false
+     */
+    Boolean delete(SubjectCategoryBO subjectCategoryBO);
 }
