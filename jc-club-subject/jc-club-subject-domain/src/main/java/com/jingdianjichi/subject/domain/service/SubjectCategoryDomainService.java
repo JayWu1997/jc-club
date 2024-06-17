@@ -22,7 +22,7 @@ public interface SubjectCategoryDomainService {
      *
      * @return 返回所有岗位。
      */
-    List<SubjectCategoryBO> queryPrimaryCategory();
+    List<SubjectCategoryBO> queryCategory(SubjectCategoryBO subjectCategoryBO);
 
     /**
      * 更新题目分类信息

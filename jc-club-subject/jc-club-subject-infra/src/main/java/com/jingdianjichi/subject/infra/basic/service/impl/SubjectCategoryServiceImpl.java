@@ -1,6 +1,8 @@
 package com.jingdianjichi.subject.infra.basic.service.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.jingdianjichi.subject.common.enums.CategoryTypeEnum;
+import com.jingdianjichi.subject.common.enums.IsDeletedEnum;
 import com.jingdianjichi.subject.infra.basic.entity.SubjectCategory;
 import com.jingdianjichi.subject.infra.basic.dao.SubjectCategoryDao;
 import com.jingdianjichi.subject.infra.basic.service.SubjectCategoryService;
@@ -93,11 +95,8 @@ public class SubjectCategoryServiceImpl implements SubjectCategoryService {
      * @return 所有岗位信息
      */
     @Override
-    public List<SubjectCategory> queryPrimaryCategory() {
-        SubjectCategory subjectCategory = new SubjectCategory();
-        subjectCategory.setParentId(0L);
-        subjectCategory.setIsDeleted(0);
-
+    public List<SubjectCategory> queryCategory(SubjectCategory subjectCategory) {
+        subjectCategory.setIsDeleted(IsDeletedEnum.NOT_DELETED.getCode());
         return subjectCategoryDao.queryByAll(subjectCategory);
     }
 }

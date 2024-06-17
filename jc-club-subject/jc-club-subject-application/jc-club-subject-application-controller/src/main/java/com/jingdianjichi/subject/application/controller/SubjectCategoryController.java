@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.jingdianjichi.subject.application.controller.convert.SubjectCategoryDTOConverter;
 import com.jingdianjichi.subject.application.controller.dto.SubjectCategoryDTO;
 import com.jingdianjichi.subject.common.entity.Result;
+import com.jingdianjichi.subject.common.enums.CategoryTypeEnum;
 import com.jingdianjichi.subject.common.enums.ResultCodeEnum;
 import com.jingdianjichi.subject.common.exception.BusinessException;
 import com.jingdianjichi.subject.domain.entity.SubjectCategoryBO;
@@ -64,10 +65,10 @@ public class SubjectCategoryController {
 
             return result;
         } catch (BusinessException e) {
-            log.error(e.getMessage(), e);
+            log.error("SubjectCategoryController.add.error:{}", e.getMessage(), e);
             return Result.fail(e.getMessage());
         } catch (Exception e) {
-            log.error(e.getMessage(), e);
+            log.error("SubjectCategoryController.add.error:{}", e.getMessage(), e);
             return Result.fail("添加题目分类失败！");
         }
     }
@@ -81,11 +82,14 @@ public class SubjectCategoryController {
      * 
      * @return Result<List<SubjectCategoryDTO>> 返回查询结果，包含岗位信息的列表。
      */
-    @GetMapping("/queryPrimaryCategory")
-    public Result<List<SubjectCategoryDTO>> queryPrimaryCategory() {
+    @PostMapping("/queryPrimaryCategory")
+    public Result<List<SubjectCategoryDTO>> queryPrimaryCategory(SubjectCategoryDTO subjectCategoryDTO) {
         try {
+            if(subjectCategoryDTO.getCategoryType() == null || !subjectCategoryDTO.getCategoryType().equals(CategoryTypeEnum.PRIMARY.getCode())) {
+                subjectCategoryDTO.setCategoryType(CategoryTypeEnum.PRIMARY.getCode());
+            }
             // 调用领域服务查询所有岗位信息
-            List<SubjectCategoryBO> subjectCategoryBOList = subjectCategoryDomainService.queryPrimaryCategory();
+            List<SubjectCategoryBO> subjectCategoryBOList = subjectCategoryDomainService.queryCategory(SubjectCategoryDTOConverter.INSTANCE.convertDto2Bo(subjectCategoryDTO));
             // 将查询到的岗位信息BO转换为DTO，并包装在Result对象中返回
             Result<List<SubjectCategoryDTO>> result = Result.success(SubjectCategoryDTOConverter.INSTANCE.convertBo2Dto(subjectCategoryBOList));
             // 如果日志级别为INFO，则记录查询成功的结果
@@ -94,11 +98,18 @@ public class SubjectCategoryController {
             }
             return result;
         } catch (BusinessException e) {
-            log.error(e.getMessage(), e);
+            log.error("SubjectCategoryController.queryPrimaryCategory.error:{}", e.getMessage(), e);
             return Result.fail(e.getMessage());
         } catch (Exception e) {
-            log.error(e.getMessage(), e);
+            log.error("SubjectCategoryController.queryPrimaryCategory.error:{}", e.getMessage(), e);
             return Result.fail("查询岗位信息失败！");
+        }
+    }
+
+    @PostMapping("/queryCategoryList")
+    public Result<List<SubjectCategoryDTO>> queryCategoryList(@RequestBody SubjectCategoryDTO subjectCategoryDTO) {
+        try {
+
         }
     }
 
@@ -108,27 +119,27 @@ public class SubjectCategoryController {
      * @return 操作结果
      */
     @PostMapping("/update")
-    public Result update(@RequestBody SubjectCategoryDTO subjectCategoryDTO) {
+    public Result<Boolean> update(@RequestBody SubjectCategoryDTO subjectCategoryDTO) {
         try {
-            if (!StringUtils.hasText(subjectCategoryDTO.getCategoryName())) {
+            if (subjectCategoryDTO.getId() == null || subjectCategoryDTO.getId() < 0) {
                 throw new BusinessException(ResultCodeEnum.PARAM_ERROR, "更新题目类别时，分类名称不能为空");
             }
 
             if (log.isInfoEnabled()) {
-                log.info("SubjectCategoryController.add.dto:{}", JSON.toJSON(subjectCategoryDTO));
+                log.info("SubjectCategoryController.update.dto:{}", JSON.toJSON(subjectCategoryDTO));
             }
 
             Boolean isUpdateSucceed = subjectCategoryDomainService.update(SubjectCategoryDTOConverter.INSTANCE.convertDto2Bo(subjectCategoryDTO));
             if (isUpdateSucceed != null && isUpdateSucceed) {
-                return Result.success("题目分类信息更新成功！");
+                return Result.success("题目分类信息更新成功！", Boolean.TRUE);
             } else {
-                return Result.fail("题目分类信息更新失败！");
+                return Result.success("题目分类信息更新失败！", Boolean.FALSE);
             }
         } catch (BusinessException e) {
-            log.error(e.getMessage(), e);
+            log.error("SubjectCategoryController.update.error:{}", e.getMessage(), e);
             return Result.fail(e.getMessage());
         } catch (Exception e) {
-            log.error(e.getMessage(), e);
+            log.error("SubjectCategoryController.update.error:{}", e.getMessage(), e);
             return Result.fail("更新题目分类信息失败！");
         }
     }
@@ -139,22 +150,27 @@ public class SubjectCategoryController {
      * @return 操作结果
      */
     @PostMapping("/delete")
-    public Result delete(@RequestBody SubjectCategoryDTO subjectCategoryDTO) {
+    public Result<Boolean> delete(@RequestBody SubjectCategoryDTO subjectCategoryDTO) {
         try {
             if (subjectCategoryDTO.getId() == null) {
                 throw new BusinessException(ResultCodeEnum.PARAM_ERROR, "删除题目类别时，分类 id 不能为空");
             }
+
+            if (log.isInfoEnabled()) {
+                log.info("SubjectCategoryController.delete.dto:{}", JSON.toJSON(subjectCategoryDTO));
+            }
+
             Boolean isDeleteSucceed = subjectCategoryDomainService.delete(SubjectCategoryDTOConverter.INSTANCE.convertDto2Bo(subjectCategoryDTO));
             if (isDeleteSucceed) {
-                return Result.success("删除题目分类成功！");
+                return Result.success("删除题目分类成功！", Boolean.TRUE);
             } else {
-                return Result.fail("删除题目分类失败！");
+                return Result.success("删除题目分类失败！", Boolean.FALSE);
             }
         } catch (BusinessException e) {
-            log.error(e.getMessage(), e);
+            log.error("SubjectCategoryController.delete.error:{}", e.getMessage(), e);
             return Result.fail(e.getMessage());
         } catch (Exception e) {
-            log.error(e.getMessage(), e);
+            log.error("SubjectCategoryController.delete.error:{}", e.getMessage(), e);
             return Result.fail("删除题目分类信息失败！");
         }
     }
