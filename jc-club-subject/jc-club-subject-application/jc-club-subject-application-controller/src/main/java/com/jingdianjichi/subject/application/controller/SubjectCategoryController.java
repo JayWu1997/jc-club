@@ -38,17 +38,17 @@ public class SubjectCategoryController {
     @PostMapping("/add")
     public Result<SubjectCategoryDTO> add(@RequestBody SubjectCategoryDTO subjectCategoryDTO) {
         try {
+            // 日志记录优化：确保日志级别允许时才进行DTO序列化操作
+            if (log.isInfoEnabled()) {
+                log.info("SubjectCategoryController.add.dto:{}", JSON.toJSON(subjectCategoryDTO));
+            }
+
             // 数据校验
             if (ObjectUtils.isEmpty(subjectCategoryDTO.getCategoryType())) {
                 throw new BusinessException(ResultCodeEnum.PARAM_ERROR, "添加题目类别时，分类类型不能为空");
             }
             if (!StringUtils.hasText(subjectCategoryDTO.getCategoryName())) {
                 throw new BusinessException(ResultCodeEnum.PARAM_ERROR, "添加题目类别时，分类名称不能为空");
-            }
-
-            // 日志记录优化：确保日志级别允许时才进行DTO序列化操作
-            if (log.isInfoEnabled()) {
-                log.info("SubjectCategoryController.add.dto:{}", JSON.toJSON(subjectCategoryDTO));
             }
 
             // 转换DTO为BO，进行业务逻辑处理前的准备
@@ -85,6 +85,10 @@ public class SubjectCategoryController {
     @PostMapping("/queryPrimaryCategory")
     public Result<List<SubjectCategoryDTO>> queryPrimaryCategory(SubjectCategoryDTO subjectCategoryDTO) {
         try {
+            if (log.isInfoEnabled()) {
+                log.info("SubjectCategoryController.queryPrimaryCategory.dto:{}", JSON.toJSON(subjectCategoryDTO));
+            }
+
             if(subjectCategoryDTO.getCategoryType() == null || !subjectCategoryDTO.getCategoryType().equals(CategoryTypeEnum.PRIMARY.getCode())) {
                 subjectCategoryDTO.setCategoryType(CategoryTypeEnum.PRIMARY.getCode());
             }
@@ -106,10 +110,39 @@ public class SubjectCategoryController {
         }
     }
 
+    /**
+     * 查询大类下的分类
+     * @param subjectCategoryDTO
+     * @return
+     */
     @PostMapping("/queryCategoryList")
     public Result<List<SubjectCategoryDTO>> queryCategoryList(@RequestBody SubjectCategoryDTO subjectCategoryDTO) {
         try {
+            // 日志记录优化：确保日志级别允许时才进行DTO序列化操作
+            if (log.isInfoEnabled()) {
+                log.info("SubjectCategoryController.queryCategoryList.dto:{}", JSON.toJSON(subjectCategoryDTO));
+            }
 
+            if(subjectCategoryDTO.getCategoryType() == null || !subjectCategoryDTO.getCategoryType().equals(CategoryTypeEnum.SECONDARY.getCode())) {
+                subjectCategoryDTO.setCategoryType(CategoryTypeEnum.SECONDARY.getCode());
+            }
+            if(subjectCategoryDTO.getParentId() == null || subjectCategoryDTO.getParentId() < 0) {
+                throw new BusinessException(ResultCodeEnum.PARAM_ERROR, "查询次级分类时，父级分类不能为空");
+            }
+            List<SubjectCategoryBO> subjectCategoryBOList = subjectCategoryDomainService.queryCategory(SubjectCategoryDTOConverter.INSTANCE.convertDto2Bo(subjectCategoryDTO));
+            // 将查询到的岗位信息BO转换为DTO，并包装在Result对象中返回
+            Result<List<SubjectCategoryDTO>> result = Result.success("分类信息查询成功!", SubjectCategoryDTOConverter.INSTANCE.convertBo2Dto(subjectCategoryBOList));
+            // 如果日志级别为INFO，则记录查询成功的结果
+            if (log.isInfoEnabled()) {
+                log.info("SubjectCategoryController.queryCategoryList.successResult:{}", JSON.toJSON(result));
+            }
+            return result;
+        } catch (BusinessException e) {
+            log.error("SubjectCategoryController.queryCategoryList.error:{}", e.getMessage(), e);
+            return Result.fail(e.getMessage());
+        } catch (Exception e) {
+            log.error("SubjectCategoryController.queryCategoryList.error:{}", e.getMessage(), e);
+            return Result.fail("查询分类信息失败！");
         }
     }
 
