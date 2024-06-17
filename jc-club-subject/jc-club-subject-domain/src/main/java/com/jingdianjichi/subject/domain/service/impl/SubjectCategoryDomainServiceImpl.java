@@ -59,8 +59,8 @@ public class SubjectCategoryDomainServiceImpl implements SubjectCategoryDomainSe
      * @return 返回所有岗位。
      */
     @Override
-    public List<SubjectCategoryBO> queryPrimaryCategory() {
-        List<SubjectCategory> entityList = subjectCategoryService.queryPrimaryCategory();
+    public List<SubjectCategoryBO> queryCategory(SubjectCategoryBO subjectCategoryBO) {
+        List<SubjectCategory> entityList = subjectCategoryService.queryCategory(SubjectCategoryBOConverter.INSTANCE.convertBo2Entity(subjectCategoryBO));
         return SubjectCategoryBOConverter.INSTANCE.convertEntity2Bo(entityList);
     }
 
