@@ -9,7 +9,7 @@ import lombok.Getter;
 public enum CategoryTypeEnum {
 
     PRIMARY(1, "岗位大类"),
-    SECONDARY(0,"二级分类");
+    SECONDARY(2,"二级分类");
 
     public final Integer code;
 
