@@ -1,6 +1,6 @@
-package com.jingdianjichi.subject.application.controller.convert;
+package com.jingdianjichi.subject.application.convert;
 
-import com.jingdianjichi.subject.application.controller.dto.SubjectLabelDTO;
+import com.jingdianjichi.subject.application.dto.SubjectLabelDTO;
 import com.jingdianjichi.subject.domain.entity.SubjectLabelBO;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;

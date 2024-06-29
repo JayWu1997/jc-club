@@ -1,8 +1,8 @@
 package com.jingdianjichi.subject.application.controller;
 
 import com.alibaba.fastjson.JSON;
-import com.jingdianjichi.subject.application.controller.convert.SubjectCategoryDTOConverter;
-import com.jingdianjichi.subject.application.controller.dto.SubjectCategoryDTO;
+import com.jingdianjichi.subject.application.convert.SubjectCategoryDTOConverter;
+import com.jingdianjichi.subject.application.dto.SubjectCategoryDTO;
 import com.jingdianjichi.subject.common.entity.Result;
 import com.jingdianjichi.subject.common.enums.CategoryTypeEnum;
 import com.jingdianjichi.subject.common.enums.ResultCodeEnum;
@@ -112,8 +112,8 @@ public class SubjectCategoryController {
 
     /**
      * 查询大类下的分类
-     * @param subjectCategoryDTO
-     * @return
+     * @param subjectCategoryDTO 主题类别数据传输对象，包含要查询的大类信息
+     * @return 返回操作结果，成功返回包含查询结果的结果，失败返回空结果
      */
     @PostMapping("/queryCategoryList")
     public Result<List<SubjectCategoryDTO>> queryCategoryList(@RequestBody SubjectCategoryDTO subjectCategoryDTO) {
