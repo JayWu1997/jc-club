@@ -45,6 +45,17 @@ public class SubjectMappingServiceImpl implements SubjectMappingService {
     }
 
     /**
+     * 批量新增数据
+     *
+     * @param subjectMappingList 实例对象列表
+     * @return 成功个数
+     */
+    @Override
+    public Integer insertBatch(List<SubjectMapping> subjectMappingList) {
+        return subjectMappingDao.insertBatch(subjectMappingList);
+    }
+
+    /**
      * 修改数据
      *
      * @param subjectMapping 实例对象

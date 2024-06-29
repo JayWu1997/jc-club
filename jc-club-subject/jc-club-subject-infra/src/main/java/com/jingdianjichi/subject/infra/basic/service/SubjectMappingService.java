@@ -24,9 +24,17 @@ public interface SubjectMappingService {
      * 新增数据
      *
      * @param subjectMapping 实例对象
-     * @return 实例对象
+     * @return 成功个数
      */
     Integer insert(SubjectMapping subjectMapping);
+
+    /**
+     * 批量新增数据
+     *
+     * @param subjectMappingList 实例对象列表
+     * @return 成功个数
+     */
+    Integer insertBatch(List<SubjectMapping> subjectMappingList);
 
     /**
      * 修改数据

@@ -1,4 +1,4 @@
-package com.jingdianjichi.subject.application.controller.dto;
+package com.jingdianjichi.subject.application.dto;
 
 import lombok.Data;
 

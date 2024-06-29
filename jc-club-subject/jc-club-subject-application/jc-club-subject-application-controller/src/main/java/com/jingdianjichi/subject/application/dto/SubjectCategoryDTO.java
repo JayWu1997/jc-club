@@ -1,9 +1,8 @@
-package com.jingdianjichi.subject.application.controller.dto;
+package com.jingdianjichi.subject.application.dto;
 
 import lombok.Data;
 
 import java.io.Serializable;
-import java.util.Date;
 
 /**
  * 题目分类(SubjectCategory)实体类

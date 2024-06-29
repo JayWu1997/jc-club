@@ -1,8 +1,8 @@
 package com.jingdianjichi.subject.application.controller;
 
 import com.alibaba.fastjson.JSON;
-import com.jingdianjichi.subject.application.controller.convert.SubjectLabelDTOConverter;
-import com.jingdianjichi.subject.application.controller.dto.SubjectLabelDTO;
+import com.jingdianjichi.subject.application.convert.SubjectLabelDTOConverter;
+import com.jingdianjichi.subject.application.dto.SubjectLabelDTO;
 import com.jingdianjichi.subject.common.entity.Result;
 import com.jingdianjichi.subject.common.enums.ResultCodeEnum;
 import com.jingdianjichi.subject.common.exception.BusinessException;
