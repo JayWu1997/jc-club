@@ -11,10 +11,29 @@ import lombok.Data;
 @Data
 public class PageInfo {
 
+    /**
+     * 每页显示的记录数
+     */
     private Integer pageSize;
 
+    /**
+     * 当前页码
+     */
     private Integer pageNo;
 
+    /**
+     * 无参构造方法，默认分页为10条记录，第一页
+     */
+    public PageInfo() {
+        this.pageSize = 10;
+        this.pageNo = 0;
+    }
+
+    /**
+     * 构造方法，传入每页显示的记录数和当前页码
+     * @param pageSize 每页显示的记录数
+     * @param pageNum 当前页码
+     */
     public PageInfo(int pageSize, int pageNum) {
         this.pageSize = pageSize;
         this.pageNo = pageNum;

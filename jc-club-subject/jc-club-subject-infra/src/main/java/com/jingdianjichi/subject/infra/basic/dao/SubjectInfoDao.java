@@ -33,6 +33,26 @@ public interface SubjectInfoDao {
     long count(SubjectInfo subjectInfo);
 
     /**
+     * 根据特定条件统计符合条件的记录数
+     *
+     * @param subjectInfo 题目信息对象，可能包含多个字段用于查询条件
+     * @param categoryId 类别ID，用于限定查询的类别条件
+     * @param labelId 标签ID，用于限定查询的标签条件
+     * @return 返回符合条件的记录总数
+     */
+    Integer countByCondition(@Param("subjectInfo") SubjectInfo subjectInfo,
+                          @Param("categoryId") Long categoryId,
+                          @Param("labelId") Long labelId);
+
+
+    List<SubjectInfo> queryPage(@Param("subjectInfo") SubjectInfo subjectInfo,
+                                @Param("categoryId") Long categoryId,
+                                @Param("labelId") Long labelId,
+                                @Param("start") Integer start,
+                                @Param("pageSize") Integer pageSize);
+
+
+    /**
      * 新增数据
      *
      * @param subjectInfo 实例对象

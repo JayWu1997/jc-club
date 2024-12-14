@@ -17,22 +17,29 @@
     </resultMap>
 
     <!--查询单个-->
+    <sql id="allColumns">
+        id,
+        subject_name,
+        subject_difficult,
+        settle_name,
+        subject_type,
+        subject_score,
+        subject_parse,
+        created_by,
+        created_time,
+        update_by,
+        update_time,
+        is_deleted
+    </sql>
+
     <select id="queryById" resultMap="SubjectInfoMap">
-        select id,
-               subject_name,
-               subject_difficult,
-               settle_name,
-               subject_type,
-               subject_score,
-               subject_parse,
-               created_by,
-               created_time,
-               update_by,
-               update_time,
-               is_deleted
+        select
+        <include refid="allColumns"/>
         from subject_info
-        where id = #{id}
+        where id = #{id, jdbcType=INTEGER}
+        and is_deleted = 0
     </select>
+
 
     <!--统计总行数-->
     <select id="count" resultType="java.lang.Long">
@@ -76,6 +83,47 @@
                 and is_deleted = #{isDeleted}
             </if>
         </where>
+    </select>
+
+    <!--  条件查询  -->
+    <select id="countByCondition" resultType="java.lang.Integer">
+        select count(1)
+        from subject_info i, subject_mapping m
+        <where>
+            i.id = m.subject_id
+            and i.subject_difficult = #{subjectInfo.subjectDifficult}
+            and m.category_id = #{categoryId}
+            and m.label_id = #{labelId}
+            and i.is_deleted = 0
+            and m.is_deleted = 0
+        </where>
+    </select>
+
+    <!--  条件查询  -->
+    <select id="queryPage" resultType="com.jingdianjichi.subject.infra.basic.entity.SubjectInfo">
+        select
+        i.id,
+        subject_name,
+        subject_difficult,
+        settle_name,
+        subject_type,
+        subject_score,
+        subject_parse,
+        i.created_by,
+        i.created_time,
+        i.update_by,
+        i.update_time,
+        i.is_deleted
+        from subject_info i, subject_mapping m
+        <where>
+            i.id = m.subject_id
+            and i.subject_difficult = #{subjectInfo.subjectDifficult}
+            and m.category_id = #{categoryId}
+            and m.label_id = #{labelId}
+            and i.is_deleted = 0
+            and m.is_deleted = 0
+        </where>
+        limit #{pageSize} offset #{start}
     </select>
 
     <!--新增所有列-->

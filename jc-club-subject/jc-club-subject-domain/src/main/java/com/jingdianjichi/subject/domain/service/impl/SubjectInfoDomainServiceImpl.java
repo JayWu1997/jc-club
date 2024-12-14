@@ -1,5 +1,6 @@
 package com.jingdianjichi.subject.domain.service.impl;
 
+import com.jingdianjichi.subject.common.entity.PageResult;
 import com.jingdianjichi.subject.common.enums.IsDeletedEnum;
 import com.jingdianjichi.subject.common.enums.ResultCodeEnum;
 import com.jingdianjichi.subject.common.exception.BusinessException;
@@ -15,6 +16,7 @@ import com.jingdianjichi.subject.infra.basic.service.SubjectMappingService;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -91,5 +93,33 @@ public class SubjectInfoDomainServiceImpl implements SubjectInfoDomainService {
         subjectInfo.setId(subjectsInfoBO.getId());
         subjectInfo.setIsDeleted(IsDeletedEnum.DELETED.getCode());
         return subjectInfoService.update(subjectInfo) > 0;
+    }
+
+    /**
+     * 分页查询题目信息
+     *
+     * @param subjectInfoBO 查询条件
+     * @return
+     */
+    @Override
+    public PageResult<SubjectInfoBO> getSubjectPage(SubjectInfoBO subjectInfoBO) {
+
+        int start = (subjectInfoBO.getPageNo() - 1) * subjectInfoBO.getPageSize();
+        SubjectInfo subjectInfo = SubjectInfoBOConverter.INSTANCE.convertBO2Entity(subjectInfoBO);
+        int total = subjectInfoService.countByCondition(subjectInfo, subjectInfoBO.getCategoryId(), subjectInfoBO.getLabelId());
+        // 查询得到的数量为0，就不用继续查询题目列表信息了
+        if (total == 0) {
+            return new PageResult<>(subjectInfoBO.getPageNo(),
+                    subjectInfoBO.getPageSize(),
+                    total,
+                    Collections.emptyList());
+        }
+        List<SubjectInfo> subjectInfoList = subjectInfoService.queryByCondition(subjectInfo, subjectInfoBO.getCategoryId(), subjectInfoBO.getLabelId(), start, subjectInfoBO.getPageSize());
+        List<SubjectInfoBO> subjectInfoBOList = SubjectInfoBOConverter.INSTANCE.convertEntity2BO(subjectInfoList);
+
+        return new PageResult<>(subjectInfoBO.getPageNo(),
+                subjectInfoBO.getPageSize(),
+                total,
+                subjectInfoBOList);
     }
 }

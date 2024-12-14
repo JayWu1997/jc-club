@@ -3,6 +3,7 @@ package com.jingdianjichi.subject.application.controller;
 import com.alibaba.fastjson.JSON;
 import com.jingdianjichi.subject.application.convert.SubjectInfoDTOConverter;
 import com.jingdianjichi.subject.application.dto.SubjectInfoDTO;
+import com.jingdianjichi.subject.common.entity.PageResult;
 import com.jingdianjichi.subject.common.entity.Result;
 import com.jingdianjichi.subject.common.enums.ResultCodeEnum;
 import com.jingdianjichi.subject.common.exception.BusinessException;
@@ -23,7 +24,7 @@ import javax.annotation.Resource;
 @RestController
 @RequestMapping("/subject/info")
 @Slf4j
-public class SubjectInfoController {
+public class SubjectController {
 
     @Resource
     private SubjectInfoDomainService subjectInfoDomainService;
@@ -36,7 +37,6 @@ public class SubjectInfoController {
     @PostMapping("/add")
     public Result<Boolean> add(@RequestBody SubjectInfoDTO subjectInfoDTO) {
         try {
-            // 日志记录优化：确保日志级别允许时才进行DTO序列化操作
             if (log.isInfoEnabled()) {
                 log.info("SubjectInfoController.add.dto:{}", JSON.toJSON(subjectInfoDTO));
             }
@@ -61,7 +61,34 @@ public class SubjectInfoController {
             return Result.fail(e.getMessage());
         } catch (Exception e) {
             log.error("SubjectInfoController.add.error:{}", e.getMessage(), e);
-            return Result.fail("添加题目标签失败！");
+            return Result.fail("添加题目失败！");
+        }
+    }
+
+    /**
+     * 获取题目分页
+     * @param subjectInfoDTO dto
+     * @return 分页数据
+     */
+    @PostMapping("/querySubjectPage")
+    public Result<PageResult<SubjectInfoDTO>> querySubjectPage(@RequestBody SubjectInfoDTO subjectInfoDTO) {
+        try {
+            if (log.isInfoEnabled()) {
+                log.info("SubjectInfoController.querySubjectPage.subjectInfoDTO:{}", JSON.toJSON(subjectInfoDTO));
+            }
+
+            ParamCheckUtil.checkNotNull(subjectInfoDTO.getCategoryId(), ResultCodeEnum.PARAM_ERROR, "类型不能为空!");
+            ParamCheckUtil.checkNotNull(subjectInfoDTO.getLabelId(), ResultCodeEnum.PARAM_ERROR, "标签不能为空!");
+
+            SubjectInfoBO subjectInfoBO = SubjectInfoDTOConverter.INSTANCE.convertDto2Bo(subjectInfoDTO);
+            PageResult<SubjectInfoBO> boPageResult = subjectInfoDomainService.getSubjectPage(subjectInfoBO);
+            return Result.success(new PageResult<>(boPageResult.getPageNo(), boPageResult.getPageSize(), boPageResult.getTotal(), SubjectInfoDTOConverter.INSTANCE.convertBo2Dto(boPageResult.getResult())));
+        } catch (BusinessException e) {
+            log.error("SubjectInfoController.querySubjectPage.error:{}", e.getMessage(), e);
+            return Result.fail(e.getMessage());
+        } catch (Exception e) {
+            log.error("SubjectInfoController.querySubjectPage.error:{}", e.getMessage(), e);
+            return Result.fail("获取题目分页失败！");
         }
     }
 

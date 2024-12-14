@@ -1,5 +1,6 @@
 package com.jingdianjichi.subject.domain.service;
 
+import com.jingdianjichi.subject.common.entity.PageResult;
 import com.jingdianjichi.subject.domain.entity.SubjectInfoBO;
 
 /**
@@ -28,4 +29,11 @@ public interface SubjectInfoDomainService {
      * @return 是否删除成功
      */
     Boolean delete(SubjectInfoBO subjectsInfoBO);
+
+    /**
+     * 分页查询题目信息
+     * @param subjectInfoBO 查询条件
+     * @return
+     */
+    PageResult<SubjectInfoBO> getSubjectPage(SubjectInfoBO subjectInfoBO);
 }
