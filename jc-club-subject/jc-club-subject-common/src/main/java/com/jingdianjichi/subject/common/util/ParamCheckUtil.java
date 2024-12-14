@@ -23,7 +23,7 @@ public class ParamCheckUtil {
      * @param resultCodeEnum 异常信息
      */
     public static void checkNotNull(Object obj, ResultCodeEnum resultCodeEnum, String errorMsg) {
-        if (ObjectUtil.isEmpty(obj)) {
+        if (ObjectUtil.isNull(obj)) {
             throw new BusinessException(resultCodeEnum, errorMsg);
         }
     }
