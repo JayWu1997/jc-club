@@ -73,4 +73,15 @@ public class SubjectMultipleServiceImpl implements SubjectMultipleService {
     public boolean deleteById(Long id) {
         return this.subjectMultipleDao.deleteById(id) > 0;
     }
+
+    /**
+     * 根据题目 id 查询多选题信息
+     *
+     * @param subjectId 题目 id
+     * @return 多选题信息
+     */
+    @Override
+    public List<SubjectMultiple> queryBySubjectId(Long subjectId) {
+        return subjectMultipleDao.queryBySubjectId(subjectId);
+    }
 }

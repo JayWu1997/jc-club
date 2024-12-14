@@ -91,6 +91,49 @@ public class SubjectController {
             return Result.fail("获取题目分页失败！");
         }
     }
+    /**
+     * 根据题目信息查询题目详情
+     * <p>
+     * 此方法通过POST请求接收一个SubjectInfoDTO对象作为参数，该对象包含了查询所需的信息，
+     * 包括题目ID、类别ID和标签ID。方法首先会检查这些参数是否为空，然后将DTO转换为BO，
+     * 并调用领域服务获取题目信息。最后，将结果转换回DTO并返回。
+     *
+     * @param subjectInfoDTO 包含查询信息的SubjectInfoDTO对象
+     * @return 返回一个Result对象，其中包含查询到的SubjectInfoDTO对象
+     */
+    @PostMapping("/querySubjectInfo")
+    public Result<SubjectInfoDTO> querySubjectInfo(@RequestBody SubjectInfoDTO subjectInfoDTO) {
+        try {
+            // 记录请求参数日志
+            if (log.isInfoEnabled()) {
+                log.info("SubjectInfoController.querySubjectInfo.subjectInfoDTO:{}", JSON.toJSON(subjectInfoDTO));
+            }
+
+            // 参数校验，确保题目id、类别id和标签id不为空
+            ParamCheckUtil.checkNotNull(subjectInfoDTO.getId(), ResultCodeEnum.PARAM_ERROR, "题目 id 不能为空!");
+            ParamCheckUtil.checkNotNull(subjectInfoDTO.getCategoryId(), ResultCodeEnum.PARAM_ERROR, "类型不能为空!");
+            ParamCheckUtil.checkNotNull(subjectInfoDTO.getLabelId(), ResultCodeEnum.PARAM_ERROR, "标签不能为空!");
+
+            // 将DTO转换为BO，以便领域服务处理
+            SubjectInfoBO subjectInfoBO = SubjectInfoDTOConverter.INSTANCE.convertDto2Bo(subjectInfoDTO);
+            // 调用领域服务获取题目信息
+            SubjectInfoBO resultBO = subjectInfoDomainService.querySubjectInfo(subjectInfoBO);
+            resultBO.setCategoryId(subjectInfoBO.getCategoryId());
+            resultBO.setLabelId(subjectInfoBO.getLabelId());
+            // 将结果转换回DTO并成功返回
+            return Result.success(SubjectInfoDTOConverter.INSTANCE.convertBo2Dto(resultBO));
+        } catch (BusinessException e) {
+            // 记录业务异常日志并返回错误信息
+            log.error("SubjectInfoController.querySubjectInfo.error:{}", e.getMessage(), e);
+            return Result.fail(e.getMessage());
+        } catch (Exception e) {
+            // 记录未知异常日志并返回通用错误信息
+            log.error("SubjectInfoController.querySubjectInfo.error:{}", e.getMessage(), e);
+            return Result.fail("获取题目信息失败！");
+        }
+    }
+
+
 
     /**
      * 更新题目信息

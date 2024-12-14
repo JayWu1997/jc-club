@@ -21,6 +21,13 @@ public interface SubjectJudgeService {
     SubjectJudge queryById(Long id);
 
     /**
+     * 根据 subjectId 查询 SubjectJudge
+     * @param subjectId 题目 id
+     * @return SubjectJudge
+     */
+    SubjectJudge queryBySubjectId(Long subjectId);
+
+    /**
      * 新增数据
      *
      * @param subjectJudge 实例对象

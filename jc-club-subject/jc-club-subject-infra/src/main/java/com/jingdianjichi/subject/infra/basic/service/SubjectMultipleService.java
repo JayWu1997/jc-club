@@ -52,4 +52,11 @@ public interface SubjectMultipleService {
      */
     boolean deleteById(Long id);
 
+    /**
+     * 根据题目 id 查询多选题信息
+     *
+     * @param subjectId 题目 id
+     * @return 多选题信息
+     */
+    List<SubjectMultiple> queryBySubjectId(Long subjectId);
 }

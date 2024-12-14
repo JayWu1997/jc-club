@@ -27,7 +27,9 @@
                update_time,
                is_deleted
         from subject_radio
-        where id = #{id}
+        where
+            id = #{id}
+            and is_deleted = 0
     </select>
 
     <!--统计总行数-->
@@ -35,6 +37,7 @@
         select count(1)
         from subject_radio
         <where>
+            is_deleted = 0
             <if test="id != null">
                 and id = #{id}
             </if>
@@ -62,10 +65,25 @@
             <if test="updateTime != null">
                 and update_time = #{updateTime}
             </if>
-            <if test="isDeleted != null">
-                and is_deleted = #{isDeleted}
-            </if>
         </where>
+    </select>
+
+    <!--  根据题目 id 查询单选题选项  -->
+    <select id="queryBySubjectId" resultType="com.jingdianjichi.subject.infra.basic.entity.SubjectRadio">
+        select id,
+               subject_id,
+               option_type,
+               option_content,
+               is_correct,
+               created_by,
+               created_time,
+               update_by,
+               update_time,
+               is_deleted
+        from subject_radio
+        where
+            subject_id = #{subjectId}
+            and is_deleted = 0
     </select>
 
     <!--新增所有列-->

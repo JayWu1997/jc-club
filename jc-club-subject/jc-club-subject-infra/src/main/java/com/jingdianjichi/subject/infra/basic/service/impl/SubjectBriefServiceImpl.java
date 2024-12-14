@@ -73,4 +73,15 @@ public class SubjectBriefServiceImpl implements SubjectBriefService {
     public boolean deleteById(Long id) {
         return this.subjectBriefDao.deleteById(id) > 0;
     }
+
+    /**
+     * 根据题目 id 查询简答题
+     *
+     * @param subjectId 题目 id
+     * @return 简答题信息
+     */
+    @Override
+    public SubjectBrief queryBySubjectId(Long subjectId) {
+        return subjectBriefDao.queryBySubjectId(subjectId);
+    }
 }

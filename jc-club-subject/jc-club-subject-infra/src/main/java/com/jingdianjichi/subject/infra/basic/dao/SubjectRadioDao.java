@@ -73,5 +73,15 @@ public interface SubjectRadioDao {
      */
     int deleteById(Long id);
 
+    /**
+     * 根据题目ID查询单选题选项
+     * 该方法用于从数据库或其他数据源中获取与特定题目ID关联的所有单选题选项
+     *
+     * @param subjectId 题目ID，用于查询的唯一标识符
+     * @return 返回一个单选题选项的列表，这些对象与指定的题目ID相关联
+     * 如果没有找到相关的单选题选项返回一个空列表
+     */
+    List<SubjectRadio> queryBySubjectId(Long subjectId);
+
 }
 

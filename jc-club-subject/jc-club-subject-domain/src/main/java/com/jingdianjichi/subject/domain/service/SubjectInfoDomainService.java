@@ -36,4 +36,12 @@ public interface SubjectInfoDomainService {
      * @return
      */
     PageResult<SubjectInfoBO> getSubjectPage(SubjectInfoBO subjectInfoBO);
+
+    /**
+     * 获取题目信息
+     *
+     * @param subjectInfoBO 包含查询条件的主题信息对象，不能为空
+     * @return 返回一个填充了详细信息的题目信息对象如果找不到相关信息，则返回null
+     */
+    SubjectInfoBO querySubjectInfo(SubjectInfoBO subjectInfoBO);
 }

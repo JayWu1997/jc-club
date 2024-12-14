@@ -23,7 +23,9 @@
                update_time,
                is_deleted
         from subject_brief
-        where id = #{id}
+        where
+            id = #{id}
+            and is_deleted = 0
     </select>
 
     <!--统计总行数-->
@@ -31,6 +33,7 @@
         select count(1)
         from subject_brief
         <where>
+            is_deleted = 0
             <if test="id != null">
                 and id = #{id}
             </if>
@@ -52,10 +55,22 @@
             <if test="updateTime != null">
                 and update_time = #{updateTime}
             </if>
-            <if test="isDeleted != null">
-                and is_deleted = #{isDeleted}
-            </if>
         </where>
+    </select>
+    <!--  根据题目 id 查询简答题  -->
+    <select id="queryBySubjectId" resultType="com.jingdianjichi.subject.infra.basic.entity.SubjectBrief">
+        select id,
+               subject_id,
+               subject_answer,
+               created_by,
+               created_time,
+               update_by,
+               update_time,
+               is_deleted
+        from subject_brief
+        where
+            subject_id = #{subjectId}
+            and is_deleted = 0
     </select>
 
     <!--新增所有列-->

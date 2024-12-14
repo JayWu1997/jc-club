@@ -78,6 +78,6 @@ public interface SubjectMappingDao {
      * @param subjectMapping    查询条件
      * @return  实例对象列表
      */
-    List<SubjectMapping> queryDistinctLabelIdsByCategoryId(SubjectMapping subjectMapping);
+    List<SubjectMapping> queryDistinctLabelIdsByCondition(SubjectMapping subjectMapping);
 }
 

@@ -52,4 +52,10 @@ public interface SubjectBriefService {
      */
     boolean deleteById(Long id);
 
+    /**
+     * 根据题目 id 查询简答题
+     * @param subjectId 题目 id
+     * @return 简答题信息
+     */
+    SubjectBrief queryBySubjectId(Long subjectId);
 }

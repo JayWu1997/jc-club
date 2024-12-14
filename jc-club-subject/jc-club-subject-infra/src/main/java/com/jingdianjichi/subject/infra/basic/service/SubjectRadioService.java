@@ -52,4 +52,12 @@ public interface SubjectRadioService {
      */
     boolean deleteById(Long id);
 
+    /**
+     * 根据题目信息查询SubjectRadio列表
+     *
+     * @param subjectId 题目ID，用于查询与题目相关的SubjectRadio信息
+     * @return 返回一个SubjectRadio对象列表，这些对象与给定的题目ID相关
+     */
+    List<SubjectRadio> queryBySubjectId(Long subjectId);
+
 }

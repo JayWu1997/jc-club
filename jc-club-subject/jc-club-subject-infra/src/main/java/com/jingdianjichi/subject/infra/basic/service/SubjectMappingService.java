@@ -58,5 +58,5 @@ public interface SubjectMappingService {
      * @param subjectMapping 包含分类 ID
      * @return 标签列表
      */
-    List<Long> queryLabelIdsByCategoryId(SubjectMapping subjectMapping);
+    List<Long> queryDistinctLabelIdsByCondition(SubjectMapping subjectMapping);
 }

@@ -73,5 +73,11 @@ public interface SubjectMultipleDao {
      */
     int deleteById(Long id);
 
+    /**
+     * 通过题目 id 查询多选题信息表
+     * @param subjectId 题目 id
+     * @return 多选题信息
+     */
+    List<SubjectMultiple> queryBySubjectId(Long subjectId);
 }
 

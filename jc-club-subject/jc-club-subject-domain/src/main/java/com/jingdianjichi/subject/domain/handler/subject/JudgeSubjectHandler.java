@@ -1,11 +1,13 @@
 package com.jingdianjichi.subject.domain.handler.subject;
 
+import com.google.common.collect.Lists;
 import com.jingdianjichi.subject.common.enums.IsDeletedEnum;
 import com.jingdianjichi.subject.common.enums.ResultCodeEnum;
 import com.jingdianjichi.subject.common.enums.SubjectInfoTypeEnum;
 import com.jingdianjichi.subject.common.util.ParamCheckUtil;
-import com.jingdianjichi.subject.domain.convert.SubjectAnswerBOConverter;
+import com.jingdianjichi.subject.domain.entity.SubjectAnswerBO;
 import com.jingdianjichi.subject.domain.entity.SubjectInfoBO;
+import com.jingdianjichi.subject.domain.entity.SubjectOptionBO;
 import com.jingdianjichi.subject.infra.basic.entity.SubjectJudge;
 import com.jingdianjichi.subject.infra.basic.service.SubjectInfoService;
 import com.jingdianjichi.subject.infra.basic.service.SubjectJudgeService;
@@ -13,12 +15,12 @@ import com.jingdianjichi.subject.infra.basic.service.SubjectMappingService;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
-import java.util.List;
 
 /**
  * 判断题处理器
+ *
  * @author jay
- * @since  2024/06/20
+ * @since 2024/06/20
  */
 @Component
 public class JudgeSubjectHandler implements SubjectTypeHandler {
@@ -52,11 +54,29 @@ public class JudgeSubjectHandler implements SubjectTypeHandler {
         ParamCheckUtil.checkCollNotEmpty(subjectInfoBO.getOptionList(), ResultCodeEnum.PARAM_ERROR, "判断题的答案不能为空");
 
         // 保存题目选项
-        List<SubjectJudge> subjectJudgeList = SubjectAnswerBOConverter.INSTANCE.convertBOList2JudgeEntityList(subjectInfoBO.getOptionList());
-        subjectJudgeList.forEach(subjectJudge -> {
-            subjectJudge.setSubjectId(subjectInfoBO.getId());
-            subjectJudge.setIsDeleted(IsDeletedEnum.NOT_DELETED.getCode());
-        });
-        subjectJudgeService.insertBatch(subjectJudgeList);
+        SubjectJudge subjectJudge = new SubjectJudge();
+        SubjectAnswerBO subjectAnswerBO = subjectInfoBO.getOptionList().get(0);
+        subjectJudge.setSubjectId(subjectInfoBO.getId());
+        subjectJudge.setIsCorrect(subjectAnswerBO.getIsCorrect());
+        subjectJudge.setIsDeleted(IsDeletedEnum.NOT_DELETED.getCode());
+        subjectJudgeService.insert(subjectJudge);
+    }
+
+    /**
+     * 查询题目信息
+     *
+     * @param subjectId@return 返回查询到的题目信息对象；如果未找到相关信息，则返回null
+     */
+    @Override
+    public SubjectOptionBO querySubjectOptions(Long subjectId) {
+        SubjectJudge subjectJudge = subjectJudgeService.queryBySubjectId(subjectId);
+        SubjectOptionBO subjectOptionBO = null;
+        if (subjectJudge != null) {
+            subjectOptionBO = new SubjectOptionBO();
+            SubjectAnswerBO subjectAnswerBO = new SubjectAnswerBO();
+            subjectAnswerBO.setIsCorrect(subjectJudge.getIsCorrect());
+            subjectOptionBO.setOptionList(Lists.newArrayList(subjectAnswerBO));
+        }
+        return subjectOptionBO;
     }
 }

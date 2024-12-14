@@ -31,6 +31,17 @@ public class SubjectJudgeServiceImpl implements SubjectJudgeService {
     }
 
     /**
+     * 根据 subjectId 查询 SubjectJudge
+     *
+     * @param subjectId 题目 id
+     * @return SubjectJudge
+     */
+    @Override
+    public SubjectJudge queryBySubjectId(Long subjectId) {
+        return subjectJudgeDao.queryBySubjectId(subjectId);
+    }
+
+    /**
      * 新增数据
      *
      * @param subjectJudge 实例对象

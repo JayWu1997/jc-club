@@ -84,8 +84,8 @@ public class SubjectMappingServiceImpl implements SubjectMappingService {
      * @return 标签列表
      */
     @Override
-    public List<Long> queryLabelIdsByCategoryId(SubjectMapping subjectMapping) {
-        List<SubjectMapping> mappingList = subjectMappingDao.queryDistinctLabelIdsByCategoryId(subjectMapping);
+    public List<Long> queryDistinctLabelIdsByCondition(SubjectMapping subjectMapping) {
+        List<SubjectMapping> mappingList = subjectMappingDao.queryDistinctLabelIdsByCondition(subjectMapping);
         if (CollectionUtils.isEmpty(mappingList)) {
             return Collections.emptyList();
         }

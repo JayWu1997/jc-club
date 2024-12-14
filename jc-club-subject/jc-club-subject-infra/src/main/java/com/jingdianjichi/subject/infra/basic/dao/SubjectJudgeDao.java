@@ -73,5 +73,12 @@ public interface SubjectJudgeDao {
      */
     int deleteById(Long id);
 
+    /**
+     * 根据题目ID查询题目判断信息
+     *
+     * @param subjectId 题目ID，用于唯一标识一个题目
+     * @return 返回与题目ID关联的题目判断对象，如果找不到则返回null
+     */
+    SubjectJudge queryBySubjectId(Long subjectId);
 }
 

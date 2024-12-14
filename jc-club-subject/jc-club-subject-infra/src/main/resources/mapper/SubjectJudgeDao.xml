@@ -23,7 +23,9 @@
                update_time,
                is_deleted
         from subject_judge
-        where id = #{id}
+        where
+            id = #{id}
+            and is_deleted = 0
     </select>
 
     <!--统计总行数-->
@@ -56,6 +58,21 @@
                 and is_deleted = #{isDeleted}
             </if>
         </where>
+    </select>
+
+    <select id="queryBySubjectId" resultType="com.jingdianjichi.subject.infra.basic.entity.SubjectJudge">
+        select id,
+               subject_id,
+               is_correct,
+               created_by,
+               created_time,
+               update_by,
+               update_time,
+               is_deleted
+        from subject_judge
+        where
+            subject_id = #{subjectId}
+            and is_deleted = 0
     </select>
 
     <!--新增所有列-->
