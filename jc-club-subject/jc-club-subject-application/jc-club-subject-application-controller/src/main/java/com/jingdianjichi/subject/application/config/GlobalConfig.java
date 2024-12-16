@@ -1,5 +1,6 @@
 package com.jingdianjichi.subject.application.config;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import org.springframework.context.annotation.Configuration;
@@ -19,21 +20,23 @@ public class GlobalConfig extends WebMvcConfigurationSupport {
     @Override
     protected void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
         super.configureMessageConverters(converters);
-        converters.add(mappingJackson2CborHttpMessageConverter());
+        converters.add(mappingJackson2HttpMessageConverter());
     }
 
     /**
-     * 创建并配置一个MappingJackson2CborHttpMessageConverter实例
-     * 当序列化的对象为空时，不抛出异常
+     * 创建并配置一个MappingJackson2CborHttpMessageConverter实例，配置Jackson序列化属性
      *
-     * @return MappingJackson2CborHttpMessageConverter实例，用于CBOR格式的HTTP消息转换
+     * @return MappingJackson2CborHttpMessageConverter实例
      */
-    private MappingJackson2HttpMessageConverter mappingJackson2CborHttpMessageConverter() {
+    private MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter() {
         // 创建一个ObjectMapper实例，用于JSON与对象的相互转换
         ObjectMapper objectMapper = new ObjectMapper();
 
         // 配置ObjectMapper，当序列化的对象为空时，不抛出异常
         objectMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+
+        // 设置ObjectMapper的序列化包含属性，仅序列化非空属性
+        objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
 
         // 创建并返回一个自定义ObjectMapper的MappingJackson2CborHttpMessageConverter实例
         return new MappingJackson2HttpMessageConverter(objectMapper);
