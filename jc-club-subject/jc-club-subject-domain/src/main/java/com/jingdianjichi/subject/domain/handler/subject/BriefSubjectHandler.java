@@ -42,11 +42,9 @@ public class BriefSubjectHandler implements SubjectTypeHandler {
      */
     @Override
     public void insert(SubjectInfoBO subjectInfoBO) {
-        ParamCheckUtil.checkCollNotEmpty(subjectInfoBO.getOptionList(), ResultCodeEnum.PARAM_ERROR, "简答题的答案不能为空");
-
         // 保存题目选项
         SubjectBrief subjectBrief = SubjectAnswerBOConverter.INSTANCE.convertSubjectInfoBO2BriefEntity(subjectInfoBO);
-        subjectBrief.setSubjectId(subjectBrief.getSubjectId());
+        subjectBrief.setSubjectId(subjectInfoBO.getId());
         subjectBrief.setIsDeleted(IsDeletedEnum.NOT_DELETED.getCode());
         subjectBriefService.insert(subjectBrief);
     }

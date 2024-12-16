@@ -2,6 +2,7 @@ package com.jingdianjichi.subject.common.entity;
 
 import lombok.Data;
 
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 
@@ -12,7 +13,7 @@ import java.util.List;
  * @since 2024/6/25 下午9:52
  */
 @Data
-public class PageResult<T> {
+public class PageResult<T> implements Serializable {
 
     private Integer pageSize = 20;
 

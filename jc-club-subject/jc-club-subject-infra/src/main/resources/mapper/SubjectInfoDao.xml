@@ -91,11 +91,16 @@
         from subject_info i, subject_mapping m
         <where>
             i.id = m.subject_id
-            and i.subject_difficult = #{subjectInfo.subjectDifficult}
             and m.category_id = #{categoryId}
             and m.label_id = #{labelId}
             and i.is_deleted = 0
             and m.is_deleted = 0
+            <if test="subjectInfo.subjectDifficult != null">
+                and i.subject_difficult = #{subjectInfo.subjectDifficult}
+            </if>
+            <if test="subjectInfo.subjectType != null">
+                and i.subject_type = #{subjectInfo.subjectType}
+            </if>
         </where>
     </select>
 
@@ -117,11 +122,17 @@
         from subject_info i, subject_mapping m
         <where>
             i.id = m.subject_id
-            and i.subject_difficult = #{subjectInfo.subjectDifficult}
+
             and m.category_id = #{categoryId}
             and m.label_id = #{labelId}
             and i.is_deleted = 0
             and m.is_deleted = 0
+            <if test="subjectInfo.subjectDifficult != null">
+                and i.subject_difficult = #{subjectInfo.subjectDifficult}
+            </if>
+            <if test="subjectInfo.subjectType != null">
+                and i.subject_type = #{subjectInfo.subjectType}
+            </if>
         </where>
         limit #{pageSize} offset #{start}
     </select>

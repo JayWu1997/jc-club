@@ -11,6 +11,7 @@ import com.jingdianjichi.subject.common.util.ParamCheckUtil;
 import com.jingdianjichi.subject.domain.entity.SubjectInfoBO;
 import com.jingdianjichi.subject.domain.service.SubjectInfoDomainService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -35,6 +36,7 @@ public class SubjectController {
      * @return 包装后的结果
      */
     @PostMapping("/add")
+    @Transactional(rollbackFor = Exception.class)
     public Result<Boolean> add(@RequestBody SubjectInfoDTO subjectInfoDTO) {
         try {
             if (log.isInfoEnabled()) {
