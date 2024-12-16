@@ -113,15 +113,11 @@ public class SubjectController {
 
             // 参数校验，确保题目id、类别id和标签id不为空
             ParamCheckUtil.checkNotNull(subjectInfoDTO.getId(), ResultCodeEnum.PARAM_ERROR, "题目 id 不能为空!");
-            ParamCheckUtil.checkNotNull(subjectInfoDTO.getCategoryId(), ResultCodeEnum.PARAM_ERROR, "类型不能为空!");
-            ParamCheckUtil.checkNotNull(subjectInfoDTO.getLabelId(), ResultCodeEnum.PARAM_ERROR, "标签不能为空!");
 
             // 将DTO转换为BO，以便领域服务处理
             SubjectInfoBO subjectInfoBO = SubjectInfoDTOConverter.INSTANCE.convertDto2Bo(subjectInfoDTO);
             // 调用领域服务获取题目信息
             SubjectInfoBO resultBO = subjectInfoDomainService.querySubjectInfo(subjectInfoBO);
-            resultBO.setCategoryId(subjectInfoBO.getCategoryId());
-            resultBO.setLabelId(subjectInfoBO.getLabelId());
             // 将结果转换回DTO并成功返回
             return Result.success(SubjectInfoDTOConverter.INSTANCE.convertBo2Dto(resultBO));
         } catch (BusinessException e) {
