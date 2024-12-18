@@ -25,8 +25,6 @@ public class PageInfo {
      * 无参构造方法，默认分页为10条记录，第一页
      */
     public PageInfo() {
-        this.pageSize = 10;
-        this.pageNo = 0;
     }
 
     /**
@@ -44,7 +42,10 @@ public class PageInfo {
      * @return 当前的页码
      */
     public Integer getPageNo() {
-        if (pageNo == null || pageNo < 1) {
+        if (pageNo == null) {
+            return null;
+        }
+        if (pageNo < 1) {
             return 1;
         }
         return pageNo;
@@ -55,7 +56,10 @@ public class PageInfo {
      * @return 每页显示的记录数
      */
     public Integer getPageSize() {
-        if (pageSize == null || pageSize < 1 || pageSize > 100) {
+        if (pageSize == null) {
+            return null;
+        }
+        if (pageSize < 1 || pageSize > 100) {
             return 20;
         }
         return pageSize;

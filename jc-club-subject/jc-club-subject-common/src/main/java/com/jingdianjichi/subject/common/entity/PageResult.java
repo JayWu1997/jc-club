@@ -27,7 +27,7 @@ public class PageResult<T> implements Serializable {
 
     private Integer end = 1;
 
-    private List<T> result = Collections.emptyList();
+    private List<T> result;
 
     public PageResult(Integer pageNo, Integer pageSize, Integer total, List<T> result) {
         this.pageSize = pageSize;
