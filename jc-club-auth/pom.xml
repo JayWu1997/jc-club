@@ -10,8 +10,6 @@
     <packaging>pom</packaging>
     <modules>
         <module>jc-club-auth-application</module>
-        <module>jc-club-auth-application/jc-club-auth-application-controller</module>
-        <module>jc-club-auth-common</module>
         <module>jc-club-auth-common</module>
         <module>jc-club-auth-infra</module>
         <module>jc-club-auth-api</module>
