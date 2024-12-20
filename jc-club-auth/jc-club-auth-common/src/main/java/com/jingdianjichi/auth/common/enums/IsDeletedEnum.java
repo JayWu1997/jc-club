@@ -11,9 +11,9 @@ public enum IsDeletedEnum {
     DELETED(1, "已删除"),
     NOT_DELETED(0,"未删除");
 
-    public final Integer code;
+    private final Integer code;
 
-    public final String message;
+    private final String message;
 
     IsDeletedEnum(Integer code, String message){
         this.code = code;

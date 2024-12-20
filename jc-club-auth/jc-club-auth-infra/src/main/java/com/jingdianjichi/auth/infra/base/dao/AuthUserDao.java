@@ -1,11 +1,10 @@
 package com.jingdianjichi.auth.infra.base.dao;
 
 import com.jingdianjichi.auth.infra.base.entity.AuthUser;
+import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
-
-import org.apache.ibatis.annotations.Mapper;
 
 /**
  * 用户信息表(AuthUser)表数据库访问层

@@ -43,6 +43,7 @@
         <mybatis-plus-boot-starter.version>3.4.0</mybatis-plus-boot-starter.version>
         <sa-token-reactor-spring-boot-starter.version>1.39.0</sa-token-reactor-spring-boot-starter.version>
         <sa-token-redis-jackson.version>1.39.0</sa-token-redis-jackson.version>
+        <sa-token-core.version>1.39.0</sa-token-core.version>
     </properties>
 
     <dependencyManagement>

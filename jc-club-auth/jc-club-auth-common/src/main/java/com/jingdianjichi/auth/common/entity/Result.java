@@ -1,6 +1,7 @@
 package com.jingdianjichi.auth.common.entity;
 
-import com.jingdianjichi.subject.common.enums.ResultCodeEnum;
+
+import com.jingdianjichi.auth.common.enums.ResultCodeEnum;
 import lombok.Data;
 
 @Data
@@ -29,12 +30,6 @@ public class Result<T> {
 
     public static Result success() {
         Result result = new Result(ResultCodeEnum.SUCCESS.getCode(), ResultCodeEnum.SUCCESS.getMessage());
-        result.setSuccess(true);
-        return result;
-    }
-
-    public static Result success(String message) {
-        Result result = new Result(ResultCodeEnum.SUCCESS.getCode(), message);
         result.setSuccess(true);
         return result;
     }

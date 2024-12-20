@@ -5,9 +5,8 @@ import com.jingdianjichi.auth.infra.base.dao.AuthUserDao;
 import com.jingdianjichi.auth.infra.base.service.AuthUserService;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * 用户信息表(AuthUser)表服务实现类
