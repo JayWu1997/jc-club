@@ -1,4 +1,4 @@
-package com.jingdianjichi.auth.start;
+package com.jingdianjichi.auth;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
