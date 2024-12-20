@@ -22,6 +22,14 @@
     </properties>
 
     <dependencies>
+        <!-- Sa-Token 权限认证，在线文档：https://sa-token.cc -->
+        <dependency>
+            <groupId>cn.dev33</groupId>
+            <artifactId>sa-token-spring-boot-starter</artifactId>
+            <version>${sa-token-spring-boot-starter.version}</version>
+        </dependency>
+
+
         <dependency>
             <groupId>org.example</groupId>
             <artifactId>jc-club-auth-domain</artifactId>

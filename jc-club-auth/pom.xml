@@ -22,8 +22,8 @@
         <maven.compiler.target>8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-        <spring-boot-dependencies.version>2.3.8.RELEASE</spring-boot-dependencies.version>
-        <spring-boot-starter-web.version>2.3.8.RELEASE</spring-boot-starter-web.version>
+        <spring-boot-dependencies.version>2.4.2</spring-boot-dependencies.version>
+        <spring-boot-starter-web.version>2.4.2</spring-boot-starter-web.version>
         <spring-boot-maven-plugin.version>2.3.0.RELEASE</spring-boot-maven-plugin.version>
         <spring-boot-starter-jdbc.version>2.4.2</spring-boot-starter-jdbc.version>
         <spring-boot-starter-log4j2.version>2.4.2</spring-boot-starter-log4j2.version>
@@ -36,6 +36,7 @@
         <druid-spring-boot-starter.version>1.1.21</druid-spring-boot-starter.version>
         <mysql-connector-java.version>8.0.22</mysql-connector-java.version>
         <mybatis-plus-boot-starter.version>3.4.0</mybatis-plus-boot-starter.version>
+        <sa-token-spring-boot-starter.version>1.37.0</sa-token-spring-boot-starter.version>
     </properties>
 
     <dependencyManagement>
