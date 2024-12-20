@@ -41,7 +41,8 @@
         <druid-spring-boot-starter.version>1.1.21</druid-spring-boot-starter.version>
         <mysql-connector-java.version>8.0.22</mysql-connector-java.version>
         <mybatis-plus-boot-starter.version>3.4.0</mybatis-plus-boot-starter.version>
-        <sa-token-spring-boot-starter.version>1.37.0</sa-token-spring-boot-starter.version>
+        <sa-token-reactor-spring-boot-starter.version>1.39.0</sa-token-reactor-spring-boot-starter.version>
+        <sa-token-redis-jackson.version>1.39.0</sa-token-redis-jackson.version>
     </properties>
 
     <dependencyManagement>
@@ -132,6 +133,19 @@
                 <artifactId>mybatis-plus-boot-starter</artifactId>
                 <version>${mybatis-plus-boot-starter.version}</version>
             </dependency>
+            <!-- Sa-Token 权限认证（Reactor响应式集成）, 在线文档：https://sa-token.cc -->
+            <dependency>
+                <groupId>cn.dev33</groupId>
+                <artifactId>sa-token-reactor-spring-boot-starter</artifactId>
+                <version>${sa-token-reactor-spring-boot-starter.version}</version>
+            </dependency>
+            <!-- Sa-Token 整合 Redis （使用 jackson 序列化方式） -->
+            <dependency>
+                <groupId>cn.dev33</groupId>
+                <artifactId>sa-token-redis-jackson</artifactId>
+                <version>${sa-token-redis-jackson.version}</version>
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
 

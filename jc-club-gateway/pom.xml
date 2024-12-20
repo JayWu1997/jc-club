@@ -17,6 +17,8 @@
         <spring-cloud.version>2020.0.6</spring-cloud.version>
 
         <lombok.version>1.18.28</lombok.version>
+        <sa-token-reactor-spring-boot-starter.version>1.39.0</sa-token-reactor-spring-boot-starter.version>
+        <sa-token-redis-jackson.version>1.39.0</sa-token-redis-jackson.version>
     </properties>
     <dependencies>
         <dependency>
@@ -51,6 +53,23 @@
             <artifactId>lombok</artifactId>
             <version>${lombok.version}</version>
         </dependency>
+
+        <!-- Sa-Token 权限认证（Reactor响应式集成）, 在线文档：https://sa-token.cc -->
+        <dependency>
+            <groupId>cn.dev33</groupId>
+            <artifactId>sa-token-reactor-spring-boot-starter</artifactId>
+        </dependency>
+
+        <!-- Sa-Token 整合 Redis （使用 jackson 序列化方式） -->
+        <dependency>
+            <groupId>cn.dev33</groupId>
+            <artifactId>sa-token-redis-jackson</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-pool2</artifactId>
+        </dependency>
+
     </dependencies>
     <dependencyManagement>
         <dependencies>
@@ -74,6 +93,19 @@
                 <version>${spring-cloud-alibaba.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
+            </dependency>
+            <!-- Sa-Token 权限认证（Reactor响应式集成）, 在线文档：https://sa-token.cc -->
+            <dependency>
+                <groupId>cn.dev33</groupId>
+                <artifactId>sa-token-reactor-spring-boot-starter</artifactId>
+                <version>${sa-token-reactor-spring-boot-starter.version}</version>
+            </dependency>
+
+            <!-- Sa-Token 整合 Redis （使用 jackson 序列化方式） -->
+            <dependency>
+                <groupId>cn.dev33</groupId>
+                <artifactId>sa-token-redis-jackson</artifactId>
+                <version>${sa-token-redis-jackson.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
