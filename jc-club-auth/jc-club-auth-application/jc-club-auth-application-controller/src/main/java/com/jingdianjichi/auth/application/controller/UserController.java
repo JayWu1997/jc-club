@@ -1,4 +1,4 @@
-package com.jingdianjichi.auth.controller;
+package com.jingdianjichi.auth.application.controller;
 
 import cn.dev33.satoken.stp.SaTokenInfo;
 import cn.dev33.satoken.stp.StpUtil;
