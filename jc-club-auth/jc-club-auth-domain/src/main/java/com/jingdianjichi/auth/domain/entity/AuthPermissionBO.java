@@ -4,6 +4,7 @@ import lombok.Data;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 /**
  * (AuthPermission)实体类BO
@@ -68,5 +69,13 @@ public class AuthPermissionBO implements Serializable {
      * 是否被删除 0为删除 1已删除
      */
     private Integer isDeleted;
+    /**
+     * 角色id
+     */
+    private Long roleId;
+    /**
+     * 权限 id列表
+     */
+    private List<Long> permissionIds;
 }
 

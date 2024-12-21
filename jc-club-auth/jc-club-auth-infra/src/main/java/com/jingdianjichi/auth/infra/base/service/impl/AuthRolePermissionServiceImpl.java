@@ -1,13 +1,12 @@
 package com.jingdianjichi.auth.infra.base.service.impl;
 
-import com.jingdianjichi.auth.infra.base.entity.AuthRolePermission;
 import com.jingdianjichi.auth.infra.base.dao.AuthRolePermissionDao;
+import com.jingdianjichi.auth.infra.base.entity.AuthRolePermission;
 import com.jingdianjichi.auth.infra.base.service.AuthRolePermissionService;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * 角色权限关联表(AuthRolePermission)表服务实现类
@@ -60,6 +59,17 @@ public class AuthRolePermissionServiceImpl implements AuthRolePermissionService 
     @Override
     public int insert(AuthRolePermission authRolePermission) {
         return authRolePermissionDao.insert(authRolePermission);
+    }
+
+    /**
+     * 批量新增数据
+     *
+     * @param authRolePermissionList 实例对象列表
+     * @return 影响行数
+     */
+    @Override
+    public int insertBatch(List<AuthRolePermission> authRolePermissionList) {
+        return authRolePermissionDao.insertBatch(authRolePermissionList);
     }
 
     /**

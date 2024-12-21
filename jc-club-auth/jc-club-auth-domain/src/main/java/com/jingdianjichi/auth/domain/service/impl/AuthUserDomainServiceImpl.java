@@ -3,7 +3,7 @@ package com.jingdianjichi.auth.domain.service.impl;
 import cn.dev33.satoken.secure.SaSecureUtil;
 import com.jingdianjichi.auth.common.enums.IsDeletedEnum;
 import com.jingdianjichi.auth.common.enums.ResultCodeEnum;
-import com.jingdianjichi.auth.common.enums.UserEnableEnum;
+import com.jingdianjichi.auth.common.enums.UserStatusEnum;
 import com.jingdianjichi.auth.common.util.ParamCheckUtil;
 import com.jingdianjichi.auth.domain.converter.AuthUserBOConverter;
 import com.jingdianjichi.auth.domain.entity.AuthUserBO;
@@ -55,7 +55,7 @@ public class AuthUserDomainServiceImpl implements AuthUserDomainService {
     public String register(AuthUserBO authUserBO) {
         // 插入用户信息
         AuthUser user = AuthUserBOConverter.INSTANCE.convertBo2Entity(authUserBO);
-        user.setStatus(UserEnableEnum.ENABLE.getCode());
+        user.setStatus(UserStatusEnum.ENABLE.getCode());
         user.setPassword(SaSecureUtil.md5BySalt(user.getPassword(), SALT));
         user.setIsDeleted(IsDeletedEnum.NOT_DELETED.getCode());
         authUserService.insert(user);

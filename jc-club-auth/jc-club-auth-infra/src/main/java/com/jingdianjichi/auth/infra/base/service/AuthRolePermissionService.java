@@ -44,6 +44,15 @@ public interface AuthRolePermissionService {
      */
     int insert(AuthRolePermission authRolePermission);
 
+
+    /**
+     * 批量新增数据
+     *
+     * @param authRolePermissionList 实例对象列表
+     * @return 影响行数
+     */
+    int insertBatch(List<AuthRolePermission> authRolePermissionList);
+
     /**
      * 修改数据
      *

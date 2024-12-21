@@ -51,4 +51,17 @@ public class ParamCheckUtil {
             throw new BusinessException(resultCodeEnum, errorMsg);
         }
     }
+
+    /**
+     * 检查是否不为假，为假则抛出异常
+     *
+     * @param expression     表达式
+     * @param resultCodeEnum 操作结果枚举
+     * @param errorMsg        错误消息
+     */
+    public static void checkNotFalse(boolean expression, ResultCodeEnum resultCodeEnum, String errorMsg) {
+        if (!expression) {
+            throw new BusinessException(resultCodeEnum, errorMsg);
+        }
+    }
 }
