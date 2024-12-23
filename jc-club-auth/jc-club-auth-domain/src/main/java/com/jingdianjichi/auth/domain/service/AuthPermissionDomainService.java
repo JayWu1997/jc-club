@@ -43,11 +43,4 @@ public interface AuthPermissionDomainService {
      * @param authPermissionBO 权限信息
      */
     void presentOrAbsent(AuthPermissionBO authPermissionBO);
-
-    /**
-     * 角色和权限关联
-     *
-     * @param authPermissionBO 权限信息
-     */
-    void mappingRoleAndPermission(AuthPermissionBO authPermissionBO);
 }

@@ -125,7 +125,7 @@ public class AuthPermissionController {
             }
             ParamCheckUtil.checkNotNull(authPermissionDTO.getId(), ResultCodeEnum.PARAM_ERROR, "权限 id 不能为空!");
             Integer statusCode = authPermissionDTO.getStatus();
-            ParamCheckUtil.checkNotNull(statusCode, ResultCodeEnum.PARAM_ERROR, "权限 id 不能为空!");
+            ParamCheckUtil.checkNotNull(statusCode, ResultCodeEnum.PARAM_ERROR, "权限启用状态不能为空!");
             ParamCheckUtil.checkNotFalse(statusCode.equals(PermissionStatusEnum.ENABLE.getCode()) || statusCode.equals(PermissionStatusEnum.DISABLE.getCode())
                     , ResultCodeEnum.PARAM_ERROR
                     , "传入的权限启用状态码无效!");
@@ -157,7 +157,7 @@ public class AuthPermissionController {
             }
             ParamCheckUtil.checkNotNull(authPermissionDTO.getId(), ResultCodeEnum.PARAM_ERROR, "权限 id 不能为空!");
             Integer showCode = authPermissionDTO.getShow();
-            ParamCheckUtil.checkNotNull(showCode, ResultCodeEnum.PARAM_ERROR, "权限 id 不能为空!");
+            ParamCheckUtil.checkNotNull(showCode, ResultCodeEnum.PARAM_ERROR, "权限展示状态不能为空!");
             ParamCheckUtil.checkNotFalse(showCode.equals(PermissionShowEnum.PRESENT.getCode()) || showCode.equals(PermissionShowEnum.ABSENT.getCode())
                     , ResultCodeEnum.PARAM_ERROR
                     , "传入的权限展示状态码无效!");
@@ -175,34 +175,4 @@ public class AuthPermissionController {
             return Result.fail("更改权限展示状态失败！");
         }
     }
-
-    /**
-     * 角色与权限的关联
-     * @param authPermissionDTO 参数
-     * @return 操作成功标志
-     */
-    @PostMapping("/mappingRoleAndPermission")
-    public Result<Boolean> mappingRoleAndPermission(@RequestBody AuthPermissionDTO authPermissionDTO) {
-        try {
-            if (log.isInfoEnabled()) {
-                log.info("AuthPermissionController.mappingRoleAndPermission.authPermissionDTO:{}", JSON.toJSON(authPermissionDTO));
-            }
-            ParamCheckUtil.checkNotNull(authPermissionDTO.getRoleId(), ResultCodeEnum.PARAM_ERROR, "角色 id 不能为空!");
-            ParamCheckUtil.checkCollNotEmpty(authPermissionDTO.getPermissionIds(), ResultCodeEnum.PARAM_ERROR, "权限 id 列表不能为空!");
-            authPermissionDomainService.mappingRoleAndPermission(AuthPermissionDTOConverter.INSTANCE.convertDto2Bo(authPermissionDTO));
-            return Result.success(Boolean.TRUE);
-        } catch (BusinessException e) {
-            if (log.isErrorEnabled()) {
-                log.error("AuthPermissionController.mappingRoleAndPermission.error:{}", e.getMessage(), e);
-            }
-            return Result.fail(e.getMessage());
-        } catch (Exception e) {
-            if (log.isErrorEnabled()) {
-                log.error("AuthPermissionController.mappingRoleAndPermission.error:{}", e.getMessage(), e);
-            }
-            return Result.fail("关联角色与权限失败！");
-        }
-    }
-
-    
 }

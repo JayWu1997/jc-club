@@ -1,10 +1,10 @@
 package com.jingdianjichi.auth.application.dto;
 
-import java.util.Date;
-
 import lombok.Data;
 
 import java.io.Serializable;
+import java.util.Date;
+import java.util.List;
 
 /**
  * 角色权限关联表(AuthRolePermission)实体类DTO
@@ -25,6 +25,10 @@ public class AuthRolePermissionDTO implements Serializable {
      * 权限id
      */
     private Long permissionId;
+    /**
+     * 权限id集合
+     */
+    private List<Long> permissionIdList;
     /**
      * 创建人
      */

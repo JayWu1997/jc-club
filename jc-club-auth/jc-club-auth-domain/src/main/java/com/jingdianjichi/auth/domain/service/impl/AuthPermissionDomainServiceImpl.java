@@ -9,13 +9,10 @@ import com.jingdianjichi.auth.domain.converter.AuthPermissionBOConverter;
 import com.jingdianjichi.auth.domain.entity.AuthPermissionBO;
 import com.jingdianjichi.auth.domain.service.AuthPermissionDomainService;
 import com.jingdianjichi.auth.infra.base.entity.AuthPermission;
-import com.jingdianjichi.auth.infra.base.entity.AuthRolePermission;
 import com.jingdianjichi.auth.infra.base.service.AuthPermissionService;
-import com.jingdianjichi.auth.infra.base.service.AuthRolePermissionService;
+import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * 权限领域服务实现类
@@ -23,13 +20,11 @@ import java.util.stream.Collectors;
  * @author jay
  * @since 2024/12/21 下午9:01
  */
+@Service
 public class AuthPermissionDomainServiceImpl implements AuthPermissionDomainService {
 
     @Resource
     private AuthPermissionService permissionService;
-
-    @Resource
-    private AuthRolePermissionService rolePermissionService;
 
     /**
      * 添加权限
@@ -103,25 +98,6 @@ public class AuthPermissionDomainServiceImpl implements AuthPermissionDomainServ
         authPermission.setShow(authPermissionBO.getShow());
         String errMsg = PermissionShowEnum.PRESENT.getCode().equals(authPermissionBO.getShow()) ? "显示权限失败" : "隐藏权限失败";
         ParamCheckUtil.checkNotFalse(permissionService.update(authPermission) > 0, ResultCodeEnum.FAIL, errMsg);
-        //TODO 2.更新redis
-    }
-
-    /**
-     * 角色和权限关联
-     *
-     * @param authPermissionBO 权限信息
-     */
-    @Override
-    public void mappingRoleAndPermission(AuthPermissionBO authPermissionBO) {
-        // 1.插入关联表
-        List<AuthRolePermission> mappingList = authPermissionBO.getPermissionIds().stream().map(permissionId -> {
-            AuthRolePermission mapping = new AuthRolePermission();
-            mapping.setId(permissionId);
-            mapping.setRoleId(authPermissionBO.getRoleId());
-            mapping.setIsDeleted(IsDeletedEnum.NOT_DELETED.getCode());
-            return mapping;
-        }).collect(Collectors.toList());
-        ParamCheckUtil.checkNotFalse(rolePermissionService.insertBatch(mappingList) > 0, ResultCodeEnum.FAIL, "角色和权限关联失败");
         //TODO 2.更新redis
     }
 }
