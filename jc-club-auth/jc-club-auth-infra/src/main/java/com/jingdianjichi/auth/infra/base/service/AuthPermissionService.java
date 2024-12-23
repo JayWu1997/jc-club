@@ -60,4 +60,11 @@ public interface AuthPermissionService {
      */
     boolean deleteById(Long id);
 
+    /**
+     * 根据主键批量查询数据
+     *
+     * @param permissionIdList 主键集合
+     * @return 实例对象集合
+     */
+    List<AuthPermission> queryBatchByIds(List<Long> permissionIdList);
 }

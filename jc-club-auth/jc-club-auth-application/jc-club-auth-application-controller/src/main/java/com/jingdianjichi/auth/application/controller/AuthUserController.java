@@ -1,5 +1,6 @@
 package com.jingdianjichi.auth.application.controller;
 
+import cn.dev33.satoken.stp.SaTokenInfo;
 import com.alibaba.fastjson.JSON;
 import com.jingdianjichi.auth.application.converter.AuthUserDTOConverter;
 import com.jingdianjichi.auth.application.dto.AuthUserDTO;
@@ -27,11 +28,12 @@ public class AuthUserController {
 
     /**
      * 用户注册
+     *
      * @param authUserDTO 用户注册信息
      * @return token
      */
     @PostMapping("register")
-    public Result<String> register(@RequestBody AuthUserDTO authUserDTO) {
+    public Result<SaTokenInfo> register(@RequestBody AuthUserDTO authUserDTO) {
         try {
             if (log.isInfoEnabled()) {
                 log.info("AuthUserController.register.authUserDTO:{}", JSON.toJSON(authUserDTO));
@@ -41,8 +43,8 @@ public class AuthUserController {
             ParamCheckUtil.checkStrNotEmpty(authUserDTO.getEmail(), ResultCodeEnum.PARAM_ERROR, "邮箱不能为空!");
 
             AuthUserBO authUserBO = AuthUserDTOConverter.INSTANCE.convertDto2Bo(authUserDTO);
-            String result = authUserDomainService.register(authUserBO);
-            return Result.success(result);
+            SaTokenInfo tokenInfo = authUserDomainService.register(authUserBO);
+            return Result.success(tokenInfo);
         } catch (BusinessException e) {
             if (log.isErrorEnabled()) {
                 log.error("SubjectCategoryController.register.error:{}", e.getMessage(), e);

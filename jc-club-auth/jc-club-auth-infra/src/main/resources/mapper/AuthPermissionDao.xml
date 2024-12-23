@@ -130,6 +130,15 @@
         </where>
     </select>
 
+    <!--  根据 id 批量查询  -->
+    <select id="queryBatchByIds" resultType="com.jingdianjichi.auth.infra.base.entity.AuthPermission">
+        SELECT * from auth_permission
+        WHERE id in
+        <foreach collection="permissionIdList" item="dramaId" open="(" close=")" separator=",">
+            #{dramaId}
+        </foreach>
+    </select>
+
     <!--新增所有列-->
     <insert id="insert" keyProperty="id" useGeneratedKeys="true">
         insert into auth_permission(name, parent_id, type, menu_url, status, `show`, icon, permission_key, created_by,
