@@ -85,6 +85,36 @@ public class AuthUserController {
     }
 
     /**
+     * 用户退出登录
+     * @param userName 用户名
+     * @return 操作成功标志
+     */
+    @RequestMapping("/logout")
+    public Result<Boolean> logout(@RequestParam String userName) {
+        try {
+            if (log.isInfoEnabled()) {
+                log.info("AuthUserController.logout.userName:{}", userName);
+            }
+
+            ParamCheckUtil.checkStrNotEmpty(userName, ResultCodeEnum.PARAM_ERROR, "用户名不能为空!");
+            AuthUserBO authUserBO = new AuthUserBO();
+            authUserBO.setUserName(userName);
+            Boolean resultFlag = authUserDomainService.logout(authUserBO);
+            return Result.success(resultFlag);
+        }  catch (BusinessException e) {
+            if (log.isErrorEnabled()) {
+                log.error("AuthUserController.logout.error:{}", e.getMessage(), e);
+            }
+            return Result.fail(e.getMessage());
+        } catch (Exception e) {
+            if (log.isErrorEnabled()) {
+                log.error("AuthUserController.logout.error:{}", e.getMessage(), e);
+            }
+            return Result.fail("用户登出失败！");
+        }
+    }
+
+    /**
      * 获取用户信息
      * @param authUserDTO 查询条件
      * @return 用户信息

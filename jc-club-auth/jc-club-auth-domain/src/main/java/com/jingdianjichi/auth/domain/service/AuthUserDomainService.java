@@ -45,4 +45,11 @@ public interface AuthUserDomainService {
      * @return 用户信息
      */
     AuthUserBO getUserInfo(AuthUserBO authUserBO);
+
+    /**
+     * 登出
+     * @param authUserBO 用户信息
+     * @return 操作成功标志
+     */
+    Boolean logout(AuthUserBO authUserBO);
 }

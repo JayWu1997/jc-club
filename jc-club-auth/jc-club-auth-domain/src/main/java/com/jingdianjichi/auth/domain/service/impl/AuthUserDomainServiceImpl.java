@@ -215,6 +215,22 @@ public class AuthUserDomainServiceImpl implements AuthUserDomainService {
         if (CollUtil.isNotEmpty(authUsers)) {
             return AuthUserBOConverter.INSTANCE.convertEntity2Bo(authUsers.get(0));
         }
-        return null;
+        return new AuthUserBO();
+    }
+
+    /**
+     * 登出
+     *
+     * @param authUserBO 用户信息
+     * @return 操作成功标志
+     */
+    @Override
+    public Boolean logout(AuthUserBO authUserBO) {
+        Boolean resultFlag = Boolean.FALSE;
+        if (StpUtil.isLogin(authUserBO.getUserName())) {
+            StpUtil.logout(authUserBO.getUserName());
+            resultFlag =  Boolean.TRUE;
+        }
+        return resultFlag;
     }
 }
