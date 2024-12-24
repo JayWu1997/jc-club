@@ -31,4 +31,18 @@ public interface AuthUserDomainService {
      * @return 结果
      */
     Boolean delete(Long id);
+
+    /**
+     * 验证码登录
+     * @param validCode 验证码
+     * @return token 信息
+     */
+    SaTokenInfo doLogin(String validCode);
+
+    /**
+     * 获取用户信息
+     * @param authUserBO 查询条件
+     * @return 用户信息
+     */
+    AuthUserBO getUserInfo(AuthUserBO authUserBO);
 }

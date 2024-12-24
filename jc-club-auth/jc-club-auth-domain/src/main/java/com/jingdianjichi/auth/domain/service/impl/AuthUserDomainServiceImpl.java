@@ -3,7 +3,9 @@ package com.jingdianjichi.auth.domain.service.impl;
 import cn.dev33.satoken.secure.SaSecureUtil;
 import cn.dev33.satoken.stp.SaTokenInfo;
 import cn.dev33.satoken.stp.StpUtil;
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.collection.CollectionUtil;
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.google.gson.Gson;
 import com.jingdianjichi.auth.common.enums.IsDeletedEnum;
 import com.jingdianjichi.auth.common.enums.ResultCodeEnum;
@@ -19,7 +21,6 @@ import com.jingdianjichi.auth.infra.base.service.AuthUserRoleService;
 import com.jingdianjichi.auth.infra.base.service.AuthUserService;
 import com.jingdianjichi.auth.infra.base.service.impl.AuthPermissionServiceImpl;
 import com.jingdianjichi.auth.infra.base.service.impl.AuthRolePermissionServiceImpl;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -40,6 +41,19 @@ import static com.jingdianjichi.auth.domain.constant.AuthConstant.DEFAULT_ROLE_K
 @Service
 public class AuthUserDomainServiceImpl implements AuthUserDomainService {
 
+    private static final Gson GSON = new Gson();
+
+    private static final String AUTH_PERMISSION_PREFIX = "auth.permission";
+
+    private static final String AUTH_ROLE_PREFIX = "auth.role";
+
+    private static final String VERIFICATION_CODE_REDIS_KEY_PREFIX = "VERIFICATION_CODE";
+
+    /**
+     * 密码加密盐
+     */
+    private static final String SALT = "jingdianjichi";
+
     @Resource
     private AuthUserService authUserService;
 
@@ -52,19 +66,10 @@ public class AuthUserDomainServiceImpl implements AuthUserDomainService {
     @Resource
     private RedisUtil redisUtil;
 
-    private static final Gson GSON = new Gson();
-
-    private static final String AUTH_PERMISSION_PREFIX = "auth.permission";
-
-    private static final String AUTH_ROLE_PREFIX = "auth.role";
-
-    /**
-     * 密码加密盐
-     */
-    private static final String SALT = "jingdianjichi";
-    @Autowired
+    @Resource
     private AuthRolePermissionServiceImpl authRolePermissionService;
-    @Autowired
+
+    @Resource
     private AuthPermissionServiceImpl authPermissionService;
 
     /**
@@ -77,12 +82,14 @@ public class AuthUserDomainServiceImpl implements AuthUserDomainService {
     @Transactional(rollbackFor = Exception.class)
     public SaTokenInfo register(AuthUserBO authUserBO) {
         // 插入用户信息
-        AuthUser user = AuthUserBOConverter.INSTANCE.convertBo2Entity(authUserBO);
-        user.setStatus(UserStatusEnum.ENABLE.getCode());
-        user.setPassword(SaSecureUtil.md5BySalt(user.getPassword(), SALT));
-        user.setIsDeleted(IsDeletedEnum.NOT_DELETED.getCode());
-        authUserService.insert(user);
-        ParamCheckUtil.checkNotNull(user.getId(), ResultCodeEnum.PARAM_ERROR, "角色添加失败！");
+        AuthUser userToBeRegistered = AuthUserBOConverter.INSTANCE.convertBo2Entity(authUserBO);
+        userToBeRegistered.setStatus(UserStatusEnum.ENABLE.getCode());
+        if (StringUtils.isNotBlank(userToBeRegistered.getPassword())) {
+            userToBeRegistered.setPassword(SaSecureUtil.md5BySalt(userToBeRegistered.getPassword(), SALT));
+        }
+        userToBeRegistered.setIsDeleted(IsDeletedEnum.NOT_DELETED.getCode());
+        authUserService.insert(userToBeRegistered);
+        ParamCheckUtil.checkNotNull(userToBeRegistered.getId(), ResultCodeEnum.PARAM_ERROR, "角色添加失败！");
 
         // 获取默认角色
         AuthRole defaultRole = new AuthRole();
@@ -94,14 +101,14 @@ public class AuthUserDomainServiceImpl implements AuthUserDomainService {
 
         // 建立角色关联
         AuthUserRole userRole = new AuthUserRole();
-        userRole.setUserId(user.getId());
+        userRole.setUserId(userToBeRegistered.getId());
         userRole.setRoleId(defaultRole.getId());
         userRole.setIsDeleted(IsDeletedEnum.NOT_DELETED.getCode());
         authUserRoleService.insert(userRole);
         ParamCheckUtil.checkNotNull(userRole.getId(), ResultCodeEnum.PARAM_ERROR, "角色添加失败！");
 
         // 把当前角色刷到 redis中
-        String roleKey = redisUtil.buildKey(AUTH_ROLE_PREFIX, user.getUserName());
+        String roleKey = redisUtil.buildKey(AUTH_ROLE_PREFIX, userToBeRegistered.getUserName());
         ArrayList<AuthRole> roleList = CollectionUtil.newArrayList(defaultRole);
         redisUtil.set(roleKey, GSON.toJson(roleList));
 
@@ -114,10 +121,10 @@ public class AuthUserDomainServiceImpl implements AuthUserDomainService {
         List<Long> permissionIdList = rolePermissionList.stream().map(AuthRolePermission::getPermissionId).collect(Collectors.toList());
         List<AuthPermission> permissionList = authPermissionService.queryBatchByIds(permissionIdList);
         ParamCheckUtil.checkCollNotEmpty(permissionList, ResultCodeEnum.PARAM_ERROR, "角色添加失败！");
-        String permissionKey = redisUtil.buildKey(AUTH_PERMISSION_PREFIX, user.getUserName());
+        String permissionKey = redisUtil.buildKey(AUTH_PERMISSION_PREFIX, userToBeRegistered.getUserName());
         redisUtil.set(permissionKey, GSON.toJson(permissionList));
 
-        StpUtil.login(user.getUserName());
+        StpUtil.login(userToBeRegistered.getUserName());
         return StpUtil.getTokenInfo();
     }
 
@@ -155,5 +162,44 @@ public class AuthUserDomainServiceImpl implements AuthUserDomainService {
             result = Boolean.TRUE;
         }
         return result;
+    }
+
+    /**
+     * 验证码登录
+     *
+     * @param validCode 验证码
+     * @return token 信息
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public SaTokenInfo doLogin(String validCode) {
+        String userWxId = redisUtil.get(redisUtil.buildKey(VERIFICATION_CODE_REDIS_KEY_PREFIX, validCode));
+        ParamCheckUtil.checkStrNotEmpty(userWxId, ResultCodeEnum.PARAM_ERROR, "验证码错误！");
+        AuthUser info = new AuthUser();
+        info.setUserName(userWxId);
+        List<AuthUser> authUserList = authUserService.queryAll(info);
+        if (CollUtil.isNotEmpty(authUserList)) {
+            StpUtil.login(authUserList.get(0).getUserName());
+            return StpUtil.getTokenInfo();
+        } else {
+            AuthUserBO userBO = new AuthUserBO();
+            userBO.setUserName(userWxId);
+            return register(userBO);
+        }
+    }
+
+    /**
+     * 获取用户信息
+     *
+     * @param authUserBO 查询条件
+     * @return 用户信息
+     */
+    @Override
+    public AuthUserBO getUserInfo(AuthUserBO authUserBO) {
+        List<AuthUser> authUsers = authUserService.queryAll(AuthUserBOConverter.INSTANCE.convertBo2Entity(authUserBO));
+        if (CollUtil.isNotEmpty(authUsers)) {
+            return AuthUserBOConverter.INSTANCE.convertEntity2Bo(authUsers.get(0));
+        }
+        return null;
     }
 }

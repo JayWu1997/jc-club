@@ -1,6 +1,7 @@
 package com.jingdianjichi.auth.application.controller;
 
 import cn.dev33.satoken.stp.SaTokenInfo;
+import cn.dev33.satoken.stp.StpUtil;
 import com.alibaba.fastjson.JSON;
 import com.jingdianjichi.auth.application.converter.AuthUserDTOConverter;
 import com.jingdianjichi.auth.application.dto.AuthUserDTO;
@@ -11,10 +12,7 @@ import com.jingdianjichi.auth.common.util.ParamCheckUtil;
 import com.jingdianjichi.auth.domain.entity.AuthUserBO;
 import com.jingdianjichi.auth.domain.service.AuthUserDomainService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 
@@ -47,14 +45,70 @@ public class AuthUserController {
             return Result.success(tokenInfo);
         } catch (BusinessException e) {
             if (log.isErrorEnabled()) {
-                log.error("SubjectCategoryController.register.error:{}", e.getMessage(), e);
+                log.error("AuthUserController.register.error:{}", e.getMessage(), e);
             }
             return Result.fail(e.getMessage());
         } catch (Exception e) {
            if (log.isErrorEnabled()) {
-               log.error("SubjectCategoryController.register.error:{}", e.getMessage(), e);
+               log.error("AuthUserController.register.error:{}", e.getMessage(), e);
            }
            return Result.fail("用户注册失败！");
+        }
+    }
+
+    @RequestMapping("doLogin")
+    public Result<SaTokenInfo> doLogin(@RequestParam("validCode") String validCode) {
+        try {
+            if (log.isInfoEnabled()) {
+                log.info("AuthUserController.doLogin.validCode:{}", JSON.toJSON(validCode));
+            }
+            
+            ParamCheckUtil.checkStrNotEmpty(validCode, ResultCodeEnum.PARAM_ERROR, "验证码不能为空!");
+            SaTokenInfo tokenInfo = authUserDomainService.doLogin(validCode);
+            return Result.success(tokenInfo);
+        }  catch (BusinessException e) {
+            if (log.isErrorEnabled()) {
+                log.error("AuthUserController.doLogin.error:{}", e.getMessage(), e);
+            }
+            return Result.fail(e.getMessage());
+        } catch (Exception e) {
+            if (log.isErrorEnabled()) {
+                log.error("AuthUserController.doLogin.error:{}", e.getMessage(), e);
+            }
+            return Result.fail("操作失败！");
+        }
+    }
+
+    @RequestMapping("/isLogin")
+    public Boolean isLogin() {
+        return StpUtil.isLogin();
+    }
+
+    /**
+     * 获取用户信息
+     * @param authUserDTO 查询条件
+     * @return 用户信息
+     */
+    @PostMapping("/getUserInfo")
+    public Result<AuthUserDTO> getUserInfo(@RequestBody AuthUserDTO authUserDTO) {
+        try {
+            if (log.isInfoEnabled()) {
+                log.info("AuthUserController.getUserInfo.authUserDTO:{}", JSON.toJSON(authUserDTO));
+            }
+
+            ParamCheckUtil.checkNotNull(authUserDTO.getUserName(), ResultCodeEnum.PARAM_ERROR, "用户名不能为空!");
+            AuthUserBO userBO = authUserDomainService.getUserInfo(AuthUserDTOConverter.INSTANCE.convertDto2Bo(authUserDTO));
+            return Result.success(AuthUserDTOConverter.INSTANCE.convertBo2Dto(userBO));
+        }  catch (BusinessException e) {
+            if (log.isErrorEnabled()) {
+                log.error("AuthUserController.getUserInfo.error:{}", e.getMessage(), e);
+            }
+            return Result.fail(e.getMessage());
+        } catch (Exception e) {
+            if (log.isErrorEnabled()) {
+                log.error("AuthUserController.getUserInfo.error:{}", e.getMessage(), e);
+            }
+            return Result.fail("操作失败！");
         }
     }
 
@@ -75,16 +129,17 @@ public class AuthUserController {
             return Result.success(authUserDomainService.update(authUserBO));
         } catch (BusinessException e) {
             if (log.isErrorEnabled()) {
-                log.error("SubjectCategoryController.update.error:{}", e.getMessage(), e);
+                log.error("AuthUserController.update.error:{}", e.getMessage(), e);
             }
             return Result.fail(e.getMessage());
         } catch (Exception e) {
             if (log.isErrorEnabled()) {
-                log.error("SubjectCategoryController.update.error:{}", e.getMessage(), e);
+                log.error("AuthUserController.update.error:{}", e.getMessage(), e);
             }
             return Result.fail("信息更新失败！");
         }
     }
+
 
     @PostMapping("delete")
     public Result<Boolean> delete(@RequestBody AuthUserDTO authUserDTO) {
@@ -97,12 +152,12 @@ public class AuthUserController {
             return Result.success(authUserDomainService.delete(authUserDTO.getId()));
         } catch (BusinessException e) {
             if (log.isErrorEnabled()) {
-                log.error("SubjectCategoryController.delete.error:{}", e.getMessage(), e);
+                log.error("AuthUserController.delete.error:{}", e.getMessage(), e);
             }
             return Result.fail(e.getMessage());
         } catch (Exception e) {
             if (log.isErrorEnabled()) {
-                log.error("SubjectCategoryController.delete.error:{}", e.getMessage(), e);
+                log.error("AuthUserController.delete.error:{}", e.getMessage(), e);
             }
             return Result.fail("删除用户失败！");
         }
