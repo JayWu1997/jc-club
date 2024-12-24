@@ -52,4 +52,11 @@ public interface AuthUserDomainService {
      * @return 操作成功标志
      */
     Boolean logout(AuthUserBO authUserBO);
+
+    /**
+     * 根据用户名更新用户信息
+     * @param authUserBO 用户信息
+     * @return 是否成功
+     */
+    Boolean updateByUserName(AuthUserBO authUserBO);
 }

@@ -233,4 +233,23 @@ public class AuthUserDomainServiceImpl implements AuthUserDomainService {
         }
         return resultFlag;
     }
+
+    /**
+     * 根据用户名更新用户信息
+     *
+     * @param authUserBO 用户信息
+     * @return 是否成功
+     */
+    @Override
+    public Boolean updateByUserName(AuthUserBO authUserBO) {
+        AuthUser userQueryCondition = new AuthUser();
+        userQueryCondition.setIsDeleted(IsDeletedEnum.NOT_DELETED.getCode());
+        userQueryCondition.setUserName(authUserBO.getUserName());
+        if (CollUtil.isNotEmpty(authUserService.queryAll(userQueryCondition))) {
+            AuthUser authUser = AuthUserBOConverter.INSTANCE.convertBo2Entity(authUserBO);
+            authUser.setId(authUserService.queryAll(userQueryCondition).get(0).getId());
+            return authUserService.update(authUser) > 0;
+        }
+        return Boolean.FALSE;
+    }
 }

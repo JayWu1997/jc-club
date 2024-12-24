@@ -153,10 +153,10 @@ public class AuthUserController {
             if (log.isInfoEnabled()) {
                 log.info("AuthUserController.update.authUserDTO:{}", JSON.toJSON(authUserDTO));
             }
-            ParamCheckUtil.checkNotNull(authUserDTO.getId(), ResultCodeEnum.PARAM_ERROR, "用户 id 不能为空!");
+            ParamCheckUtil.checkNotNull(authUserDTO.getUserName(), ResultCodeEnum.PARAM_ERROR, "用户名不能为空!");
 
             AuthUserBO authUserBO = AuthUserDTOConverter.INSTANCE.convertDto2Bo(authUserDTO);
-            return Result.success(authUserDomainService.update(authUserBO));
+            return Result.success(authUserDomainService.updateByUserName(authUserBO));
         } catch (BusinessException e) {
             if (log.isErrorEnabled()) {
                 log.error("AuthUserController.update.error:{}", e.getMessage(), e);
