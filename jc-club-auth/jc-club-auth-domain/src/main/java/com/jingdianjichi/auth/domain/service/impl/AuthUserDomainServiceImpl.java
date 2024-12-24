@@ -43,11 +43,20 @@ public class AuthUserDomainServiceImpl implements AuthUserDomainService {
 
     private static final Gson GSON = new Gson();
 
-    private static final String AUTH_PERMISSION_PREFIX = "auth.permission";
+    /**
+     * 用户权限 redis key 前缀
+     */
+    private static final String REDIS_KEY_AUTH_PERMISSION_PREFIX = "auth.permission";
 
-    private static final String AUTH_ROLE_PREFIX = "auth.role";
+    /**
+     * 用户角色 redis key 前缀
+     */
+    private static final String REDIS_KEY_AUTH_ROLE_PREFIX = "auth.role";
 
-    private static final String VERIFICATION_CODE_REDIS_KEY_PREFIX = "VERIFICATION_CODE";
+    /**
+     * 验证码 redis key 前缀
+     */
+    private static final String REDIS_KEY_VERIFICATION_CODE_PREFIX = "VERIFICATION_CODE";
 
     /**
      * 密码加密盐
@@ -81,6 +90,12 @@ public class AuthUserDomainServiceImpl implements AuthUserDomainService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public SaTokenInfo register(AuthUserBO authUserBO) {
+
+        // 查询用户是否已存在
+        AuthUser queryCondition = new AuthUser();
+        queryCondition.setUserName(authUserBO.getUserName());
+        ParamCheckUtil.checkNotFalse(authUserService.count(queryCondition) == 0, ResultCodeEnum.PARAM_ERROR, "用户名已存在！");
+
         // 插入用户信息
         AuthUser userToBeRegistered = AuthUserBOConverter.INSTANCE.convertBo2Entity(authUserBO);
         userToBeRegistered.setStatus(UserStatusEnum.ENABLE.getCode());
@@ -108,7 +123,7 @@ public class AuthUserDomainServiceImpl implements AuthUserDomainService {
         ParamCheckUtil.checkNotNull(userRole.getId(), ResultCodeEnum.PARAM_ERROR, "角色添加失败！");
 
         // 把当前角色刷到 redis中
-        String roleKey = redisUtil.buildKey(AUTH_ROLE_PREFIX, userToBeRegistered.getUserName());
+        String roleKey = redisUtil.buildKey(REDIS_KEY_AUTH_ROLE_PREFIX, userToBeRegistered.getUserName());
         ArrayList<AuthRole> roleList = CollectionUtil.newArrayList(defaultRole);
         redisUtil.set(roleKey, GSON.toJson(roleList));
 
@@ -121,7 +136,7 @@ public class AuthUserDomainServiceImpl implements AuthUserDomainService {
         List<Long> permissionIdList = rolePermissionList.stream().map(AuthRolePermission::getPermissionId).collect(Collectors.toList());
         List<AuthPermission> permissionList = authPermissionService.queryBatchByIds(permissionIdList);
         ParamCheckUtil.checkCollNotEmpty(permissionList, ResultCodeEnum.PARAM_ERROR, "角色添加失败！");
-        String permissionKey = redisUtil.buildKey(AUTH_PERMISSION_PREFIX, userToBeRegistered.getUserName());
+        String permissionKey = redisUtil.buildKey(REDIS_KEY_AUTH_PERMISSION_PREFIX, userToBeRegistered.getUserName());
         redisUtil.set(permissionKey, GSON.toJson(permissionList));
 
         StpUtil.login(userToBeRegistered.getUserName());
@@ -173,7 +188,7 @@ public class AuthUserDomainServiceImpl implements AuthUserDomainService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public SaTokenInfo doLogin(String validCode) {
-        String userWxId = redisUtil.get(redisUtil.buildKey(VERIFICATION_CODE_REDIS_KEY_PREFIX, validCode));
+        String userWxId = redisUtil.get(redisUtil.buildKey(REDIS_KEY_VERIFICATION_CODE_PREFIX, validCode));
         ParamCheckUtil.checkStrNotEmpty(userWxId, ResultCodeEnum.PARAM_ERROR, "验证码错误！");
         AuthUser info = new AuthUser();
         info.setUserName(userWxId);
