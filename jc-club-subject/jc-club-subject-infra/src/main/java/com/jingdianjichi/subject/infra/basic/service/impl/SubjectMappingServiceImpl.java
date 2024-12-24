@@ -91,4 +91,15 @@ public class SubjectMappingServiceImpl implements SubjectMappingService {
         }
         return mappingList.stream().map(SubjectMapping::getLabelId).collect(Collectors.toList());
     }
+
+    /**
+     * 根据分类 ID 查询题目数量
+     *
+     * @param categoryId 分类 ID
+     * @return 符合条件的题目数量
+     */
+    @Override
+    public Integer countByCategoryIdDistinctSubjectId(Long categoryId) {
+        return subjectMappingDao.countByCategoryIdDistinctSubjectId(categoryId);
+    }
 }

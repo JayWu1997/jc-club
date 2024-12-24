@@ -79,17 +79,17 @@ public class SubjectCategoryController {
      * <p>
      * 通过调用主题分类领域服务查询所有岗位信息，并将查询结果转换为DTO形式返回。
      * 此接口用于前端获取岗位信息，以展示在相应的界面中。
-     * 
-     * @return Result<List<SubjectCategoryDTO>> 返回查询结果，包含岗位信息的列表。
+     *
+     * @return Result<List < SubjectCategoryDTO>> 返回查询结果，包含岗位信息的列表。
      */
     @PostMapping("/queryPrimaryCategory")
-    public Result<List<SubjectCategoryDTO>> queryPrimaryCategory(SubjectCategoryDTO subjectCategoryDTO) {
+    public Result<List<SubjectCategoryDTO>> queryPrimaryCategory(@RequestBody SubjectCategoryDTO subjectCategoryDTO) {
         try {
             if (log.isInfoEnabled()) {
                 log.info("SubjectCategoryController.queryPrimaryCategory.dto:{}", JSON.toJSON(subjectCategoryDTO));
             }
 
-            if(subjectCategoryDTO.getCategoryType() == null || !subjectCategoryDTO.getCategoryType().equals(CategoryTypeEnum.PRIMARY.getCode())) {
+            if (subjectCategoryDTO.getCategoryType() == null || !subjectCategoryDTO.getCategoryType().equals(CategoryTypeEnum.PRIMARY.getCode())) {
                 subjectCategoryDTO.setCategoryType(CategoryTypeEnum.PRIMARY.getCode());
             }
             // 调用领域服务查询所有岗位信息
@@ -112,6 +112,7 @@ public class SubjectCategoryController {
 
     /**
      * 查询大类下的分类
+     *
      * @param subjectCategoryDTO 主题类别数据传输对象，包含要查询的大类信息
      * @return 返回操作结果，成功返回包含查询结果的结果，失败返回空结果
      */
@@ -123,10 +124,10 @@ public class SubjectCategoryController {
                 log.info("SubjectCategoryController.queryCategoryList.dto:{}", JSON.toJSON(subjectCategoryDTO));
             }
 
-            if(subjectCategoryDTO.getCategoryType() == null || !subjectCategoryDTO.getCategoryType().equals(CategoryTypeEnum.SECONDARY.getCode())) {
+            if (subjectCategoryDTO.getCategoryType() == null || !subjectCategoryDTO.getCategoryType().equals(CategoryTypeEnum.SECONDARY.getCode())) {
                 subjectCategoryDTO.setCategoryType(CategoryTypeEnum.SECONDARY.getCode());
             }
-            if(subjectCategoryDTO.getParentId() == null || subjectCategoryDTO.getParentId() < 0) {
+            if (subjectCategoryDTO.getParentId() == null || subjectCategoryDTO.getParentId() < 0) {
                 throw new BusinessException(ResultCodeEnum.PARAM_ERROR, "查询次级分类时，父级分类不能为空");
             }
             List<SubjectCategoryBO> subjectCategoryBOList = subjectCategoryDomainService.queryCategory(SubjectCategoryDTOConverter.INSTANCE.convertDto2Bo(subjectCategoryDTO));
@@ -148,6 +149,7 @@ public class SubjectCategoryController {
 
     /**
      * 更新分类信息
+     *
      * @param subjectCategoryDTO dto
      * @return 操作结果
      */
@@ -179,6 +181,7 @@ public class SubjectCategoryController {
 
     /**
      * 删除题目分类
+     *
      * @param subjectCategoryDTO dto
      * @return 操作结果
      */

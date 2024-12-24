@@ -171,5 +171,16 @@
             and update_time = #{updateTime}
         </if>
     </select>
+
+    <!--  通过分类 id 查询题目数量  -->
+    <select id="countByCategoryIdDistinctSubjectId" resultType="java.lang.Integer">
+        SELECT COUNT(DISTINCT subject_id)
+        FROM subject_mapping m,
+             subject_label l
+        WHERE m.category_id = ${categoryId}
+          AND m.label_id = l.id
+          AND m.is_deleted = 0
+          AND l.is_deleted = 0
+    </select>
 </mapper>
 

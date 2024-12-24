@@ -1,11 +1,10 @@
 package com.jingdianjichi.subject.infra.basic.dao;
 
 import com.jingdianjichi.subject.infra.basic.entity.SubjectMapping;
+import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
-
-import org.apache.ibatis.annotations.Mapper;
 
 /**
  * 题目分类关系表(SubjectMapping)表数据库访问层
@@ -75,9 +74,18 @@ public interface SubjectMappingDao {
 
     /**
      * 通过分类 id 查询
-     * @param subjectMapping    查询条件
-     * @return  实例对象列表
+     *
+     * @param subjectMapping 查询条件
+     * @return 实例对象列表
      */
     List<SubjectMapping> queryDistinctLabelIdsByCondition(SubjectMapping subjectMapping);
+
+    /**
+     * 通过分类 id 查询题目数量
+     *
+     * @param categoryId 分类 id
+     * @return 符合条件的题目数量
+     */
+    Integer countByCategoryIdDistinctSubjectId(@Param("categoryId") Long categoryId);
 }
 

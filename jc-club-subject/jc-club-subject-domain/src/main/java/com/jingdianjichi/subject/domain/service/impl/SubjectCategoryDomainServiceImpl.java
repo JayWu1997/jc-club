@@ -1,6 +1,7 @@
 package com.jingdianjichi.subject.domain.service.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.jingdianjichi.subject.common.enums.IsDeletedEnum;
 import com.jingdianjichi.subject.common.enums.ResultCodeEnum;
 import com.jingdianjichi.subject.common.exception.BusinessException;
@@ -9,12 +10,15 @@ import com.jingdianjichi.subject.domain.entity.SubjectCategoryBO;
 import com.jingdianjichi.subject.domain.service.SubjectCategoryDomainService;
 import com.jingdianjichi.subject.infra.basic.entity.SubjectCategory;
 import com.jingdianjichi.subject.infra.basic.service.SubjectCategoryService;
+import com.jingdianjichi.subject.infra.basic.service.SubjectMappingService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -22,6 +26,9 @@ public class SubjectCategoryDomainServiceImpl implements SubjectCategoryDomainSe
 
     @Resource
     private SubjectCategoryService subjectCategoryService;
+
+    @Resource
+    private SubjectMappingService mappingService;
 
     /**
      * 添加一个主题分类信息
@@ -60,12 +67,26 @@ public class SubjectCategoryDomainServiceImpl implements SubjectCategoryDomainSe
      */
     @Override
     public List<SubjectCategoryBO> queryCategory(SubjectCategoryBO subjectCategoryBO) {
-        List<SubjectCategory> entityList = subjectCategoryService.queryCategory(SubjectCategoryBOConverter.INSTANCE.convertBo2Entity(subjectCategoryBO));
-        return SubjectCategoryBOConverter.INSTANCE.convertEntity2Bo(entityList);
+        // 查询岗位信息
+        SubjectCategory subjectCategory = SubjectCategoryBOConverter.INSTANCE.convertBo2Entity(subjectCategoryBO);
+        subjectCategory.setIsDeleted(IsDeletedEnum.NOT_DELETED.getCode());
+        List<SubjectCategory> categoryList = subjectCategoryService.queryCategory(subjectCategory);
+        if (CollectionUtils.isEmpty(categoryList)) {
+            return Collections.emptyList();
+        }
+
+        // 查询每个岗位的题目数量
+        List<SubjectCategoryBO> categoryBOList = categoryList.stream().map(category -> {
+            SubjectCategoryBO categoryBO = SubjectCategoryBOConverter.INSTANCE.convertEntity2Bo(category);
+            categoryBO.setCount(mappingService.countByCategoryIdDistinctSubjectId(category.getId()));
+            return categoryBO;
+        }).collect(Collectors.toList());
+        return categoryBOList;
     }
 
     /**
      * 更新题目分类信息
+     *
      * @param subjectCategoryBO 待更新的主题类别信息，通过 categoryName 检索
      * @return 成功返回 true， 否则返回 false
      */
@@ -77,6 +98,7 @@ public class SubjectCategoryDomainServiceImpl implements SubjectCategoryDomainSe
 
     /**
      * 删除题目分类
+     *
      * @param subjectCategoryBO 待删除的主题类别信息，通过 id 检索
      * @return 成功返回 true， 否则返回 false
      */

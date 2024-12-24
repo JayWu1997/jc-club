@@ -59,4 +59,12 @@ public interface SubjectMappingService {
      * @return 标签列表
      */
     List<Long> queryDistinctLabelIdsByCondition(SubjectMapping subjectMapping);
+
+    /**
+     * 根据分类 ID 查询题目数量
+     *
+     * @param categoryId 分类 ID
+     * @return 符合条件的题目数量
+     */
+    Integer countByCategoryIdDistinctSubjectId(Long categoryId);
 }
