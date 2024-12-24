@@ -7,6 +7,7 @@ import com.jingdianjichi.subject.common.entity.Result;
 import com.jingdianjichi.subject.common.enums.CategoryTypeEnum;
 import com.jingdianjichi.subject.common.enums.ResultCodeEnum;
 import com.jingdianjichi.subject.common.exception.BusinessException;
+import com.jingdianjichi.subject.common.util.ParamCheckUtil;
 import com.jingdianjichi.subject.domain.entity.SubjectCategoryBO;
 import com.jingdianjichi.subject.domain.service.SubjectCategoryDomainService;
 import lombok.extern.slf4j.Slf4j;
@@ -106,6 +107,37 @@ public class SubjectCategoryController {
             return Result.fail(e.getMessage());
         } catch (Exception e) {
             log.error("SubjectCategoryController.queryPrimaryCategory.error:{}", e.getMessage(), e);
+            return Result.fail("查询岗位信息失败！");
+        }
+    }
+
+    /**
+     * 根据传入的 id 查询当前分类下的子分类集合，并且每个子分类需装载其关联的标签集合
+     * @param categoryDTO id
+     * @return 子分类列表及与子分类关联的标签列表
+     */
+    @PostMapping("/queryCategoryAndLabel")
+    public Result<List<SubjectCategoryDTO>> queryCategoryAndLabel(@RequestBody SubjectCategoryDTO categoryDTO) {
+        try {
+            if (log.isInfoEnabled()) {
+                log.info("SubjectCategoryController.queryCategoryAndLabel.categoryDTO:{}", JSON.toJSON(categoryDTO));
+            }
+            ParamCheckUtil.checkNotNull(categoryDTO.getId(), ResultCodeEnum.PARAM_ERROR, "分类 id 不能为空");
+
+            // 调用领域服务查询子分类及其关联标签信息
+            List<SubjectCategoryBO> subjectCategoryBOList = subjectCategoryDomainService.querySubcategoryAndLabelList(SubjectCategoryDTOConverter.INSTANCE.convertDto2Bo(categoryDTO));
+            // 将查询到的岗位信息BO转换为DTO，并包装在Result对象中返回
+            Result<List<SubjectCategoryDTO>> result = Result.success(SubjectCategoryDTOConverter.INSTANCE.convertBo2Dto(subjectCategoryBOList));
+            // 如果日志级别为INFO，则记录查询成功的结果
+            if (log.isInfoEnabled()) {
+                log.info("SubjectCategoryController.queryCategoryAndLabel.successResult:{}", JSON.toJSON(result));
+            }
+            return result;
+        } catch (BusinessException e) {
+            log.error("SubjectCategoryController.queryCategoryAndLabel.error:{}", e.getMessage(), e);
+            return Result.fail(e.getMessage());
+        } catch (Exception e) {
+            log.error("SubjectCategoryController.queryCategoryAndLabel.error:{}", e.getMessage(), e);
             return Result.fail("查询岗位信息失败！");
         }
     }

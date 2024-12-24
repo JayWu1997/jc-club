@@ -50,4 +50,11 @@ public interface SubjectLabelService {
      * @return 标签列表
      */
     List<SubjectLabel> queryBatchByIds(List<Long> labelIdList);
+
+    /**
+     * 根据分类 id 查询与其标签列表
+     * @param categoryId 分类 id
+     * @return 标签列表
+     */
+    List<SubjectLabel> queryDistinctLabelListByCategoryId(Long categoryId);
 }

@@ -37,4 +37,11 @@ public interface SubjectCategoryDomainService {
      * @return 成功返回 true， 否则返回 false
      */
     Boolean delete(SubjectCategoryBO subjectCategoryBO);
+
+    /**
+     * 查询所有子类和子类的标签
+     * @param categoryBO 父类 id
+     * @return 所有子类和子类的标签
+     */
+    List<SubjectCategoryBO> querySubcategoryAndLabelList(SubjectCategoryBO categoryBO);
 }

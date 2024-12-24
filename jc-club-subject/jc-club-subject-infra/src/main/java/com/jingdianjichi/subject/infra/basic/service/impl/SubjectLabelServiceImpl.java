@@ -1,7 +1,7 @@
 package com.jingdianjichi.subject.infra.basic.service.impl;
 
-import com.jingdianjichi.subject.infra.basic.entity.SubjectLabel;
 import com.jingdianjichi.subject.infra.basic.dao.SubjectLabelDao;
+import com.jingdianjichi.subject.infra.basic.entity.SubjectLabel;
 import com.jingdianjichi.subject.infra.basic.service.SubjectLabelService;
 import org.springframework.stereotype.Service;
 
@@ -72,5 +72,16 @@ public class SubjectLabelServiceImpl implements SubjectLabelService {
     @Override
     public List<SubjectLabel> queryBatchByIds(List<Long> labelIdList) {
         return subjectLabelDao.batchQueryByIds(labelIdList);
+    }
+
+    /**
+     * 根据分类 id 查询与其标签列表
+     *
+     * @param categoryId 分类 id
+     * @return 标签列表
+     */
+    @Override
+    public List<SubjectLabel> queryDistinctLabelListByCategoryId(Long categoryId) {
+        return subjectLabelDao.queryDistinctLabelListByCategoryId(categoryId);
     }
 }

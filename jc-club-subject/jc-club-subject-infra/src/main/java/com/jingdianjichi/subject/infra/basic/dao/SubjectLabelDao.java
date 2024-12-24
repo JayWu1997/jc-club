@@ -1,11 +1,10 @@
 package com.jingdianjichi.subject.infra.basic.dao;
 
 import com.jingdianjichi.subject.infra.basic.entity.SubjectLabel;
+import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
-
-import org.apache.ibatis.annotations.Mapper;
 
 /**
  * 题目标签表(SubjectLabel)表数据库访问层
@@ -79,5 +78,12 @@ public interface SubjectLabelDao {
      * @return 标签列表
      */
     List<SubjectLabel> batchQueryByIds(List<Long> labelIdList);
+
+    /**
+     * 根据分类 id 查询与该分类关联的所有标签
+     * @param categoryId 分类 id
+     * @return 与指定分类关联的所有标签
+     */
+    List<SubjectLabel> queryDistinctLabelListByCategoryId(@Param("categoryId") Long categoryId);
 }
 

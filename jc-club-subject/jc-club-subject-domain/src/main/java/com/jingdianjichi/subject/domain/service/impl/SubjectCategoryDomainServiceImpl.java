@@ -6,10 +6,14 @@ import com.jingdianjichi.subject.common.enums.IsDeletedEnum;
 import com.jingdianjichi.subject.common.enums.ResultCodeEnum;
 import com.jingdianjichi.subject.common.exception.BusinessException;
 import com.jingdianjichi.subject.domain.convert.SubjectCategoryBOConverter;
+import com.jingdianjichi.subject.domain.convert.SubjectLabelBOConverter;
 import com.jingdianjichi.subject.domain.entity.SubjectCategoryBO;
 import com.jingdianjichi.subject.domain.service.SubjectCategoryDomainService;
 import com.jingdianjichi.subject.infra.basic.entity.SubjectCategory;
+import com.jingdianjichi.subject.infra.basic.entity.SubjectLabel;
+import com.jingdianjichi.subject.infra.basic.entity.SubjectMapping;
 import com.jingdianjichi.subject.infra.basic.service.SubjectCategoryService;
+import com.jingdianjichi.subject.infra.basic.service.SubjectLabelService;
 import com.jingdianjichi.subject.infra.basic.service.SubjectMappingService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -29,6 +33,9 @@ public class SubjectCategoryDomainServiceImpl implements SubjectCategoryDomainSe
 
     @Resource
     private SubjectMappingService mappingService;
+
+    @Resource
+    private SubjectLabelService labelService;
 
     /**
      * 添加一个主题分类信息
@@ -108,6 +115,37 @@ public class SubjectCategoryDomainServiceImpl implements SubjectCategoryDomainSe
         subjectCategory.setId(subjectCategoryBO.getId());
         subjectCategory.setIsDeleted(IsDeletedEnum.DELETED.getCode());
         return subjectCategoryService.update(subjectCategory) == 1;
+    }
+
+    /**
+     * 查询所有子类和子类的标签
+     *
+     * @param categoryBO 父类 id
+     * @return 所有子类和子类的标签
+     */
+    @Override
+    public List<SubjectCategoryBO> querySubcategoryAndLabelList(SubjectCategoryBO categoryBO) {
+        // 查询子分类
+        SubjectCategory queryCondition = new SubjectCategory();
+        queryCondition.setParentId(categoryBO.getId());
+        queryCondition.setIsDeleted(IsDeletedEnum.NOT_DELETED.getCode());
+        List<SubjectCategory> categoryList = subjectCategoryService.queryCategory(queryCondition);
+
+        // 查询结果为空直接返回空集合
+        if (CollectionUtils.isEmpty(categoryList)) {
+            return Collections.emptyList();
+        }
+        List<SubjectCategoryBO> categoryBOList = categoryList.stream().map(category -> {
+            SubjectCategoryBO boTemp = SubjectCategoryBOConverter.INSTANCE.convertEntity2Bo(category);
+            SubjectMapping labelIdListQueryCondition = new SubjectMapping();
+            labelIdListQueryCondition.setIsDeleted(IsDeletedEnum.NOT_DELETED.getCode());
+            labelIdListQueryCondition.setCategoryId(boTemp.getId());
+            List<Long> labelIdList = mappingService.queryDistinctLabelIdsByCondition(labelIdListQueryCondition);
+            List<SubjectLabel> labelList = labelService.queryBatchByIds(labelIdList);
+            boTemp.setLabelDTOList(SubjectLabelBOConverter.INSTANCE.convertEntity2BO(labelList));
+            return boTemp;
+        }).collect(Collectors.toList());
+        return categoryBOList;
     }
 
 }
