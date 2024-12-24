@@ -76,4 +76,11 @@ public interface StorageAdapter {
      */
     public void removeFile(String bucketName, String objectName);
 
+    /**
+     * 获取文件下载地址
+     * @param bucketName bucket名称
+     * @param objName 文件名称
+     * @return 文件下载地址
+     */
+    String getUrl(String bucketName, String objName);
 }

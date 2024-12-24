@@ -1,9 +1,11 @@
 package com.jingdianjichi.oss.adapter.impl;
 
-import com.jingdianjichi.oss.entity.FileInfo;
 import com.jingdianjichi.oss.adapter.StorageAdapter;
+import com.jingdianjichi.oss.entity.FileInfo;
 import com.jingdianjichi.oss.util.MinioUtil;
 import lombok.SneakyThrows;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -16,10 +18,14 @@ import java.util.List;
  * @since 2024/12/18 下午8:24
  */
 @Service
+@RefreshScope
 public class MinioStorageAdapter implements StorageAdapter {
 
     @Resource
     private MinioUtil minioUtil;
+
+    @Value("${minio.url}")
+    private String minioUrl;
 
     /**
      * 创建一个bucket
@@ -120,5 +126,17 @@ public class MinioStorageAdapter implements StorageAdapter {
     @SneakyThrows
     public void removeFile(String bucketName, String objectName) {
         minioUtil.removeFile(bucketName, objectName);
+    }
+
+    /**
+     * 获取文件下载地址
+     *
+     * @param bucketName bucket名称
+     * @param objName    文件名称
+     * @return 文件下载地址
+     */
+    @Override
+    public String getUrl(String bucketName, String objName) {
+        return minioUrl + "/" + bucketName + "/" + objName;
     }
 }
