@@ -87,14 +87,13 @@
 
     <!--  条件查询  -->
     <select id="countByCondition" resultType="java.lang.Integer">
-        select count(1)
-        from subject_info i, subject_mapping m
+
+        select count(DISTINCT i.id) FROM subject_info i inner join subject_mapping m on m.subject_id = i.id
         <where>
-            i.id = m.subject_id
-            and m.category_id = #{categoryId}
+            m.category_id = #{categoryId}
             and m.label_id = #{labelId}
-            and i.is_deleted = 0
             and m.is_deleted = 0
+            and i.is_deleted = 0
             <if test="subjectInfo.subjectDifficult != null">
                 and i.subject_difficult = #{subjectInfo.subjectDifficult}
             </if>
@@ -102,6 +101,22 @@
                 and i.subject_type = #{subjectInfo.subjectType}
             </if>
         </where>
+
+<!--        select count(1)-->
+<!--        from subject_info i, subject_mapping m-->
+<!--        <where>-->
+<!--            i.id = m.subject_id-->
+<!--            and m.category_id = #{categoryId}-->
+<!--            and m.label_id = #{labelId}-->
+<!--            and i.is_deleted = 0-->
+<!--            and m.is_deleted = 0-->
+<!--            <if test="subjectInfo.subjectDifficult != null">-->
+<!--                and i.subject_difficult = #{subjectInfo.subjectDifficult}-->
+<!--            </if>-->
+<!--            <if test="subjectInfo.subjectType != null">-->
+<!--                and i.subject_type = #{subjectInfo.subjectType}-->
+<!--            </if>-->
+<!--        </where>-->
     </select>
 
     <!--  条件查询  -->

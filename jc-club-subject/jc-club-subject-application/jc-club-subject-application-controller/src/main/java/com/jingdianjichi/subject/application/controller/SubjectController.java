@@ -23,7 +23,7 @@ import javax.annotation.Resource;
  * 题目信息 Controller
  */
 @RestController
-@RequestMapping("/subject/info")
+@RequestMapping("/subject")
 @Slf4j
 public class SubjectController {
 
@@ -72,7 +72,7 @@ public class SubjectController {
      * @param subjectInfoDTO dto
      * @return 分页数据
      */
-    @PostMapping("/querySubjectPage")
+    @PostMapping("/getSubjectPage")
     public Result<PageResult<SubjectInfoDTO>> querySubjectPage(@RequestBody SubjectInfoDTO subjectInfoDTO) {
         try {
             if (log.isInfoEnabled()) {

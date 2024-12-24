@@ -175,9 +175,8 @@
     <!--  通过分类 id 查询题目数量  -->
     <select id="countByCategoryIdDistinctSubjectId" resultType="java.lang.Integer">
         SELECT COUNT(DISTINCT subject_id)
-        FROM subject_mapping m,
-             subject_label l
-        WHERE m.category_id = ${categoryId}
+        FROM subject_mapping m inner join subject_label l on m.label_id = l.id
+        WHERE (m.category_id = #{categoryId} or m.category_id in (select id from subject_category c where c.is_deleted = 0 and c.parent_id = #{categoryId}))
           AND m.label_id = l.id
           AND m.is_deleted = 0
           AND l.is_deleted = 0
