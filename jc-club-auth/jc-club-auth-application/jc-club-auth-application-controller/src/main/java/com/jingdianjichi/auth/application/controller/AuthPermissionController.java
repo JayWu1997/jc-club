@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 @RestController
 @RequestMapping("/permission/")
@@ -173,6 +174,29 @@ public class AuthPermissionController {
                 log.error("AuthPermissionController.presentOrAbsent.error:{}", e.getMessage(), e);
             }
             return Result.fail("更改权限展示状态失败！");
+        }
+    }
+
+    @RequestMapping("getPermission")
+    public Result<List<AuthPermissionDTO>> getPermission(String userName) {
+        try {
+            if (log.isInfoEnabled()) {
+                log.info("AuthPermissionController.getPermission.userName:{}", userName);
+            }
+            ParamCheckUtil.checkStrNotEmpty(userName, ResultCodeEnum.PARAM_ERROR, "用户名不能为空!");
+
+            List<AuthPermissionBO> permissionDTOList =  authPermissionDomainService.getPermission(userName);
+            return Result.success(AuthPermissionDTOConverter.INSTANCE.convertBo2Dto(permissionDTOList));
+        } catch (BusinessException e) {
+            if (log.isErrorEnabled()) {
+                log.error("AuthPermissionController.getPermission.error:{}", e.getMessage(), e);
+            }
+            return Result.fail(e.getMessage());
+        } catch (Exception e) {
+            if (log.isErrorEnabled()) {
+                log.error("AuthPermissionController.getPermission.error:{}", e.getMessage(), e);
+            }
+            return Result.fail("查询角色权限失败！");
         }
     }
 }

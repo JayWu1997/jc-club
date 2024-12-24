@@ -93,4 +93,15 @@ public class AuthPermissionServiceImpl implements AuthPermissionService {
     public List<AuthPermission> queryBatchByIds(List<Long> permissionIdList) {
         return this.authPermissionDao.queryBatchByIds(permissionIdList);
     }
+
+    /**
+     * 根据用户名查询权限列表
+     *
+     * @param userName 用户名
+     * @return 权限列表
+     */
+    @Override
+    public List<AuthPermission> queryByUserName(String userName) {
+        return authPermissionDao.queryByUserName(userName);
+    }
 }

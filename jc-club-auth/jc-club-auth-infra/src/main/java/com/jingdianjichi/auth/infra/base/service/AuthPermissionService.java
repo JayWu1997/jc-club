@@ -67,4 +67,11 @@ public interface AuthPermissionService {
      * @return 实例对象集合
      */
     List<AuthPermission> queryBatchByIds(List<Long> permissionIdList);
+
+    /**
+     * 根据用户名查询权限列表
+     * @param userName 用户名
+     * @return 权限列表
+     */
+    List<AuthPermission> queryByUserName(String userName);
 }

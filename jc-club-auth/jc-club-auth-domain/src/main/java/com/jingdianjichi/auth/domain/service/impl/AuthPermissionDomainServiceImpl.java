@@ -1,5 +1,8 @@
 package com.jingdianjichi.auth.domain.service.impl;
 
+import cn.hutool.core.util.StrUtil;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.jingdianjichi.auth.common.enums.IsDeletedEnum;
 import com.jingdianjichi.auth.common.enums.PermissionShowEnum;
 import com.jingdianjichi.auth.common.enums.PermissionStatusEnum;
@@ -7,12 +10,15 @@ import com.jingdianjichi.auth.common.enums.ResultCodeEnum;
 import com.jingdianjichi.auth.common.util.ParamCheckUtil;
 import com.jingdianjichi.auth.domain.converter.AuthPermissionBOConverter;
 import com.jingdianjichi.auth.domain.entity.AuthPermissionBO;
+import com.jingdianjichi.auth.domain.redis.RedisUtil;
 import com.jingdianjichi.auth.domain.service.AuthPermissionDomainService;
 import com.jingdianjichi.auth.infra.base.entity.AuthPermission;
 import com.jingdianjichi.auth.infra.base.service.AuthPermissionService;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * 权限领域服务实现类
@@ -25,6 +31,16 @@ public class AuthPermissionDomainServiceImpl implements AuthPermissionDomainServ
 
     @Resource
     private AuthPermissionService permissionService;
+    
+    @Resource
+    private RedisUtil redisUtil;
+
+    /**
+     * 用户权限 redis key 前缀
+     */
+    private static final String REDIS_KEY_AUTH_PERMISSION_PREFIX = "auth.permission";
+
+    private static final Gson GSON = new Gson();
 
     /**
      * 添加权限
@@ -99,5 +115,23 @@ public class AuthPermissionDomainServiceImpl implements AuthPermissionDomainServ
         String errMsg = PermissionShowEnum.PRESENT.getCode().equals(authPermissionBO.getShow()) ? "显示权限失败" : "隐藏权限失败";
         ParamCheckUtil.checkNotFalse(permissionService.update(authPermission) > 0, ResultCodeEnum.FAIL, errMsg);
         //TODO 2.更新redis
+    }
+
+    /**
+     * 获取指定用户的权限列表
+     *
+     * @param userName 用户名
+     * @return 权限列表
+     */
+    @Override
+    public List<AuthPermissionBO> getPermission(String userName) {
+        String permissionKey = redisUtil.buildKey(REDIS_KEY_AUTH_PERMISSION_PREFIX, userName);
+        String permissionListJsonStr = redisUtil.get(permissionKey);
+        if(StrUtil.isEmpty(permissionListJsonStr)) {
+            return Collections.emptyList();
+        }
+        List<AuthPermission> permissionList = GSON.fromJson(permissionListJsonStr, new TypeToken<List<AuthPermission>>() {
+        }.getType());
+        return AuthPermissionBOConverter.INSTANCE.convertEntity2Bo(permissionList);
     }
 }

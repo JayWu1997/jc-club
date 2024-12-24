@@ -87,5 +87,12 @@ public interface AuthPermissionDao {
      * @return 权限集合
      */
     List<AuthPermission> queryBatchByIds(@Param("permissionIdList") List<Long> permissionIdList);
+
+    /**
+     * 根据用户名查询权限集合
+     * @param userName 用户名
+     * @return 权限集合
+     */
+    List<AuthPermission> queryByUserName(@Param("userName") String userName);
 }
 

@@ -139,6 +139,17 @@
         </foreach>
     </select>
 
+    <!--  根据用户名查询权限集合  -->
+    <select id="queryByUserName" resultType="com.jingdianjichi.auth.infra.base.entity.AuthPermission">
+        select *
+        from auth_permission
+        where id in (select permission_id
+                     from auth_role_permission
+                     where role_id in (select role_id
+                                       from auth_user_role ur
+                                       where user_id = (select id from auth_user where user_name = #{userName})))
+    </select>
+
     <!--新增所有列-->
     <insert id="insert" keyProperty="id" useGeneratedKeys="true">
         insert into auth_permission(name, parent_id, type, menu_url, status, `show`, icon, permission_key, created_by,
