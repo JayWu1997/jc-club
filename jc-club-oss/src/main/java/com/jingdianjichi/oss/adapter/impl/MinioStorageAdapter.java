@@ -11,7 +11,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author jay
@@ -46,7 +48,7 @@ public class MinioStorageAdapter implements StorageAdapter {
     @Override
     @SneakyThrows
     public List<String> getAllBucketsNames() {
-        return minioUtil.getAllBucketsNames();
+        return minioUtil.getAllBucket();
     }
 
     /**
@@ -54,18 +56,19 @@ public class MinioStorageAdapter implements StorageAdapter {
      *
      * @param uploadFile 文件流
      * @param bucketName bucket名称
-     * @param objectName 文件名称
+     * @param parentDir  文件名称
+     * @param fileName
      */
     @Override
     @SneakyThrows
-    public void uploadFile(MultipartFile uploadFile, String bucketName, String objectName) {
+    public void uploadFile(MultipartFile uploadFile, String bucketName, String parentDir, String fileName) {
         minioUtil.createBucket(bucketName);
-        if (objectName == null) {
-            objectName = "";
+        if (parentDir == null) {
+            parentDir = "";
         } else {
-            objectName = objectName + "/";
+            parentDir = parentDir + "/";
         }
-        minioUtil.uploadFile(uploadFile.getInputStream(), bucketName, objectName + uploadFile.getName());
+        minioUtil.uploadFile(uploadFile.getInputStream(), bucketName, parentDir + fileName);
     }
 
     /**
@@ -77,7 +80,7 @@ public class MinioStorageAdapter implements StorageAdapter {
     @Override
     @SneakyThrows
     public List<String> getAllObjects(String bucketName) {
-        return minioUtil.getAllObjects(bucketName);
+        return minioUtil.getAllFile(bucketName).stream().map(FileInfo::getFileName).collect(Collectors.toList());
     }
 
     /**
@@ -89,7 +92,7 @@ public class MinioStorageAdapter implements StorageAdapter {
     @Override
     @SneakyThrows
     public List<FileInfo> getAllFiles(String bucketName) {
-        return minioUtil.getAllFiles(bucketName);
+        return minioUtil.getAllFile(bucketName);
     }
 
     /**
@@ -102,7 +105,7 @@ public class MinioStorageAdapter implements StorageAdapter {
     @Override
     @SneakyThrows
     public InputStream downloadFile(String bucketName, String objectName) {
-        return minioUtil.downloadFile(bucketName, objectName);
+        return minioUtil.downLoad(bucketName, objectName);
     }
 
     /**
@@ -113,7 +116,7 @@ public class MinioStorageAdapter implements StorageAdapter {
     @Override
     @SneakyThrows
     public void removeBucket(String bucketName) {
-        minioUtil.removeBucket(bucketName);
+        minioUtil.deleteBucket(bucketName);
     }
 
     /**
@@ -125,18 +128,23 @@ public class MinioStorageAdapter implements StorageAdapter {
     @Override
     @SneakyThrows
     public void removeFile(String bucketName, String objectName) {
-        minioUtil.removeFile(bucketName, objectName);
+        minioUtil.deleteObject(bucketName, objectName);
     }
 
     /**
      * 获取文件下载地址
      *
      * @param bucketName bucket名称
-     * @param objName    文件名称
+     * @param dirs
      * @return 文件下载地址
      */
     @Override
-    public String getUrl(String bucketName, String objName) {
-        return minioUrl + "/" + bucketName + "/" + objName;
+    public String getUrl(String bucketName, String... dirs) {
+        StringBuilder urlBuilder =  new StringBuilder();
+        urlBuilder.append(minioUrl).append("/").append(bucketName);
+        Arrays.stream(dirs).forEach(dir->{
+            urlBuilder.append("/").append(dir);
+        });
+        return urlBuilder.toString();
     }
 }

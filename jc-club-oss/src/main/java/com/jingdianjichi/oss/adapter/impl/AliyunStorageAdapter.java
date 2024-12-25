@@ -40,10 +40,11 @@ public class AliyunStorageAdapter implements StorageAdapter {
      *
      * @param uploadFile 文件流
      * @param bucketName bucket名称
-     * @param objectName 文件名称
+     * @param parentDir  文件名称
+     * @param fileName
      */
     @Override
-    public void uploadFile(MultipartFile uploadFile, String bucketName, String objectName) {
+    public void uploadFile(MultipartFile uploadFile, String bucketName, String parentDir, String fileName) {
 
     }
 
@@ -106,11 +107,11 @@ public class AliyunStorageAdapter implements StorageAdapter {
      * 获取文件下载地址
      *
      * @param bucketName bucket名称
-     * @param objName    文件名称
+     * @param dirs
      * @return 文件下载地址
      */
     @Override
-    public String getUrl(String bucketName, String objName) {
+    public String getUrl(String bucketName, String... dirs) {
         return "";
     }
 }

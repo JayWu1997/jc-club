@@ -24,13 +24,13 @@ public class SaTokenConfigure {
                 .setAuth(obj -> {
                     System.out.println("-------- 前端访问path：" + SaHolder.getRequest().getRequestPath());
                     // 登录校验 -- 拦截所有路由，并排除/user/doLogin 用于开放登录
-                    SaRouter.match("/**", "/auth/user/register", r -> StpUtil.checkLogin());
-                    SaRouter.match("/oss/**", r -> StpUtil.checkLogin());
-                    SaRouter.match("/subject/subject/info/add", r -> StpUtil.checkPermission("subject:add"));
-                    SaRouter.match("/auth/permission/**", r -> StpUtil.checkRole("admin"));
-                    SaRouter.match("/auth/rolePermission/**", r -> StpUtil.checkRole("admin"));
-                    SaRouter.match("/subject/**", r -> StpUtil.checkLogin());
-                    // 更多匹配 ...  */
+                    SaRouter.notMatch("/auth/user/register")
+                            .notMatch("/auth/user/doLogin")
+                            .notMatch("/auth/user/isLogin")
+                            .match("/**",  r -> StpUtil.checkLogin())
+                            .match("/subject/subject/add", r -> StpUtil.checkPermission("subject:add"))
+                            .match("/auth/permission/**", r -> StpUtil.checkRole("admin"))
+                            .match("/auth/rolePermission/**", r -> StpUtil.checkRole("admin"));
                 })
                 ;
     }
