@@ -15,6 +15,7 @@ import com.jingdianjichi.subject.infra.basic.entity.SubjectMapping;
 import com.jingdianjichi.subject.infra.basic.service.SubjectCategoryService;
 import com.jingdianjichi.subject.infra.basic.service.SubjectLabelService;
 import com.jingdianjichi.subject.infra.basic.service.SubjectMappingService;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +23,8 @@ import javax.annotation.Resource;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.stream.Collectors;
 
 @Service
@@ -36,6 +39,9 @@ public class SubjectCategoryDomainServiceImpl implements SubjectCategoryDomainSe
 
     @Resource
     private SubjectLabelService labelService;
+
+    @Resource
+    private ThreadPoolExecutor labelThreadPool;
 
     /**
      * 添加一个主题分类信息
@@ -123,6 +129,7 @@ public class SubjectCategoryDomainServiceImpl implements SubjectCategoryDomainSe
      * @param categoryBO 父类 id
      * @return 所有子类和子类的标签
      */
+    @SneakyThrows
     @Override
     public List<SubjectCategoryBO> querySubcategoryAndLabelList(SubjectCategoryBO categoryBO) {
         // 查询子分类
@@ -135,17 +142,22 @@ public class SubjectCategoryDomainServiceImpl implements SubjectCategoryDomainSe
         if (CollectionUtils.isEmpty(categoryList)) {
             return Collections.emptyList();
         }
-        List<SubjectCategoryBO> categoryBOList = categoryList.stream().map(category -> {
-            SubjectCategoryBO boTemp = SubjectCategoryBOConverter.INSTANCE.convertEntity2Bo(category);
-            SubjectMapping labelIdListQueryCondition = new SubjectMapping();
-            labelIdListQueryCondition.setIsDeleted(IsDeletedEnum.NOT_DELETED.getCode());
-            labelIdListQueryCondition.setCategoryId(boTemp.getId());
-            List<Long> labelIdList = mappingService.queryDistinctLabelIdsByCondition(labelIdListQueryCondition);
-            List<SubjectLabel> labelList = labelService.queryBatchByIds(labelIdList);
-            boTemp.setLabelDTOList(SubjectLabelBOConverter.INSTANCE.convertEntity2BO(labelList));
-            return boTemp;
-        }).collect(Collectors.toList());
-        return categoryBOList;
+
+        // 创建任务列表，用于异步查询与子类关联的标签
+        List<CompletableFuture<SubjectCategoryBO>> completableFutureList = categoryList.stream().map(category ->
+                CompletableFuture.supplyAsync(() -> querySubjectCategoryBO(category), labelThreadPool)).collect(Collectors.toList());
+        return completableFutureList.stream().map(CompletableFuture::join).collect(Collectors.toList());
+    }
+
+    private SubjectCategoryBO querySubjectCategoryBO(SubjectCategory category) {
+        SubjectCategoryBO boTemp = SubjectCategoryBOConverter.INSTANCE.convertEntity2Bo(category);
+        SubjectMapping labelIdListQueryCondition = new SubjectMapping();
+        labelIdListQueryCondition.setIsDeleted(IsDeletedEnum.NOT_DELETED.getCode());
+        labelIdListQueryCondition.setCategoryId(boTemp.getId());
+        List<Long> labelIdList = mappingService.queryDistinctLabelIdsByCondition(labelIdListQueryCondition);
+        List<SubjectLabel> labelList = labelService.queryBatchByIds(labelIdList);
+        boTemp.setLabelDTOList(SubjectLabelBOConverter.INSTANCE.convertEntity2BO(labelList));
+        return boTemp;
     }
 
 }
