@@ -1,10 +1,12 @@
 package com.jingdianjichi.subject.domain.service.impl;
 
+import cn.hutool.core.util.ObjectUtil;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
-import com.jingdianjichi.subject.common.enums.IsDeletedEnum;
 import com.jingdianjichi.subject.common.enums.BusinessErrorEnum;
+import com.jingdianjichi.subject.common.enums.IsDeletedEnum;
 import com.jingdianjichi.subject.common.exception.BusinessException;
+import com.jingdianjichi.subject.common.util.GuavaCacheUtil;
 import com.jingdianjichi.subject.domain.convert.SubjectCategoryBOConverter;
 import com.jingdianjichi.subject.domain.convert.SubjectLabelBOConverter;
 import com.jingdianjichi.subject.domain.entity.SubjectCategoryBO;
@@ -31,6 +33,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class SubjectCategoryDomainServiceImpl implements SubjectCategoryDomainService {
 
+    public static final String CACHE_KEY_PREFIX_SUBCATEGORY_AND_LABEL_LIST = "SubcategoryAndLabelList";
     @Resource
     private SubjectCategoryService subjectCategoryService;
 
@@ -132,9 +135,19 @@ public class SubjectCategoryDomainServiceImpl implements SubjectCategoryDomainSe
     @SneakyThrows
     @Override
     public List<SubjectCategoryBO> querySubcategoryAndLabelList(SubjectCategoryBO categoryBO) {
+        String cacheKey = CACHE_KEY_PREFIX_SUBCATEGORY_AND_LABEL_LIST + categoryBO.getId();
+        List<SubjectCategoryBO> boList = GuavaCacheUtil.getListFromCache(cacheKey, SubjectCategoryBO.class);
+        if (ObjectUtil.isNull(boList)){
+            boList = querySubcategoryAndLabelListFromDB(categoryBO.getId());
+            GuavaCacheUtil.put(cacheKey, boList);
+        }
+        return boList;
+    }
+
+    private List<SubjectCategoryBO> querySubcategoryAndLabelListFromDB(Long categoryId) {
         // 查询子分类
         SubjectCategory queryCondition = new SubjectCategory();
-        queryCondition.setParentId(categoryBO.getId());
+        queryCondition.setParentId(categoryId);
         queryCondition.setIsDeleted(IsDeletedEnum.NOT_DELETED.getCode());
         List<SubjectCategory> categoryList = subjectCategoryService.queryCategory(queryCondition);
 
