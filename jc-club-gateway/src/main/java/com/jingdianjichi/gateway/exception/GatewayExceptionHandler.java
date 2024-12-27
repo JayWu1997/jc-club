@@ -4,6 +4,7 @@ import cn.dev33.satoken.exception.SaTokenException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jingdianjichi.gateway.entity.Result;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.web.reactive.error.ErrorWebExceptionHandler;
 import org.springframework.core.io.buffer.DataBufferFactory;
 import org.springframework.http.MediaType;
@@ -17,6 +18,7 @@ import reactor.core.publisher.Mono;
  * @author jay
  * @since 2024/12/20 下午9:15
  */
+@Slf4j
 @Component
 public class GatewayExceptionHandler implements ErrorWebExceptionHandler {
 
@@ -39,6 +41,9 @@ public class GatewayExceptionHandler implements ErrorWebExceptionHandler {
         } else {
             code = 500;
             message = "系统繁忙";
+        }
+        if (log.isInfoEnabled()) {
+            log.info("请求异常:{}", throwable.getMessage());
         }
         Result<Object> failResult = Result.fail(String.valueOf(code), message, null);
         response.getHeaders().setContentType(MediaType.APPLICATION_JSON);
