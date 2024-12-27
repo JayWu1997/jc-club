@@ -1,11 +1,11 @@
 package com.jingdianjichi.subject.application.controller;
 
 import com.alibaba.fastjson.JSON;
+import com.jingdianjichi.subject.api.req.SubjectCategoryDTO;
+import com.jingdianjichi.subject.api.resp.Result;
 import com.jingdianjichi.subject.application.convert.SubjectCategoryDTOConverter;
-import com.jingdianjichi.subject.application.dto.SubjectCategoryDTO;
-import com.jingdianjichi.subject.common.entity.Result;
+import com.jingdianjichi.subject.common.enums.BusinessErrorEnum;
 import com.jingdianjichi.subject.common.enums.CategoryTypeEnum;
-import com.jingdianjichi.subject.common.enums.ResultCodeEnum;
 import com.jingdianjichi.subject.common.exception.BusinessException;
 import com.jingdianjichi.subject.common.util.ParamCheckUtil;
 import com.jingdianjichi.subject.domain.entity.SubjectCategoryBO;
@@ -13,7 +13,10 @@ import com.jingdianjichi.subject.domain.service.SubjectCategoryDomainService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -46,10 +49,10 @@ public class SubjectCategoryController {
 
             // 数据校验
             if (ObjectUtils.isEmpty(subjectCategoryDTO.getCategoryType())) {
-                throw new BusinessException(ResultCodeEnum.PARAM_ERROR, "添加题目类别时，分类类型不能为空");
+                throw new BusinessException(BusinessErrorEnum.PARAM_ERROR, "添加题目类别时，分类类型不能为空");
             }
             if (!StringUtils.hasText(subjectCategoryDTO.getCategoryName())) {
-                throw new BusinessException(ResultCodeEnum.PARAM_ERROR, "添加题目类别时，分类名称不能为空");
+                throw new BusinessException(BusinessErrorEnum.PARAM_ERROR, "添加题目类别时，分类名称不能为空");
             }
 
             // 转换DTO为BO，进行业务逻辑处理前的准备
@@ -122,7 +125,7 @@ public class SubjectCategoryController {
             if (log.isInfoEnabled()) {
                 log.info("SubjectCategoryController.queryCategoryAndLabel.categoryDTO:{}", JSON.toJSON(categoryDTO));
             }
-            ParamCheckUtil.checkNotNull(categoryDTO.getId(), ResultCodeEnum.PARAM_ERROR, "分类 id 不能为空");
+            ParamCheckUtil.checkNotNull(categoryDTO.getId(), BusinessErrorEnum.PARAM_ERROR, "分类 id 不能为空");
 
             // 调用领域服务查询子分类及其关联标签信息
             List<SubjectCategoryBO> subjectCategoryBOList = subjectCategoryDomainService.querySubcategoryAndLabelList(SubjectCategoryDTOConverter.INSTANCE.convertDto2Bo(categoryDTO));
@@ -160,7 +163,7 @@ public class SubjectCategoryController {
                 subjectCategoryDTO.setCategoryType(CategoryTypeEnum.SECONDARY.getCode());
             }
             if (subjectCategoryDTO.getParentId() == null || subjectCategoryDTO.getParentId() < 0) {
-                throw new BusinessException(ResultCodeEnum.PARAM_ERROR, "查询次级分类时，父级分类不能为空");
+                throw new BusinessException(BusinessErrorEnum.PARAM_ERROR, "查询次级分类时，父级分类不能为空");
             }
             List<SubjectCategoryBO> subjectCategoryBOList = subjectCategoryDomainService.queryCategory(SubjectCategoryDTOConverter.INSTANCE.convertDto2Bo(subjectCategoryDTO));
             // 将查询到的岗位信息BO转换为DTO，并包装在Result对象中返回
@@ -189,7 +192,7 @@ public class SubjectCategoryController {
     public Result<Boolean> update(@RequestBody SubjectCategoryDTO subjectCategoryDTO) {
         try {
             if (subjectCategoryDTO.getId() == null || subjectCategoryDTO.getId() < 0) {
-                throw new BusinessException(ResultCodeEnum.PARAM_ERROR, "更新题目类别时，分类名称不能为空");
+                throw new BusinessException(BusinessErrorEnum.PARAM_ERROR, "更新题目类别时，分类名称不能为空");
             }
 
             if (log.isInfoEnabled()) {
@@ -221,7 +224,7 @@ public class SubjectCategoryController {
     public Result<Boolean> delete(@RequestBody SubjectCategoryDTO subjectCategoryDTO) {
         try {
             if (subjectCategoryDTO.getId() == null) {
-                throw new BusinessException(ResultCodeEnum.PARAM_ERROR, "删除题目类别时，分类 id 不能为空");
+                throw new BusinessException(BusinessErrorEnum.PARAM_ERROR, "删除题目类别时，分类 id 不能为空");
             }
 
             if (log.isInfoEnabled()) {

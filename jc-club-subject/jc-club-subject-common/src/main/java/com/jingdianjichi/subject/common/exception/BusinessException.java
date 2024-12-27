@@ -1,6 +1,6 @@
 package com.jingdianjichi.subject.common.exception;
 
-import com.jingdianjichi.subject.common.enums.ResultCodeEnum;
+import com.jingdianjichi.subject.common.enums.BusinessErrorEnum;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -15,14 +15,14 @@ import java.util.Map;
  */
 public class BusinessException extends RuntimeException {
 
-    private ResultCodeEnum resultCode; // 结果码枚举，用于标识异常的具体类型
+    private BusinessErrorEnum resultCode; // 结果码枚举，用于标识异常的具体类型
     private Map<String, Object> data; // 可选的数据字段，用于传递额外信息，例如错误的输入值等
 
     /**
      * 构造函数，初始化异常结果码。
      * @param resultCode 异常结果码，标识异常的类型和处理方式。
      */
-    public BusinessException(ResultCodeEnum resultCode) {
+    public BusinessException(BusinessErrorEnum resultCode) {
         this(resultCode, resultCode.getMessage());
     }
 
@@ -31,7 +31,7 @@ public class BusinessException extends RuntimeException {
      * @param resultCode 异常结果码，标识异常的类型和处理方式。
      * @param message 异常的详细信息，用于描述异常的具体情况。
      */
-    public BusinessException(ResultCodeEnum resultCode, String message) {
+    public BusinessException(BusinessErrorEnum resultCode, String message) {
         super(message);
         this.resultCode = resultCode;
         this.data = new HashMap<>();
@@ -43,7 +43,7 @@ public class BusinessException extends RuntimeException {
      * @param message 异常的详细信息，用于描述异常的具体情况。
      * @param data 与异常相关联的数据，可选，用于传递额外的信息。
      */
-    public BusinessException(ResultCodeEnum resultCode, String message, Map<String, Object> data) {
+    public BusinessException(BusinessErrorEnum resultCode, String message, Map<String, Object> data) {
         super(message);
         this.resultCode = resultCode;
         this.data = data != null ? data : new HashMap<>();

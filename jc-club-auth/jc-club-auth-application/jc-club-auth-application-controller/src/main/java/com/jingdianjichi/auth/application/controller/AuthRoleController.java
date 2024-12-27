@@ -2,9 +2,9 @@ package com.jingdianjichi.auth.application.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.jingdianjichi.auth.application.converter.AuthRoleDTOConverter;
-import com.jingdianjichi.auth.application.dto.AuthRoleDTO;
-import com.jingdianjichi.auth.common.entity.Result;
-import com.jingdianjichi.auth.common.enums.ResultCodeEnum;
+import com.jingdianjichi.auth.api.req.AuthRoleDTO;
+import com.jingdianjichi.auth.api.resp.Result;
+import com.jingdianjichi.auth.common.enums.BusinessErrorEnum;
 import com.jingdianjichi.auth.common.exception.BusinessException;
 import com.jingdianjichi.auth.common.util.ParamCheckUtil;
 import com.jingdianjichi.auth.domain.entity.AuthRoleBO;
@@ -41,8 +41,8 @@ public class AuthRoleController {
             if (log.isInfoEnabled()) {
                 log.info("AuthRoleController.add.authRoleDTO:{}", JSON.toJSON(authRoleDTO));
             }
-            ParamCheckUtil.checkStrNotEmpty(authRoleDTO.getRoleName(), ResultCodeEnum.PARAM_ERROR, "角色不能为空!");
-            ParamCheckUtil.checkStrNotEmpty(authRoleDTO.getRoleKey(), ResultCodeEnum.PARAM_ERROR, "角色唯一标识不能为空!");
+            ParamCheckUtil.checkStrNotEmpty(authRoleDTO.getRoleName(), BusinessErrorEnum.PARAM_ERROR, "角色不能为空!");
+            ParamCheckUtil.checkStrNotEmpty(authRoleDTO.getRoleKey(), BusinessErrorEnum.PARAM_ERROR, "角色唯一标识不能为空!");
 
             AuthRoleBO authUserBO = AuthRoleDTOConverter.INSTANCE.convertDto2Bo(authRoleDTO);
             Boolean result = authRoleDomainService.add(authUserBO);
@@ -71,7 +71,7 @@ public class AuthRoleController {
             if (log.isInfoEnabled()) {
                 log.info("AuthUserController.update.authRoleDTO:{}", JSON.toJSON(authRoleDTO));
             }
-            ParamCheckUtil.checkNotNull(authRoleDTO.getId(), ResultCodeEnum.PARAM_ERROR, "角色 id 不能为空!");
+            ParamCheckUtil.checkNotNull(authRoleDTO.getId(), BusinessErrorEnum.PARAM_ERROR, "角色 id 不能为空!");
 
             AuthRoleBO authUserBO = AuthRoleDTOConverter.INSTANCE.convertDto2Bo(authRoleDTO);
             return Result.success(authRoleDomainService.update(authUserBO));
@@ -99,7 +99,7 @@ public class AuthRoleController {
             if (log.isInfoEnabled()) {
                 log.info("AuthUserController.delete.authRoleDTO:{}", JSON.toJSON(authRoleDTO));
             }
-            ParamCheckUtil.checkNotNull(authRoleDTO.getId(), ResultCodeEnum.PARAM_ERROR, "角色 id 不能为空!");
+            ParamCheckUtil.checkNotNull(authRoleDTO.getId(), BusinessErrorEnum.PARAM_ERROR, "角色 id 不能为空!");
 
             return Result.success(authRoleDomainService.delete(authRoleDTO.getId()));
         } catch (BusinessException e) {

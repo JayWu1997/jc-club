@@ -2,11 +2,11 @@ package com.jingdianjichi.auth.application.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.jingdianjichi.auth.application.converter.AuthPermissionDTOConverter;
-import com.jingdianjichi.auth.application.dto.AuthPermissionDTO;
-import com.jingdianjichi.auth.common.entity.Result;
+import com.jingdianjichi.auth.api.req.AuthPermissionDTO;
+import com.jingdianjichi.auth.api.resp.Result;
 import com.jingdianjichi.auth.common.enums.PermissionShowEnum;
 import com.jingdianjichi.auth.common.enums.PermissionStatusEnum;
-import com.jingdianjichi.auth.common.enums.ResultCodeEnum;
+import com.jingdianjichi.auth.common.enums.BusinessErrorEnum;
 import com.jingdianjichi.auth.common.exception.BusinessException;
 import com.jingdianjichi.auth.common.util.ParamCheckUtil;
 import com.jingdianjichi.auth.domain.entity.AuthPermissionBO;
@@ -39,8 +39,8 @@ public class AuthPermissionController {
             if (log.isInfoEnabled()) {
                 log.info("AuthPermissionController.add.authPermissionDTO:{}", JSON.toJSON(authPermissionDTO));
             }
-            ParamCheckUtil.checkStrNotEmpty(authPermissionDTO.getName(), ResultCodeEnum.PARAM_ERROR, "权限名不能为空!");
-            ParamCheckUtil.checkStrNotEmpty(authPermissionDTO.getPermissionKey(), ResultCodeEnum.PARAM_ERROR, "key不能为空!");
+            ParamCheckUtil.checkStrNotEmpty(authPermissionDTO.getName(), BusinessErrorEnum.PARAM_ERROR, "权限名不能为空!");
+            ParamCheckUtil.checkStrNotEmpty(authPermissionDTO.getPermissionKey(), BusinessErrorEnum.PARAM_ERROR, "key不能为空!");
 
             AuthPermissionBO authPermissionBO = AuthPermissionDTOConverter.INSTANCE.convertDto2Bo(authPermissionDTO);
             authPermissionDomainService.add(authPermissionBO);
@@ -69,7 +69,7 @@ public class AuthPermissionController {
             if (log.isInfoEnabled()) {
                 log.info("AuthPermissionController.update.authPermissionDTO:{}", JSON.toJSON(authPermissionDTO));
             }
-            ParamCheckUtil.checkNotNull(authPermissionDTO.getId(), ResultCodeEnum.PARAM_ERROR, "权限 id 不能为空!");
+            ParamCheckUtil.checkNotNull(authPermissionDTO.getId(), BusinessErrorEnum.PARAM_ERROR, "权限 id 不能为空!");
 
             authPermissionDomainService.update(AuthPermissionDTOConverter.INSTANCE.convertDto2Bo(authPermissionDTO));
             return Result.success(Boolean.TRUE);
@@ -97,7 +97,7 @@ public class AuthPermissionController {
             if (log.isInfoEnabled()) {
                 log.info("AuthPermissionController.delete.authPermissionDTO:{}", JSON.toJSON(authPermissionDTO));
             }
-            ParamCheckUtil.checkNotNull(authPermissionDTO.getId(), ResultCodeEnum.PARAM_ERROR, "权限 id 不能为空!");
+            ParamCheckUtil.checkNotNull(authPermissionDTO.getId(), BusinessErrorEnum.PARAM_ERROR, "权限 id 不能为空!");
             authPermissionDomainService.delete(authPermissionDTO.getId());
             return Result.success(Boolean.TRUE);
         } catch (BusinessException e) {
@@ -124,11 +124,11 @@ public class AuthPermissionController {
             if (log.isInfoEnabled()) {
                 log.info("AuthPermissionController.enableOrDisable.authPermissionDTO:{}", JSON.toJSON(authPermissionDTO));
             }
-            ParamCheckUtil.checkNotNull(authPermissionDTO.getId(), ResultCodeEnum.PARAM_ERROR, "权限 id 不能为空!");
+            ParamCheckUtil.checkNotNull(authPermissionDTO.getId(), BusinessErrorEnum.PARAM_ERROR, "权限 id 不能为空!");
             Integer statusCode = authPermissionDTO.getStatus();
-            ParamCheckUtil.checkNotNull(statusCode, ResultCodeEnum.PARAM_ERROR, "权限启用状态不能为空!");
+            ParamCheckUtil.checkNotNull(statusCode, BusinessErrorEnum.PARAM_ERROR, "权限启用状态不能为空!");
             ParamCheckUtil.checkNotFalse(statusCode.equals(PermissionStatusEnum.ENABLE.getCode()) || statusCode.equals(PermissionStatusEnum.DISABLE.getCode())
-                    , ResultCodeEnum.PARAM_ERROR
+                    , BusinessErrorEnum.PARAM_ERROR
                     , "传入的权限启用状态码无效!");
             authPermissionDomainService.enableOrDisable(AuthPermissionDTOConverter.INSTANCE.convertDto2Bo(authPermissionDTO));
             return Result.success(Boolean.TRUE);
@@ -156,11 +156,11 @@ public class AuthPermissionController {
             if (log.isInfoEnabled()) {
                 log.info("AuthPermissionController.presentOrAbsent.authPermissionDTO:{}", JSON.toJSON(authPermissionDTO));
             }
-            ParamCheckUtil.checkNotNull(authPermissionDTO.getId(), ResultCodeEnum.PARAM_ERROR, "权限 id 不能为空!");
+            ParamCheckUtil.checkNotNull(authPermissionDTO.getId(), BusinessErrorEnum.PARAM_ERROR, "权限 id 不能为空!");
             Integer showCode = authPermissionDTO.getShow();
-            ParamCheckUtil.checkNotNull(showCode, ResultCodeEnum.PARAM_ERROR, "权限展示状态不能为空!");
+            ParamCheckUtil.checkNotNull(showCode, BusinessErrorEnum.PARAM_ERROR, "权限展示状态不能为空!");
             ParamCheckUtil.checkNotFalse(showCode.equals(PermissionShowEnum.PRESENT.getCode()) || showCode.equals(PermissionShowEnum.ABSENT.getCode())
-                    , ResultCodeEnum.PARAM_ERROR
+                    , BusinessErrorEnum.PARAM_ERROR
                     , "传入的权限展示状态码无效!");
             authPermissionDomainService.presentOrAbsent(AuthPermissionDTOConverter.INSTANCE.convertDto2Bo(authPermissionDTO));
             return Result.success(Boolean.TRUE);
@@ -183,7 +183,7 @@ public class AuthPermissionController {
             if (log.isInfoEnabled()) {
                 log.info("AuthPermissionController.getPermission.userName:{}", userName);
             }
-            ParamCheckUtil.checkStrNotEmpty(userName, ResultCodeEnum.PARAM_ERROR, "用户名不能为空!");
+            ParamCheckUtil.checkStrNotEmpty(userName, BusinessErrorEnum.PARAM_ERROR, "用户名不能为空!");
 
             List<AuthPermissionBO> permissionDTOList =  authPermissionDomainService.getPermission(userName);
             return Result.success(AuthPermissionDTOConverter.INSTANCE.convertBo2Dto(permissionDTOList));

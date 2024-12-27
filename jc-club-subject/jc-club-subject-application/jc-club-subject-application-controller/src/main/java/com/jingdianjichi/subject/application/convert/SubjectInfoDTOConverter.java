@@ -1,7 +1,7 @@
 package com.jingdianjichi.subject.application.convert;
 
-import com.jingdianjichi.subject.application.dto.SubjectAnswerDTO;
-import com.jingdianjichi.subject.application.dto.SubjectInfoDTO;
+import com.jingdianjichi.subject.api.req.SubjectAnswerDTO;
+import com.jingdianjichi.subject.api.req.SubjectInfoDTO;
 import com.jingdianjichi.subject.domain.entity.SubjectAnswerBO;
 import com.jingdianjichi.subject.domain.entity.SubjectInfoBO;
 import org.mapstruct.Mapper;

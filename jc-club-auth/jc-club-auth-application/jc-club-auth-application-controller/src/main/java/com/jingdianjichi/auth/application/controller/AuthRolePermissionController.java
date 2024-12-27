@@ -2,9 +2,9 @@ package com.jingdianjichi.auth.application.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.jingdianjichi.auth.application.converter.AuthRolePermissionDTOConverter;
-import com.jingdianjichi.auth.application.dto.AuthRolePermissionDTO;
-import com.jingdianjichi.auth.common.entity.Result;
-import com.jingdianjichi.auth.common.enums.ResultCodeEnum;
+import com.jingdianjichi.auth.api.req.AuthRolePermissionDTO;
+import com.jingdianjichi.auth.api.resp.Result;
+import com.jingdianjichi.auth.common.enums.BusinessErrorEnum;
 import com.jingdianjichi.auth.common.exception.BusinessException;
 import com.jingdianjichi.auth.common.util.ParamCheckUtil;
 import com.jingdianjichi.auth.domain.entity.AuthRolePermissionBO;
@@ -40,8 +40,8 @@ public class AuthRolePermissionController {
             if (log.isInfoEnabled()) {
                 log.info("AuthRolePermissionController.add.authRolePermissionDTO:{}", JSON.toJSON(authRolePermissionDTO));
             }
-            ParamCheckUtil.checkNotNull(authRolePermissionDTO.getRoleId(), ResultCodeEnum.PARAM_ERROR, "角色 id 不能为空!");
-            ParamCheckUtil.checkCollNotEmpty(authRolePermissionDTO.getPermissionIdList(), ResultCodeEnum.PARAM_ERROR, "权限 id 集合不能为空!");
+            ParamCheckUtil.checkNotNull(authRolePermissionDTO.getRoleId(), BusinessErrorEnum.PARAM_ERROR, "角色 id 不能为空!");
+            ParamCheckUtil.checkCollNotEmpty(authRolePermissionDTO.getPermissionIdList(), BusinessErrorEnum.PARAM_ERROR, "权限 id 集合不能为空!");
 
             AuthRolePermissionBO authRolePermissionBO = AuthRolePermissionDTOConverter.INSTANCE.convertDto2Bo(authRolePermissionDTO);
             authRolePermissionDomainService.add(authRolePermissionBO);
@@ -70,7 +70,7 @@ public class AuthRolePermissionController {
             if (log.isInfoEnabled()) {
                 log.info("AuthRolePermissionController.delete.authRolePermissionDTO:{}", JSON.toJSON(authRolePermissionDTO));
             }
-            ParamCheckUtil.checkNotNull(authRolePermissionDTO.getId(), ResultCodeEnum.PARAM_ERROR, "id 不能为空!");
+            ParamCheckUtil.checkNotNull(authRolePermissionDTO.getId(), BusinessErrorEnum.PARAM_ERROR, "id 不能为空!");
 
             authRolePermissionDomainService.delete(authRolePermissionDTO.getId());
             return Result.success(Boolean.TRUE);

@@ -1,6 +1,6 @@
 package com.jingdianjichi.subject.application.convert;
 
-import com.jingdianjichi.subject.application.dto.SubjectCategoryDTO;
+import com.jingdianjichi.subject.api.req.SubjectCategoryDTO;
 import com.jingdianjichi.subject.domain.entity.SubjectCategoryBO;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;

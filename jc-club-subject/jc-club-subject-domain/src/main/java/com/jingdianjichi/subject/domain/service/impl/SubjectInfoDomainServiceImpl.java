@@ -2,7 +2,7 @@ package com.jingdianjichi.subject.domain.service.impl;
 
 import com.jingdianjichi.subject.common.entity.PageResult;
 import com.jingdianjichi.subject.common.enums.IsDeletedEnum;
-import com.jingdianjichi.subject.common.enums.ResultCodeEnum;
+import com.jingdianjichi.subject.common.enums.BusinessErrorEnum;
 import com.jingdianjichi.subject.common.exception.BusinessException;
 import com.jingdianjichi.subject.domain.convert.SubjectInfoBOConverter;
 import com.jingdianjichi.subject.domain.entity.SubjectInfoBO;
@@ -57,7 +57,7 @@ public class SubjectInfoDomainServiceImpl implements SubjectInfoDomainService {
         subjectInfo.setIsDeleted(IsDeletedEnum.NOT_DELETED.getCode());
         subjectInfoService.insert(subjectInfo);
         if (subjectInfo.getId() == null) {
-            throw new BusinessException(ResultCodeEnum.PARAM_ERROR, "题目信息保存失败");
+            throw new BusinessException(BusinessErrorEnum.PARAM_ERROR, "题目信息保存失败");
         }
         subjectInfoBO.setId(subjectInfo.getId());
 
@@ -142,7 +142,7 @@ public class SubjectInfoDomainServiceImpl implements SubjectInfoDomainService {
         // 查询题目信息
         SubjectInfo subjectInfo = subjectInfoService.queryById(subjectInfoBO.getId());
         if (subjectInfo == null) {
-            throw new BusinessException(ResultCodeEnum.PARAM_ERROR, "题目信息不存在");
+            throw new BusinessException(BusinessErrorEnum.PARAM_ERROR, "题目信息不存在");
         }
         // 查询题目答案
         subjectInfoBO = SubjectInfoBOConverter.INSTANCE.convertEntity2BO(subjectInfo);

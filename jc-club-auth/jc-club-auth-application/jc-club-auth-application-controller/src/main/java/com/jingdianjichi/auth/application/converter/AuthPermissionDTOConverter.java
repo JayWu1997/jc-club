@@ -1,6 +1,6 @@
 package com.jingdianjichi.auth.application.converter;
 
-import com.jingdianjichi.auth.application.dto.AuthPermissionDTO;
+import com.jingdianjichi.auth.api.req.AuthPermissionDTO;
 import com.jingdianjichi.auth.domain.entity.AuthPermissionBO;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;

@@ -1,9 +1,7 @@
 package com.jingdianjichi.subject.domain.handler.subject;
 
 import com.jingdianjichi.subject.common.enums.IsDeletedEnum;
-import com.jingdianjichi.subject.common.enums.ResultCodeEnum;
 import com.jingdianjichi.subject.common.enums.SubjectInfoTypeEnum;
-import com.jingdianjichi.subject.common.util.ParamCheckUtil;
 import com.jingdianjichi.subject.domain.convert.SubjectAnswerBOConverter;
 import com.jingdianjichi.subject.domain.entity.SubjectInfoBO;
 import com.jingdianjichi.subject.domain.entity.SubjectOptionBO;

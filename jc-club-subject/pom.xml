@@ -16,7 +16,7 @@
         <module>jc-club-subject-domain</module>
         <module>jc-club-subject-infra</module>
         <module>jc-club-subject-common</module>
-        <module>jc-club-subject-starter</module>
+        <module>jc-club-starter</module>
     </modules>
 
     <properties>

@@ -3,7 +3,7 @@ package com.jingdianjichi.subject.domain.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.jingdianjichi.subject.common.enums.IsDeletedEnum;
-import com.jingdianjichi.subject.common.enums.ResultCodeEnum;
+import com.jingdianjichi.subject.common.enums.BusinessErrorEnum;
 import com.jingdianjichi.subject.common.exception.BusinessException;
 import com.jingdianjichi.subject.domain.convert.SubjectCategoryBOConverter;
 import com.jingdianjichi.subject.domain.convert.SubjectLabelBOConverter;
@@ -58,7 +58,7 @@ public class SubjectCategoryDomainServiceImpl implements SubjectCategoryDomainSe
         SubjectCategory subjectCategory = SubjectCategoryBOConverter.INSTANCE.convertBo2Entity(subjectCategoryBO);
         // 查询当前分类名对应的分类是否存在
         if (subjectCategoryService.queryByCategoryName(subjectCategory.getCategoryName()) != null) {
-            throw new BusinessException(ResultCodeEnum.PARAM_ERROR, "分类名已存在");
+            throw new BusinessException(BusinessErrorEnum.PARAM_ERROR, "分类名已存在");
         }
         // 调用服务插入实体对象到数据库
         subjectCategory.setIsDeleted(0);

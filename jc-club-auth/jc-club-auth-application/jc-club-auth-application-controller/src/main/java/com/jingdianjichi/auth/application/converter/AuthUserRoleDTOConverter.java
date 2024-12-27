@@ -1,6 +1,6 @@
 package com.jingdianjichi.auth.application.converter;
 
-import com.jingdianjichi.auth.application.dto.AuthUserRoleDTO;
+import com.jingdianjichi.auth.api.req.AuthUserRoleDTO;
 import com.jingdianjichi.auth.domain.entity.AuthUserRoleBO;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;

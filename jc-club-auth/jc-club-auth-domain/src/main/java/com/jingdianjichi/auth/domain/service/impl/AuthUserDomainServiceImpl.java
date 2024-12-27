@@ -8,7 +8,7 @@ import cn.hutool.core.collection.CollectionUtil;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.google.gson.Gson;
 import com.jingdianjichi.auth.common.enums.IsDeletedEnum;
-import com.jingdianjichi.auth.common.enums.ResultCodeEnum;
+import com.jingdianjichi.auth.common.enums.BusinessErrorEnum;
 import com.jingdianjichi.auth.common.enums.UserStatusEnum;
 import com.jingdianjichi.auth.common.util.ParamCheckUtil;
 import com.jingdianjichi.auth.domain.converter.AuthUserBOConverter;
@@ -94,7 +94,7 @@ public class AuthUserDomainServiceImpl implements AuthUserDomainService {
         // 查询用户是否已存在
         AuthUser queryCondition = new AuthUser();
         queryCondition.setUserName(authUserBO.getUserName());
-        ParamCheckUtil.checkNotFalse(authUserService.count(queryCondition) == 0, ResultCodeEnum.PARAM_ERROR, "用户名已存在！");
+        ParamCheckUtil.checkNotFalse(authUserService.count(queryCondition) == 0, BusinessErrorEnum.PARAM_ERROR, "用户名已存在！");
 
         // 插入用户信息
         AuthUser userToBeRegistered = AuthUserBOConverter.INSTANCE.convertBo2Entity(authUserBO);
@@ -104,7 +104,7 @@ public class AuthUserDomainServiceImpl implements AuthUserDomainService {
         }
         userToBeRegistered.setIsDeleted(IsDeletedEnum.NOT_DELETED.getCode());
         authUserService.insert(userToBeRegistered);
-        ParamCheckUtil.checkNotNull(userToBeRegistered.getId(), ResultCodeEnum.PARAM_ERROR, "角色添加失败！");
+        ParamCheckUtil.checkNotNull(userToBeRegistered.getId(), BusinessErrorEnum.PARAM_ERROR, "角色添加失败！");
 
         // 获取默认角色
         AuthRole defaultRole = new AuthRole();
@@ -112,7 +112,7 @@ public class AuthUserDomainServiceImpl implements AuthUserDomainService {
         defaultRole = Optional.ofNullable(authRoleService.queryAll(defaultRole))
                 .map(authRoles -> authRoles.get(0))
                 .orElse(null);
-        ParamCheckUtil.checkNotNull(defaultRole, ResultCodeEnum.PARAM_ERROR, "角色添加失败！role key" + DEFAULT_ROLE_KEY + "所代表的角色不存在!");
+        ParamCheckUtil.checkNotNull(defaultRole, BusinessErrorEnum.PARAM_ERROR, "角色添加失败！role key" + DEFAULT_ROLE_KEY + "所代表的角色不存在!");
 
         // 建立角色关联
         AuthUserRole userRole = new AuthUserRole();
@@ -120,7 +120,7 @@ public class AuthUserDomainServiceImpl implements AuthUserDomainService {
         userRole.setRoleId(defaultRole.getId());
         userRole.setIsDeleted(IsDeletedEnum.NOT_DELETED.getCode());
         authUserRoleService.insert(userRole);
-        ParamCheckUtil.checkNotNull(userRole.getId(), ResultCodeEnum.PARAM_ERROR, "角色添加失败！");
+        ParamCheckUtil.checkNotNull(userRole.getId(), BusinessErrorEnum.PARAM_ERROR, "角色添加失败！");
 
         // 把当前角色刷到 redis中
         String roleKey = redisUtil.buildKey(REDIS_KEY_AUTH_ROLE_PREFIX, userToBeRegistered.getUserName());
@@ -131,11 +131,11 @@ public class AuthUserDomainServiceImpl implements AuthUserDomainService {
         AuthRolePermission rolePermission = new AuthRolePermission();
         rolePermission.setRoleId(defaultRole.getId());
         List<AuthRolePermission> rolePermissionList = authRolePermissionService.queryAll(rolePermission);
-        ParamCheckUtil.checkCollNotEmpty(rolePermissionList, ResultCodeEnum.PARAM_ERROR, "角色添加失败！");
+        ParamCheckUtil.checkCollNotEmpty(rolePermissionList, BusinessErrorEnum.PARAM_ERROR, "角色添加失败！");
 
         List<Long> permissionIdList = rolePermissionList.stream().map(AuthRolePermission::getPermissionId).collect(Collectors.toList());
         List<AuthPermission> permissionList = authPermissionService.queryBatchByIds(permissionIdList);
-        ParamCheckUtil.checkCollNotEmpty(permissionList, ResultCodeEnum.PARAM_ERROR, "角色添加失败！");
+        ParamCheckUtil.checkCollNotEmpty(permissionList, BusinessErrorEnum.PARAM_ERROR, "角色添加失败！");
         String permissionKey = redisUtil.buildKey(REDIS_KEY_AUTH_PERMISSION_PREFIX, userToBeRegistered.getUserName());
         redisUtil.set(permissionKey, GSON.toJson(permissionList));
 
@@ -189,7 +189,7 @@ public class AuthUserDomainServiceImpl implements AuthUserDomainService {
     @Transactional(rollbackFor = Exception.class)
     public SaTokenInfo doLogin(String validCode) {
         String userWxId = redisUtil.get(redisUtil.buildKey(REDIS_KEY_VERIFICATION_CODE_PREFIX, validCode));
-        ParamCheckUtil.checkStrNotEmpty(userWxId, ResultCodeEnum.PARAM_ERROR, "验证码错误！");
+        ParamCheckUtil.checkStrNotEmpty(userWxId, BusinessErrorEnum.PARAM_ERROR, "验证码错误！");
         AuthUser info = new AuthUser();
         info.setUserName(userWxId);
         List<AuthUser> authUserList = authUserService.queryAll(info);

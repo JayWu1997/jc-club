@@ -2,7 +2,7 @@ package com.jingdianjichi.subject.domain.handler.subject;
 
 import cn.hutool.core.collection.CollectionUtil;
 import com.jingdianjichi.subject.common.enums.IsDeletedEnum;
-import com.jingdianjichi.subject.common.enums.ResultCodeEnum;
+import com.jingdianjichi.subject.common.enums.BusinessErrorEnum;
 import com.jingdianjichi.subject.common.enums.SubjectInfoTypeEnum;
 import com.jingdianjichi.subject.common.util.ParamCheckUtil;
 import com.jingdianjichi.subject.domain.convert.SubjectAnswerBOConverter;
@@ -52,7 +52,7 @@ public class MultipleSubjectHandler implements SubjectTypeHandler{
      */
     @Override
     public void insert(SubjectInfoBO subjectInfoBO) {
-        ParamCheckUtil.checkCollNotEmpty(subjectInfoBO.getOptionList(), ResultCodeEnum.PARAM_ERROR, "多选题的选项不能为空");
+        ParamCheckUtil.checkCollNotEmpty(subjectInfoBO.getOptionList(), BusinessErrorEnum.PARAM_ERROR, "多选题的选项不能为空");
 
         // 保存题目选项
         List<SubjectMultiple> subjectMultipleList = SubjectAnswerBOConverter.INSTANCE.convertBOList2MultipleEntityList(subjectInfoBO.getOptionList());

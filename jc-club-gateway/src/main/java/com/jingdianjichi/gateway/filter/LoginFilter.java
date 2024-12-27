@@ -1,7 +1,7 @@
 package com.jingdianjichi.gateway.filter;
 
 import cn.dev33.satoken.stp.StpUtil;
-import com.jingdianjichi.gateway.entity.ResultCodeEnum;
+import com.jingdianjichi.gateway.entity.BusinessErrorEnum;
 import com.jingdianjichi.gateway.util.ParamCheckUtil;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
@@ -26,7 +26,7 @@ public class LoginFilter implements GlobalFilter {
         ServerHttpRequest request = exchange.getRequest();
         ServerHttpRequest.Builder mutate = request.mutate();
         String loginId = StpUtil.getLoginId().toString();
-        ParamCheckUtil.checkStrNotEmpty(loginId, ResultCodeEnum.FAIL, "用户未登录");
+        ParamCheckUtil.checkStrNotEmpty(loginId, BusinessErrorEnum.FAIL, "用户未登录");
         mutate.header("loginId", loginId);
         return chain.filter(exchange.mutate().request(mutate.build()).build());
     }

@@ -1,11 +1,11 @@
 package com.jingdianjichi.subject.application.controller;
 
 import com.alibaba.fastjson.JSON;
+import com.jingdianjichi.subject.api.req.SubjectInfoDTO;
+import com.jingdianjichi.subject.api.resp.Result;
 import com.jingdianjichi.subject.application.convert.SubjectInfoDTOConverter;
-import com.jingdianjichi.subject.application.dto.SubjectInfoDTO;
 import com.jingdianjichi.subject.common.entity.PageResult;
-import com.jingdianjichi.subject.common.entity.Result;
-import com.jingdianjichi.subject.common.enums.ResultCodeEnum;
+import com.jingdianjichi.subject.common.enums.BusinessErrorEnum;
 import com.jingdianjichi.subject.common.exception.BusinessException;
 import com.jingdianjichi.subject.common.util.ParamCheckUtil;
 import com.jingdianjichi.subject.domain.entity.SubjectInfoBO;
@@ -32,6 +32,7 @@ public class SubjectController {
 
     /**
      * 新增题目信息
+     *
      * @param subjectInfoDTO dto
      * @return 包装后的结果
      */
@@ -43,12 +44,12 @@ public class SubjectController {
                 log.info("SubjectInfoController.add.dto:{}", JSON.toJSON(subjectInfoDTO));
             }
 
-            ParamCheckUtil.checkStrNotEmpty(subjectInfoDTO.getSubjectName(), ResultCodeEnum.PARAM_ERROR, "名称不能为空!");
-            ParamCheckUtil.checkNotNull(subjectInfoDTO.getSubjectType(), ResultCodeEnum.PARAM_ERROR, "类型不能为空!");
-            ParamCheckUtil.checkNotNull(subjectInfoDTO.getSubjectDifficult(), ResultCodeEnum.PARAM_ERROR, "难度不能为空!");
-            ParamCheckUtil.checkNotNull(subjectInfoDTO.getSubjectScore(), ResultCodeEnum.PARAM_ERROR, "分数不能为空!");
-            ParamCheckUtil.checkCollNotEmpty(subjectInfoDTO.getCategoryIds(), ResultCodeEnum.PARAM_ERROR, "分类不能为空!");
-            ParamCheckUtil.checkCollNotEmpty(subjectInfoDTO.getLabelIds(), ResultCodeEnum.PARAM_ERROR, "标签不能为空!");
+            ParamCheckUtil.checkStrNotEmpty(subjectInfoDTO.getSubjectName(), BusinessErrorEnum.PARAM_ERROR, "名称不能为空!");
+            ParamCheckUtil.checkNotNull(subjectInfoDTO.getSubjectType(), BusinessErrorEnum.PARAM_ERROR, "类型不能为空!");
+            ParamCheckUtil.checkNotNull(subjectInfoDTO.getSubjectDifficult(), BusinessErrorEnum.PARAM_ERROR, "难度不能为空!");
+            ParamCheckUtil.checkNotNull(subjectInfoDTO.getSubjectScore(), BusinessErrorEnum.PARAM_ERROR, "分数不能为空!");
+            ParamCheckUtil.checkCollNotEmpty(subjectInfoDTO.getCategoryIds(), BusinessErrorEnum.PARAM_ERROR, "分类不能为空!");
+            ParamCheckUtil.checkCollNotEmpty(subjectInfoDTO.getLabelIds(), BusinessErrorEnum.PARAM_ERROR, "标签不能为空!");
 
             SubjectInfoBO subjectInfoBO = SubjectInfoDTOConverter.INSTANCE.convertDto2Bo(subjectInfoDTO);
             subjectInfoDomainService.insert(subjectInfoBO);
@@ -69,6 +70,7 @@ public class SubjectController {
 
     /**
      * 获取题目分页
+     *
      * @param subjectInfoDTO dto
      * @return 分页数据
      */
@@ -79,8 +81,8 @@ public class SubjectController {
                 log.info("SubjectInfoController.querySubjectPage.subjectInfoDTO:{}", JSON.toJSON(subjectInfoDTO));
             }
 
-            ParamCheckUtil.checkNotNull(subjectInfoDTO.getCategoryId(), ResultCodeEnum.PARAM_ERROR, "类型不能为空!");
-            ParamCheckUtil.checkNotNull(subjectInfoDTO.getLabelId(), ResultCodeEnum.PARAM_ERROR, "标签不能为空!");
+            ParamCheckUtil.checkNotNull(subjectInfoDTO.getCategoryId(), BusinessErrorEnum.PARAM_ERROR, "类型不能为空!");
+            ParamCheckUtil.checkNotNull(subjectInfoDTO.getLabelId(), BusinessErrorEnum.PARAM_ERROR, "标签不能为空!");
 
             SubjectInfoBO subjectInfoBO = SubjectInfoDTOConverter.INSTANCE.convertDto2Bo(subjectInfoDTO);
             PageResult<SubjectInfoBO> boPageResult = subjectInfoDomainService.getSubjectPage(subjectInfoBO);
@@ -93,6 +95,7 @@ public class SubjectController {
             return Result.fail("获取题目分页失败！");
         }
     }
+
     /**
      * 根据题目信息查询题目详情
      * <p>
@@ -112,7 +115,7 @@ public class SubjectController {
             }
 
             // 参数校验，确保题目id、类别id和标签id不为空
-            ParamCheckUtil.checkNotNull(subjectInfoDTO.getId(), ResultCodeEnum.PARAM_ERROR, "题目 id 不能为空!");
+            ParamCheckUtil.checkNotNull(subjectInfoDTO.getId(), BusinessErrorEnum.PARAM_ERROR, "题目 id 不能为空!");
 
             // 将DTO转换为BO，以便领域服务处理
             SubjectInfoBO subjectInfoBO = SubjectInfoDTOConverter.INSTANCE.convertDto2Bo(subjectInfoDTO);
@@ -132,9 +135,9 @@ public class SubjectController {
     }
 
 
-
     /**
      * 更新题目信息
+     *
      * @param subjectInfoDTO dto
      * @return 包装后的结果
      */
@@ -147,7 +150,7 @@ public class SubjectController {
             }
 
             if (subjectInfoDTO.getId() == null || subjectInfoDTO.getId() < 0) {
-                throw new BusinessException(ResultCodeEnum.PARAM_ERROR, "题目 ID 不合法!");
+                throw new BusinessException(BusinessErrorEnum.PARAM_ERROR, "题目 ID 不合法!");
             }
 
             Boolean insertResult = subjectInfoDomainService.update(SubjectInfoDTOConverter.INSTANCE.convertDto2Bo(subjectInfoDTO));
@@ -168,6 +171,7 @@ public class SubjectController {
 
     /**
      * 删除题目
+     *
      * @param subjectInfoDTO dto
      * @return 包装后的结果
      */
@@ -180,7 +184,7 @@ public class SubjectController {
             }
 
             if (subjectInfoDTO.getId() == null || subjectInfoDTO.getId() < 0) {
-                throw new BusinessException(ResultCodeEnum.PARAM_ERROR, "题目标签 ID 不合法!");
+                throw new BusinessException(BusinessErrorEnum.PARAM_ERROR, "题目标签 ID 不合法!");
             }
 
             Boolean insertResult = subjectInfoDomainService.delete(SubjectInfoDTOConverter.INSTANCE.convertDto2Bo(subjectInfoDTO));

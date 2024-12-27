@@ -5,6 +5,12 @@ import lombok.Data;
 @Data
 public class Result<T> {
 
+    private static final String SUCCESS_MSG = "success";
+    private static final String SUCCESS_CODE = "200";
+
+    private static final String FAIL_MSG = "fail";
+    private static final String FAIL_CODE = "500";
+
     private Boolean success;
 
     private String code;
@@ -27,26 +33,20 @@ public class Result<T> {
     }
 
     public static Result success() {
-        Result result = new Result(ResultCodeEnum.SUCCESS.getCode(), ResultCodeEnum.SUCCESS.getMessage());
-        result.setSuccess(true);
-        return result;
-    }
-
-    public static Result success(String message) {
-        Result result = new Result(ResultCodeEnum.SUCCESS.getCode(), message);
+        Result result = new Result(SUCCESS_CODE, "");
         result.setSuccess(true);
         return result;
     }
 
     public static <T> Result<T> success(T data) {
-        Result<T> result = new Result<>(ResultCodeEnum.SUCCESS.getCode(), ResultCodeEnum.SUCCESS.getMessage(), data);
+        Result<T> result = new Result<>(SUCCESS_CODE, SUCCESS_MSG, data);
         result.setSuccess(true);
         result.setData(data);
         return result;
     }
 
     public static <T> Result<T> success(String message, T data) {
-        Result<T> result = new Result<>(ResultCodeEnum.SUCCESS.getCode(), message, data);
+        Result<T> result = new Result<>(SUCCESS_CODE, message, data);
         result.setSuccess(true);
         result.setData(data);
         return result;
@@ -60,7 +60,7 @@ public class Result<T> {
     }
 
     public static Result fail() {
-        Result result = new Result(ResultCodeEnum.FAIL.getCode(), ResultCodeEnum.FAIL.getMessage());
+        Result result = new Result(FAIL_CODE, FAIL_MSG);
         result.setSuccess(false);
         return result;
     }
@@ -72,7 +72,7 @@ public class Result<T> {
     }
 
     public static <T> Result<T> fail(String message, T data) {
-        Result<T> result = new Result<>(ResultCodeEnum.FAIL.getCode(), message, data);
+        Result<T> result = new Result<>(FAIL_CODE, message, data);
         result.setSuccess(false);
         result.setData(data);
         return result;

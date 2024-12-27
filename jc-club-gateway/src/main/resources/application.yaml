@@ -1,5 +1,7 @@
 server:
   port: 5000
+logging:
+  config: classpath:log4j2-spring.xml
 spring:
   cloud:
     gateway:

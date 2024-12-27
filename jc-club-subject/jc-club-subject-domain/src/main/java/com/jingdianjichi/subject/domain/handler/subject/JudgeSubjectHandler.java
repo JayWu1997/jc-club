@@ -2,7 +2,7 @@ package com.jingdianjichi.subject.domain.handler.subject;
 
 import com.google.common.collect.Lists;
 import com.jingdianjichi.subject.common.enums.IsDeletedEnum;
-import com.jingdianjichi.subject.common.enums.ResultCodeEnum;
+import com.jingdianjichi.subject.common.enums.BusinessErrorEnum;
 import com.jingdianjichi.subject.common.enums.SubjectInfoTypeEnum;
 import com.jingdianjichi.subject.common.util.ParamCheckUtil;
 import com.jingdianjichi.subject.domain.entity.SubjectAnswerBO;
@@ -51,7 +51,7 @@ public class JudgeSubjectHandler implements SubjectTypeHandler {
      */
     @Override
     public void insert(SubjectInfoBO subjectInfoBO) {
-        ParamCheckUtil.checkCollNotEmpty(subjectInfoBO.getOptionList(), ResultCodeEnum.PARAM_ERROR, "判断题的答案不能为空");
+        ParamCheckUtil.checkCollNotEmpty(subjectInfoBO.getOptionList(), BusinessErrorEnum.PARAM_ERROR, "判断题的答案不能为空");
 
         // 保存题目选项
         SubjectJudge subjectJudge = new SubjectJudge();

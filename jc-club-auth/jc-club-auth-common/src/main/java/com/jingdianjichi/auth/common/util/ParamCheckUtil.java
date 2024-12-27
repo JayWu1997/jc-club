@@ -3,7 +3,7 @@ package com.jingdianjichi.auth.common.util;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
-import com.jingdianjichi.auth.common.enums.ResultCodeEnum;
+import com.jingdianjichi.auth.common.enums.BusinessErrorEnum;
 import com.jingdianjichi.auth.common.exception.BusinessException;
 
 import java.util.Collection;
@@ -20,11 +20,11 @@ public class ParamCheckUtil {
      * 检查参数是否为空，为空则抛出异常
      *
      * @param obj            参数
-     * @param resultCodeEnum 异常信息
+     * @param businessErrorEnum 异常信息
      */
-    public static void checkNotNull(Object obj, ResultCodeEnum resultCodeEnum, String errorMsg) {
+    public static void checkNotNull(Object obj, BusinessErrorEnum businessErrorEnum, String errorMsg) {
         if (ObjectUtil.isNull(obj)) {
-            throw new BusinessException(resultCodeEnum, errorMsg);
+            throw new BusinessException(businessErrorEnum, errorMsg);
         }
     }
 
@@ -32,11 +32,11 @@ public class ParamCheckUtil {
      * 检查字符串是否为空，为空则抛出异常
      *
      * @param str            字符串
-     * @param resultCodeEnum 异常信息
+     * @param businessErrorEnum 异常信息
      */
-    public static void checkStrNotEmpty(String str, ResultCodeEnum resultCodeEnum, String errorMsg) {
+    public static void checkStrNotEmpty(String str, BusinessErrorEnum businessErrorEnum, String errorMsg) {
         if (StrUtil.isBlank(str)) {
-            throw new BusinessException(resultCodeEnum, errorMsg);
+            throw new BusinessException(businessErrorEnum, errorMsg);
         }
     }
 
@@ -44,11 +44,11 @@ public class ParamCheckUtil {
      * 检查集合是否为空，为空则抛出异常
      *
      * @param collection     集合
-     * @param resultCodeEnum 异常信息
+     * @param businessErrorEnum 异常信息
      */
-    public static void checkCollNotEmpty(Collection<?> collection, ResultCodeEnum resultCodeEnum, String errorMsg) {
+    public static void checkCollNotEmpty(Collection<?> collection, BusinessErrorEnum businessErrorEnum, String errorMsg) {
         if (CollUtil.isEmpty(collection)) {
-            throw new BusinessException(resultCodeEnum, errorMsg);
+            throw new BusinessException(businessErrorEnum, errorMsg);
         }
     }
 
@@ -56,12 +56,12 @@ public class ParamCheckUtil {
      * 检查是否不为假，为假则抛出异常
      *
      * @param expression     表达式
-     * @param resultCodeEnum 操作结果枚举
+     * @param businessErrorEnum 操作结果枚举
      * @param errorMsg        错误消息
      */
-    public static void checkNotFalse(boolean expression, ResultCodeEnum resultCodeEnum, String errorMsg) {
+    public static void checkNotFalse(boolean expression, BusinessErrorEnum businessErrorEnum, String errorMsg) {
         if (!expression) {
-            throw new BusinessException(resultCodeEnum, errorMsg);
+            throw new BusinessException(businessErrorEnum, errorMsg);
         }
     }
 }

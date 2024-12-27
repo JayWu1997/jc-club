@@ -4,13 +4,13 @@ import cn.dev33.satoken.stp.SaTokenInfo;
 import cn.dev33.satoken.stp.StpUtil;
 import com.alibaba.fastjson.JSON;
 import com.jingdianjichi.auth.application.converter.AuthUserDTOConverter;
-import com.jingdianjichi.auth.application.dto.AuthUserDTO;
-import com.jingdianjichi.auth.common.entity.Result;
-import com.jingdianjichi.auth.common.enums.ResultCodeEnum;
+import com.jingdianjichi.auth.api.resp.Result;
+import com.jingdianjichi.auth.common.enums.BusinessErrorEnum;
 import com.jingdianjichi.auth.common.exception.BusinessException;
 import com.jingdianjichi.auth.common.util.ParamCheckUtil;
 import com.jingdianjichi.auth.domain.entity.AuthUserBO;
 import com.jingdianjichi.auth.domain.service.AuthUserDomainService;
+import com.jingdianjichi.auth.api.req.AuthUserDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
@@ -36,9 +36,9 @@ public class AuthUserController {
             if (log.isInfoEnabled()) {
                 log.info("AuthUserController.register.authUserDTO:{}", JSON.toJSON(authUserDTO));
             }
-            ParamCheckUtil.checkStrNotEmpty(authUserDTO.getUserName(), ResultCodeEnum.PARAM_ERROR, "用户名不能为空!");
-            ParamCheckUtil.checkStrNotEmpty(authUserDTO.getPassword(), ResultCodeEnum.PARAM_ERROR, "密码不能为空!");
-            ParamCheckUtil.checkStrNotEmpty(authUserDTO.getEmail(), ResultCodeEnum.PARAM_ERROR, "邮箱不能为空!");
+            ParamCheckUtil.checkStrNotEmpty(authUserDTO.getUserName(), BusinessErrorEnum.PARAM_ERROR, "用户名不能为空!");
+            ParamCheckUtil.checkStrNotEmpty(authUserDTO.getPassword(), BusinessErrorEnum.PARAM_ERROR, "密码不能为空!");
+            ParamCheckUtil.checkStrNotEmpty(authUserDTO.getEmail(), BusinessErrorEnum.PARAM_ERROR, "邮箱不能为空!");
 
             AuthUserBO authUserBO = AuthUserDTOConverter.INSTANCE.convertDto2Bo(authUserDTO);
             SaTokenInfo tokenInfo = authUserDomainService.register(authUserBO);
@@ -63,7 +63,7 @@ public class AuthUserController {
                 log.info("AuthUserController.doLogin.validCode:{}", JSON.toJSON(validCode));
             }
             
-            ParamCheckUtil.checkStrNotEmpty(validCode, ResultCodeEnum.PARAM_ERROR, "验证码不能为空!");
+            ParamCheckUtil.checkStrNotEmpty(validCode, BusinessErrorEnum.PARAM_ERROR, "验证码不能为空!");
             SaTokenInfo tokenInfo = authUserDomainService.doLogin(validCode);
             return Result.success(tokenInfo);
         }  catch (BusinessException e) {
@@ -96,7 +96,7 @@ public class AuthUserController {
                 log.info("AuthUserController.logout.userName:{}", userName);
             }
 
-            ParamCheckUtil.checkStrNotEmpty(userName, ResultCodeEnum.PARAM_ERROR, "用户名不能为空!");
+            ParamCheckUtil.checkStrNotEmpty(userName, BusinessErrorEnum.PARAM_ERROR, "用户名不能为空!");
             AuthUserBO authUserBO = new AuthUserBO();
             authUserBO.setUserName(userName);
             Boolean resultFlag = authUserDomainService.logout(authUserBO);
@@ -126,7 +126,7 @@ public class AuthUserController {
                 log.info("AuthUserController.getUserInfo.authUserDTO:{}", JSON.toJSON(authUserDTO));
             }
 
-            ParamCheckUtil.checkNotNull(authUserDTO.getUserName(), ResultCodeEnum.PARAM_ERROR, "用户名不能为空!");
+            ParamCheckUtil.checkNotNull(authUserDTO.getUserName(), BusinessErrorEnum.PARAM_ERROR, "用户名不能为空!");
             AuthUserBO userBO = authUserDomainService.getUserInfo(AuthUserDTOConverter.INSTANCE.convertDto2Bo(authUserDTO));
             return Result.success(AuthUserDTOConverter.INSTANCE.convertBo2Dto(userBO));
         }  catch (BusinessException e) {
@@ -153,7 +153,7 @@ public class AuthUserController {
             if (log.isInfoEnabled()) {
                 log.info("AuthUserController.update.authUserDTO:{}", JSON.toJSON(authUserDTO));
             }
-            ParamCheckUtil.checkNotNull(authUserDTO.getUserName(), ResultCodeEnum.PARAM_ERROR, "用户名不能为空!");
+            ParamCheckUtil.checkNotNull(authUserDTO.getUserName(), BusinessErrorEnum.PARAM_ERROR, "用户名不能为空!");
 
             AuthUserBO authUserBO = AuthUserDTOConverter.INSTANCE.convertDto2Bo(authUserDTO);
             return Result.success(authUserDomainService.updateByUserName(authUserBO));
@@ -177,7 +177,7 @@ public class AuthUserController {
             if (log.isInfoEnabled()) {
                 log.info("AuthUserController.delete.authUserDTO:{}", JSON.toJSON(authUserDTO));
             }
-            ParamCheckUtil.checkNotNull(authUserDTO.getId(), ResultCodeEnum.PARAM_ERROR, "用户 id 不能为空!");
+            ParamCheckUtil.checkNotNull(authUserDTO.getId(), BusinessErrorEnum.PARAM_ERROR, "用户 id 不能为空!");
 
             return Result.success(authUserDomainService.delete(authUserDTO.getId()));
         } catch (BusinessException e) {

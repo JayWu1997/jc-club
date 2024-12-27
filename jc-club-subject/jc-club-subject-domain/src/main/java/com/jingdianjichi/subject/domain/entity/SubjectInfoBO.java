@@ -1,6 +1,6 @@
 package com.jingdianjichi.subject.domain.entity;
 
-import com.jingdianjichi.subject.common.entity.PageInfo;
+
 import lombok.Data;
 
 import java.io.Serializable;
@@ -13,7 +13,7 @@ import java.util.List;
  * @since 2024-06-18 18:13:19
  */
 @Data
-public class SubjectInfoBO extends PageInfo implements Serializable {
+public class SubjectInfoBO implements Serializable {
     private static final long serialVersionUID = -92870786840147434L;
     /**
      * 主键
@@ -71,5 +71,42 @@ public class SubjectInfoBO extends PageInfo implements Serializable {
      * 标签 id
      */
     private Long labelId;
+    /**
+     * 每页显示的记录数
+     */
+    private Integer pageSize;
+
+    /**
+     * 当前页码
+     */
+    private Integer pageNo;
+
+    /**
+     * 获取页码，如果页码为空或者小于1，则返回1
+     * @return 当前的页码
+     */
+    public Integer getPageNo() {
+        if (pageNo == null) {
+            return null;
+        }
+        if (pageNo < 1) {
+            return 1;
+        }
+        return pageNo;
+    }
+
+    /**
+     * 获取每页显示的记录数，如果记录数为空或者小于1或者大于100，则返回20
+     * @return 每页显示的记录数
+     */
+    public Integer getPageSize() {
+        if (pageSize == null) {
+            return null;
+        }
+        if (pageSize < 1 || pageSize > 100) {
+            return 20;
+        }
+        return pageSize;
+    }
 }
 

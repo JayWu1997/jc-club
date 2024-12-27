@@ -1,7 +1,7 @@
 package com.jingdianjichi.auth.domain.service.impl;
 
 import com.jingdianjichi.auth.common.enums.IsDeletedEnum;
-import com.jingdianjichi.auth.common.enums.ResultCodeEnum;
+import com.jingdianjichi.auth.common.enums.BusinessErrorEnum;
 import com.jingdianjichi.auth.common.util.ParamCheckUtil;
 import com.jingdianjichi.auth.domain.entity.AuthRolePermissionBO;
 import com.jingdianjichi.auth.domain.service.AuthRolePermissionDomainService;
@@ -39,7 +39,7 @@ public class AuthRolePermissionDomainServiceImpl implements AuthRolePermissionDo
             mapping.setIsDeleted(IsDeletedEnum.NOT_DELETED.getCode());
             return mapping;
         }).collect(Collectors.toList());
-        ParamCheckUtil.checkNotFalse(authRolePermissionService.insertBatch(mappingList) > 0, ResultCodeEnum.FAIL, "角色和权限关联失败");
+        ParamCheckUtil.checkNotFalse(authRolePermissionService.insertBatch(mappingList) > 0, BusinessErrorEnum.FAIL, "角色和权限关联失败");
         //TODO 2.更新redis
     }
 
@@ -51,7 +51,7 @@ public class AuthRolePermissionDomainServiceImpl implements AuthRolePermissionDo
     @Override
     public void delete(Long id) {
         // 1.删除关联
-        ParamCheckUtil.checkNotFalse(authRolePermissionService.deleteById(id), ResultCodeEnum.FAIL, "删除角色权限关联失败");
+        ParamCheckUtil.checkNotFalse(authRolePermissionService.deleteById(id), BusinessErrorEnum.FAIL, "删除角色权限关联失败");
         //TODO 2.更新redis
     }
 }

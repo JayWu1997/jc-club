@@ -29,6 +29,10 @@ spring:
       connect-properties:
         config.decrypt: true
         config.decrypt.key: MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAIGeeIuwv7bWTvWWQsgC7tLHd/aqR4+pw1Ut3i7hRUFEg+EmE1+mNw2WhGr47MCrDZqGFjNQEsjdPIoOhMezkPMCAwEAAQ==
+
+logging:
+  config: classpath:log4j2-spring.xml
+
   # redis配置
   redis:
     # Redis数据库索引（默认为0）

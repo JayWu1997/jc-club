@@ -1,10 +1,10 @@
 package com.jingdianjichi.subject.application.controller;
 
 import com.alibaba.fastjson.JSON;
+import com.jingdianjichi.subject.api.req.SubjectLabelDTO;
+import com.jingdianjichi.subject.api.resp.Result;
 import com.jingdianjichi.subject.application.convert.SubjectLabelDTOConverter;
-import com.jingdianjichi.subject.application.dto.SubjectLabelDTO;
-import com.jingdianjichi.subject.common.entity.Result;
-import com.jingdianjichi.subject.common.enums.ResultCodeEnum;
+import com.jingdianjichi.subject.common.enums.BusinessErrorEnum;
 import com.jingdianjichi.subject.common.exception.BusinessException;
 import com.jingdianjichi.subject.domain.entity.SubjectLabelBO;
 import com.jingdianjichi.subject.domain.service.SubjectLabelDomainService;
@@ -31,6 +31,7 @@ public class SubjectLabelController {
 
     /**
      * 新增题目标签
+     *
      * @param subjectLabelDTO dto
      * @return 包装后的结果
      */
@@ -43,7 +44,7 @@ public class SubjectLabelController {
             }
 
             if (!StringUtils.hasText(subjectLabelDTO.getLabelName())) {
-                throw new BusinessException(ResultCodeEnum.PARAM_ERROR, "题目标签名称不能为空!");
+                throw new BusinessException(BusinessErrorEnum.PARAM_ERROR, "题目标签名称不能为空!");
             }
 
             Boolean insertResult = subjectLabelDomainService.insert(SubjectLabelDTOConverter.INSTANCE.convertDto2Bo(subjectLabelDTO));
@@ -64,6 +65,7 @@ public class SubjectLabelController {
 
     /**
      * 更新题目标签信息
+     *
      * @param subjectLabelDTO dto
      * @return 包装后的结果
      */
@@ -76,7 +78,7 @@ public class SubjectLabelController {
             }
 
             if (subjectLabelDTO.getId() == null || subjectLabelDTO.getId() < 0) {
-                throw new BusinessException(ResultCodeEnum.PARAM_ERROR, "题目标签 ID 不合法!");
+                throw new BusinessException(BusinessErrorEnum.PARAM_ERROR, "题目标签 ID 不合法!");
             }
 
             Boolean insertResult = subjectLabelDomainService.update(SubjectLabelDTOConverter.INSTANCE.convertDto2Bo(subjectLabelDTO));
@@ -97,6 +99,7 @@ public class SubjectLabelController {
 
     /**
      * 删除题目标签
+     *
      * @param subjectLabelDTO dto
      * @return 包装后的结果
      */
@@ -109,7 +112,7 @@ public class SubjectLabelController {
             }
 
             if (subjectLabelDTO.getId() == null || subjectLabelDTO.getId() < 0) {
-                throw new BusinessException(ResultCodeEnum.PARAM_ERROR, "题目标签 ID 不合法!");
+                throw new BusinessException(BusinessErrorEnum.PARAM_ERROR, "题目标签 ID 不合法!");
             }
 
             Boolean insertResult = subjectLabelDomainService.delete(SubjectLabelDTOConverter.INSTANCE.convertDto2Bo(subjectLabelDTO));
@@ -130,6 +133,7 @@ public class SubjectLabelController {
 
     /**
      * 根据分类 ID 查询题目标签
+     *
      * @param subjectLabelDTO 包含分类ID
      * @return 包装结果
      */
@@ -142,7 +146,7 @@ public class SubjectLabelController {
 
             // 分类 ID 不能为空
             if (subjectLabelDTO.getCategoryId() == null || subjectLabelDTO.getCategoryId() < 0) {
-                throw new BusinessException(ResultCodeEnum.PARAM_ERROR, "分类 ID 不合法!");
+                throw new BusinessException(BusinessErrorEnum.PARAM_ERROR, "分类 ID 不合法!");
             }
 
             List<SubjectLabelBO> boList = subjectLabelDomainService.queryBatchByCategoryId(SubjectLabelDTOConverter.INSTANCE.convertDto2Bo(subjectLabelDTO));
