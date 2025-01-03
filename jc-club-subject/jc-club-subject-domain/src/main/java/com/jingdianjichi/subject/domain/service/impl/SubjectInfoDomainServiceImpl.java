@@ -1,8 +1,9 @@
 package com.jingdianjichi.subject.domain.service.impl;
 
+import com.jingdianjichi.subject.common.context.UserContextHolder;
 import com.jingdianjichi.subject.common.entity.PageResult;
-import com.jingdianjichi.subject.common.enums.IsDeletedEnum;
 import com.jingdianjichi.subject.common.enums.BusinessErrorEnum;
+import com.jingdianjichi.subject.common.enums.IsDeletedEnum;
 import com.jingdianjichi.subject.common.exception.BusinessException;
 import com.jingdianjichi.subject.domain.convert.SubjectInfoBOConverter;
 import com.jingdianjichi.subject.domain.entity.SubjectInfoBO;
@@ -11,12 +12,13 @@ import com.jingdianjichi.subject.domain.handler.subject.SubjectTypeHandler;
 import com.jingdianjichi.subject.domain.handler.subject.SubjectTypeHandlerFactory;
 import com.jingdianjichi.subject.domain.service.SubjectInfoDomainService;
 import com.jingdianjichi.subject.infra.basic.entity.SubjectInfo;
+import com.jingdianjichi.subject.infra.basic.entity.SubjectInfoEs;
 import com.jingdianjichi.subject.infra.basic.entity.SubjectLabel;
 import com.jingdianjichi.subject.infra.basic.entity.SubjectMapping;
+import com.jingdianjichi.subject.infra.basic.service.SubjectEsInfoService;
 import com.jingdianjichi.subject.infra.basic.service.SubjectInfoService;
 import com.jingdianjichi.subject.infra.basic.service.SubjectMappingService;
 import com.jingdianjichi.subject.infra.basic.service.impl.SubjectLabelServiceImpl;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -42,8 +44,11 @@ public class SubjectInfoDomainServiceImpl implements SubjectInfoDomainService {
 
     @Resource
     private SubjectMappingService subjectMappingService;
-    @Autowired
+    @Resource
     private SubjectLabelServiceImpl subjectLabelService;
+    
+    @Resource
+    private SubjectEsInfoService subjectEsInfoService;
 
     /**
      * 新增题目信息
@@ -53,6 +58,8 @@ public class SubjectInfoDomainServiceImpl implements SubjectInfoDomainService {
     @Override
     public void insert(SubjectInfoBO subjectInfoBO) {
         // 保存题目信息
+        subjectInfoBO.setCreatedBy(UserContextHolder.getUserContext().getUserName());
+        subjectInfoBO.setCreatedTime(System.currentTimeMillis());
         SubjectInfo subjectInfo = SubjectInfoBOConverter.INSTANCE.convertBO2Entity(subjectInfoBO);
         subjectInfo.setIsDeleted(IsDeletedEnum.NOT_DELETED.getCode());
         subjectInfoService.insert(subjectInfo);
@@ -76,6 +83,27 @@ public class SubjectInfoDomainServiceImpl implements SubjectInfoDomainService {
         // 调用题目类型处理器保存题目答案
         SubjectTypeHandler subjectTypeHandler = subjectTypeHandlerFactory.getSubjectTypeHandler(subjectInfoBO.getSubjectType());
         subjectTypeHandler.insert(subjectInfoBO);
+
+        // 插入ES
+        SubjectInfoEs subjectInfoEs = convert2SubjectInfoEs(subjectInfoBO, subjectInfo);
+        subjectEsInfoService.insert(subjectInfoEs);
+    }
+
+    private static SubjectInfoEs convert2SubjectInfoEs(SubjectInfoBO subjectInfoBO, SubjectInfo subjectInfo) {
+        SubjectInfoEs subjectInfoEs = new SubjectInfoEs();
+        subjectInfoEs.setSubjectId(subjectInfo.getId());
+        subjectInfoEs.setSubjectName(subjectInfoBO.getSubjectName());
+        subjectInfoEs.setSubjectDifficult(subjectInfoBO.getSubjectDifficult());
+        subjectInfoEs.setSettleName(subjectInfoBO.getSettleName());
+        subjectInfoEs.setSubjectType(subjectInfoBO.getSubjectType());
+        subjectInfoEs.setSubjectScore(subjectInfoBO.getSubjectScore());
+        subjectInfoEs.setSubjectParse(subjectInfoBO.getSubjectParse());
+        subjectInfoEs.setCreatedBy(subjectInfoBO.getCreatedBy());
+        subjectInfoEs.setCreatedTime(subjectInfoBO.getCreatedTime());
+        subjectInfoEs.setUpdateBy(subjectInfoBO.getUpdateBy());
+        subjectInfoEs.setUpdateTime(subjectInfoBO.getUpdateTime());
+        subjectInfoEs.setSubjectAnswer(subjectInfoBO.getSubjectAnswer());
+        return subjectInfoEs;
     }
 
     /**

@@ -63,6 +63,10 @@ public class SubjectInfoBO implements Serializable {
      * 选项答案
      */
     private List<SubjectAnswerBO> optionList;
+    private String createdBy;
+    private Long createdTime;
+    private String updateBy;
+    private Long updateTime;
     /**
      * 分类 id
      */
