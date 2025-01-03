@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -20,14 +20,13 @@ import java.util.List;
  * @since 2024/12/16 下午5:27
  */
 @Configuration
-public class GlobalConfig extends WebMvcConfigurationSupport {
+public class GlobalConfig implements WebMvcConfigurer {
 
     @Resource
     private UserContextInterceptor userContextInterceptor;
 
     @Override
-    protected void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
-        super.configureMessageConverters(converters);
+    public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
         converters.add(mappingJackson2HttpMessageConverter());
     }
 
@@ -35,8 +34,7 @@ public class GlobalConfig extends WebMvcConfigurationSupport {
      * @param registry
      */
     @Override
-    protected void addInterceptors(InterceptorRegistry registry) {
-        super.addInterceptors(registry);
+    public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(userContextInterceptor)
                 .addPathPatterns("/**");
     }
