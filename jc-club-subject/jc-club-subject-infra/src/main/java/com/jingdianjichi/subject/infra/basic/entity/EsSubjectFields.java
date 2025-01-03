@@ -20,7 +20,7 @@ public class EsSubjectFields {
     public static final String SUBJECT_TYPE = "subject_type";
     public static final String CREATED_BY = "created_by";
     public static final String CREATED_TIME = "created_time";
-    public static final String[] FIELD_QUERY = {
+    public static final String[] All_Fields = {
             DOC_ID,SUBJECT_ID,SUBJECT_NAME,SUBJECT_ANSWER,SUBJECT_TYPE,CREATED_BY,CREATED_TIME
     };
 }

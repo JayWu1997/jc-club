@@ -66,5 +66,9 @@ public class SubjectInfoEs implements Serializable {
      * 删除标识
      */
     private Integer isDeleted;
+
+    private Integer pageNo;
+
+    private Integer pageSize;
 }
 

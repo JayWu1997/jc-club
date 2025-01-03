@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.Collections;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -38,15 +39,12 @@ public class SubjectInfoDomainServiceImpl implements SubjectInfoDomainService {
 
     @Resource
     private SubjectInfoService subjectInfoService;
-
     @Resource
     private SubjectTypeHandlerFactory subjectTypeHandlerFactory;
-
     @Resource
     private SubjectMappingService subjectMappingService;
     @Resource
     private SubjectLabelServiceImpl subjectLabelService;
-    
     @Resource
     private SubjectEsInfoService subjectEsInfoService;
 
@@ -59,7 +57,7 @@ public class SubjectInfoDomainServiceImpl implements SubjectInfoDomainService {
     public void insert(SubjectInfoBO subjectInfoBO) {
         // 保存题目信息
         subjectInfoBO.setCreatedBy(UserContextHolder.getUserContext().getUserName());
-        subjectInfoBO.setCreatedTime(System.currentTimeMillis());
+        subjectInfoBO.setCreatedTime(new Date());
         SubjectInfo subjectInfo = SubjectInfoBOConverter.INSTANCE.convertBO2Entity(subjectInfoBO);
         subjectInfo.setIsDeleted(IsDeletedEnum.NOT_DELETED.getCode());
         subjectInfoService.insert(subjectInfo);
@@ -99,9 +97,11 @@ public class SubjectInfoDomainServiceImpl implements SubjectInfoDomainService {
         subjectInfoEs.setSubjectScore(subjectInfoBO.getSubjectScore());
         subjectInfoEs.setSubjectParse(subjectInfoBO.getSubjectParse());
         subjectInfoEs.setCreatedBy(subjectInfoBO.getCreatedBy());
-        subjectInfoEs.setCreatedTime(subjectInfoBO.getCreatedTime());
+        Date createdTime = subjectInfoBO.getCreatedTime();
+        subjectInfoEs.setCreatedTime(createdTime != null ? createdTime.getTime() : null);
         subjectInfoEs.setUpdateBy(subjectInfoBO.getUpdateBy());
-        subjectInfoEs.setUpdateTime(subjectInfoBO.getUpdateTime());
+        Date updateTime = subjectInfoBO.getUpdateTime();
+        subjectInfoEs.setUpdateTime(updateTime != null ? updateTime.getTime() : null);
         subjectInfoEs.setSubjectAnswer(subjectInfoBO.getSubjectAnswer());
         return subjectInfoEs;
     }
@@ -187,5 +187,20 @@ public class SubjectInfoDomainServiceImpl implements SubjectInfoDomainService {
         List<String> labelNameList = subjectLabelService.queryBatchByIds(labelIds).stream().map(SubjectLabel::getLabelName).collect(Collectors.toList());
         subjectInfoBO.setLabelNames(labelNameList);
         return subjectInfoBO;
+    }
+
+    /**
+     * 从ES中查询题目信息
+     *
+     * @param subjectInfoBO
+     * @return
+     */
+    @Override
+    public PageResult<SubjectInfoEs> queryPageFromES(SubjectInfoBO subjectInfoBO) {
+        SubjectInfoEs subjectInfoEs = new SubjectInfoEs();
+        subjectInfoEs.setKeyword(subjectInfoBO.getKeyWord());
+        subjectInfoEs.setPageNo(subjectInfoBO.getPageNo());
+        subjectInfoEs.setPageSize(subjectInfoBO.getPageSize());
+        return subjectEsInfoService.query(subjectInfoEs);
     }
 }

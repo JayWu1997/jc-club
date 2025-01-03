@@ -2,6 +2,7 @@ package com.jingdianjichi.subject.domain.service;
 
 import com.jingdianjichi.subject.common.entity.PageResult;
 import com.jingdianjichi.subject.domain.entity.SubjectInfoBO;
+import com.jingdianjichi.subject.infra.basic.entity.SubjectInfoEs;
 
 /**
  * 题目信息领域服务接口
@@ -44,4 +45,11 @@ public interface SubjectInfoDomainService {
      * @return 返回一个填充了详细信息的题目信息对象如果找不到相关信息，则返回null
      */
     SubjectInfoBO querySubjectInfo(SubjectInfoBO subjectInfoBO);
+
+    /**
+     * 从ES中查询题目信息
+     * @param subjectInfoBO
+     * @return
+     */
+    PageResult<SubjectInfoEs> queryPageFromES(SubjectInfoBO subjectInfoBO);
 }

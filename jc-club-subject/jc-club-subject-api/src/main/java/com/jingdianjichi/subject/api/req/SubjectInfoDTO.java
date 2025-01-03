@@ -71,6 +71,10 @@ public class SubjectInfoDTO implements Serializable {
      */
     private Long labelId;
     /**
+     * es 全文搜索使用的关键字
+     */
+    private String keyWord;
+    /**
      * 每页显示的记录数
      */
     private Integer pageSize;

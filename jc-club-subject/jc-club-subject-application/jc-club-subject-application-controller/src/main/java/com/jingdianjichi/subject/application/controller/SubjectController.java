@@ -10,6 +10,7 @@ import com.jingdianjichi.subject.common.exception.BusinessException;
 import com.jingdianjichi.subject.common.util.ParamCheckUtil;
 import com.jingdianjichi.subject.domain.entity.SubjectInfoBO;
 import com.jingdianjichi.subject.domain.service.SubjectInfoDomainService;
+import com.jingdianjichi.subject.infra.basic.entity.SubjectInfoEs;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -202,4 +203,30 @@ public class SubjectController {
             return Result.fail("删除题目失败！");
         }
     }
+
+    /**
+     * 从 ES 获取题目分页
+     * @param subjectInfoDTO
+     * @return
+     */
+    @PostMapping("/getSubjectPageBySearch")
+    public Result<PageResult<SubjectInfoEs>> getSubjectPageBySearch(@RequestBody SubjectInfoDTO subjectInfoDTO) {
+        try {
+            if (log.isInfoEnabled()) {
+                log.info("SubjectInfoController.getSubjectPageBySearch.subjectInfoDTO:{}", JSON.toJSON(subjectInfoDTO));
+            }
+
+            ParamCheckUtil.checkStrNotEmpty(subjectInfoDTO.getKeyWord(), BusinessErrorEnum.PARAM_ERROR, "关键词不能为空!");
+            SubjectInfoBO subjectInfoBO = SubjectInfoDTOConverter.INSTANCE.convertDto2Bo(subjectInfoDTO);
+            PageResult<SubjectInfoEs> esPageResult = subjectInfoDomainService.queryPageFromES(subjectInfoBO);
+            return Result.success(esPageResult);
+        } catch (BusinessException e) {
+            log.error("SubjectInfoController.getSubjectPageBySearch.error:{}", e.getMessage(), e);
+            return Result.fail(e.getMessage());
+        } catch (Exception e) {
+            log.error("SubjectInfoController.getSubjectPageBySearch.error:{}", e.getMessage(), e);
+            return Result.fail("从ES获取题目分页失败！");
+        }
+    }
+
 }

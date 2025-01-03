@@ -4,6 +4,7 @@ package com.jingdianjichi.subject.domain.entity;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -64,9 +65,9 @@ public class SubjectInfoBO implements Serializable {
      */
     private List<SubjectAnswerBO> optionList;
     private String createdBy;
-    private Long createdTime;
+    private Date createdTime;
     private String updateBy;
-    private Long updateTime;
+    private Date updateTime;
     /**
      * 分类 id
      */
@@ -75,6 +76,10 @@ public class SubjectInfoBO implements Serializable {
      * 标签 id
      */
     private Long labelId;
+    /**
+     * es 全文搜索使用的关键字
+     */
+    private String keyWord;
     /**
      * 每页显示的记录数
      */

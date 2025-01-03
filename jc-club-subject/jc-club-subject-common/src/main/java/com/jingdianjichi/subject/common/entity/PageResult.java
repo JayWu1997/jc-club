@@ -3,7 +3,6 @@ package com.jingdianjichi.subject.common.entity;
 import lombok.Data;
 
 import java.io.Serializable;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -36,6 +35,11 @@ public class PageResult<T> implements Serializable {
         this.setTotal(total);
     }
 
+    public PageResult() {
+        this.pageSize = 20;
+        this.pageNo = 1;
+    }
+
     /**
      * 设置数据总记录数，并根据每页记录数和当前页码计算总页数、起始索引和结束索引。
      *
@@ -53,5 +57,10 @@ public class PageResult<T> implements Serializable {
 
         // 计算当前页的结束索引：起始索引 + 每页记录数，但不超过总记录数
         this.end = Math.min(total, this.start + pageSize);
+    }
+
+    public void setResult(List<T> result) {
+        this.result = result;
+        this.setTotal(result.size());
     }
 }
