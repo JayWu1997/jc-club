@@ -81,6 +81,18 @@ public class SubjectInfoBO implements Serializable {
      */
     private String keyWord;
     /**
+     * 创建人昵称
+     */
+    private String createUser;
+    /**
+     * 创建人头像链接
+     */
+    private String createUserAvatar;
+    /**
+     * 创建的题目数量
+     */
+    private Integer subjectCount;
+    /**
      * 每页显示的记录数
      */
     private Integer pageSize;

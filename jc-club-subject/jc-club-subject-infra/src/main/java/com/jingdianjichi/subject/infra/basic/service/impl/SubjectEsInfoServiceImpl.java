@@ -6,7 +6,9 @@ import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.jingdianjichi.subject.common.entity.PageResult;
 import com.jingdianjichi.subject.common.enums.SubjectInfoTypeEnum;
+import com.jingdianjichi.subject.infra.basic.dao.SubjectInfoDao;
 import com.jingdianjichi.subject.infra.basic.entity.EsSubjectFields;
+import com.jingdianjichi.subject.infra.basic.entity.SubjectInfo;
 import com.jingdianjichi.subject.infra.basic.entity.SubjectInfoEs;
 import com.jingdianjichi.subject.infra.basic.es.EsIndexInfo;
 import com.jingdianjichi.subject.infra.basic.es.EsRestClient;
@@ -22,15 +24,13 @@ import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightField;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author jay
@@ -41,6 +41,8 @@ public class SubjectEsInfoServiceImpl implements SubjectEsInfoService {
 
     @Resource
     private EsRestClient esRestClient;
+    @Autowired
+    private SubjectInfoDao subjectInfoDao;
 
     /**
      * @param subjectInfoEs
@@ -104,6 +106,14 @@ public class SubjectEsInfoServiceImpl implements SubjectEsInfoService {
                     (int) searchHits.getTotalHits().value, dataList);
         }
         return pageResult;
+    }
+
+    /**
+     * @return
+     */
+    @Override
+    public List<SubjectInfo> getContributeList() {
+        return subjectInfoDao.getContributeList();
     }
 
     private SubjectInfoEs convert2SubjectInfoEs(SearchHit hit) {

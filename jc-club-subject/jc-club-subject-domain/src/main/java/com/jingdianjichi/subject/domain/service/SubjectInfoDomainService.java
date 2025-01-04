@@ -4,6 +4,8 @@ import com.jingdianjichi.subject.common.entity.PageResult;
 import com.jingdianjichi.subject.domain.entity.SubjectInfoBO;
 import com.jingdianjichi.subject.infra.basic.entity.SubjectInfoEs;
 
+import java.util.List;
+
 /**
  * 题目信息领域服务接口
  * 该接口定义了题目信息相关的领域业务操作。
@@ -52,4 +54,10 @@ public interface SubjectInfoDomainService {
      * @return
      */
     PageResult<SubjectInfoEs> queryPageFromES(SubjectInfoBO subjectInfoBO);
+
+    /**
+     * 查询贡献榜
+     * @return
+     */
+    List<SubjectInfoBO> getContributeList();
 }

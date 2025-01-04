@@ -1,10 +1,9 @@
 package com.jingdianjichi.subject.infra.basic.entity;
 
-import java.util.Date;
-
 import lombok.Data;
 
 import java.io.Serializable;
+import java.util.Date;
 
 /**
  * 题目信息表(SubjectInfo)实体类
@@ -63,5 +62,9 @@ public class SubjectInfo implements Serializable {
      * 删除标识
      */
     private Integer isDeleted;
+    /**
+     * 指定用户创建的题目总数
+     */
+    private Integer subjectCount;
 }
 

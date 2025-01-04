@@ -47,6 +47,9 @@
         <elasticsearch-rest-client.version>7.5.2</elasticsearch-rest-client.version>
         <elasticsearch.version>7.5.2</elasticsearch.version>
         <commons-collections4.version>4.4</commons-collections4.version>
+        <jackson-databind.version>2.11.4</jackson-databind.version>
+        <commons-pool2.version>2.9.0</commons-pool2.version>
+        <spring-boot-starter-data-redis.version>2.4.2</spring-boot-starter-data-redis.version>
     </properties>
 
     <dependencyManagement>
@@ -156,6 +159,21 @@
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-collections4</artifactId>
                 <version>${commons-collections4.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-data-redis</artifactId>
+                <version>${spring-boot-starter-data-redis.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-pool2</artifactId>
+                <version>${commons-pool2.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-databind</artifactId>
+                <version>${jackson-databind.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

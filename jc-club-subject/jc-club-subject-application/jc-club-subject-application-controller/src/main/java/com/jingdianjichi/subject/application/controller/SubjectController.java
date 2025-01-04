@@ -13,12 +13,10 @@ import com.jingdianjichi.subject.domain.service.SubjectInfoDomainService;
 import com.jingdianjichi.subject.infra.basic.entity.SubjectInfoEs;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * 题目信息 Controller
@@ -226,6 +224,20 @@ public class SubjectController {
         } catch (Exception e) {
             log.error("SubjectInfoController.getSubjectPageBySearch.error:{}", e.getMessage(), e);
             return Result.fail("从ES获取题目分页失败！");
+        }
+    }
+
+    @RequestMapping("/getContributeList")
+    public Result<List<SubjectInfoDTO>> getContributeList() {
+        try {
+            List<SubjectInfoBO> boList = subjectInfoDomainService.getContributeList();
+            return Result.success(SubjectInfoDTOConverter.INSTANCE.convertBo2Dto(boList));
+        } catch (BusinessException e) {
+            log.error("SubjectInfoController.getContributeList.error:{}", e.getMessage(), e);
+            return Result.fail(e.getMessage());
+        } catch (Exception e) {
+            log.error("SubjectInfoController.getContributeList.error:{}", e.getMessage(), e);
+            return Result.fail("获取贡献榜失败！");
         }
     }
 

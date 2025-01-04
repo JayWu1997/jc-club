@@ -1,5 +1,10 @@
 package com.jingdianjichi.subject.domain.service.impl;
 
+import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.util.ObjectUtil;
+import com.jingdianjichi.auth.api.req.AuthUserDTO;
+import com.jingdianjichi.auth.api.resp.Result;
+import com.jingdianjichi.auth.api.service.UserFeignService;
 import com.jingdianjichi.subject.common.context.UserContextHolder;
 import com.jingdianjichi.subject.common.entity.PageResult;
 import com.jingdianjichi.subject.common.enums.BusinessErrorEnum;
@@ -10,6 +15,7 @@ import com.jingdianjichi.subject.domain.entity.SubjectInfoBO;
 import com.jingdianjichi.subject.domain.entity.SubjectOptionBO;
 import com.jingdianjichi.subject.domain.handler.subject.SubjectTypeHandler;
 import com.jingdianjichi.subject.domain.handler.subject.SubjectTypeHandlerFactory;
+import com.jingdianjichi.subject.domain.redis.RedisUtil;
 import com.jingdianjichi.subject.domain.service.SubjectInfoDomainService;
 import com.jingdianjichi.subject.infra.basic.entity.SubjectInfo;
 import com.jingdianjichi.subject.infra.basic.entity.SubjectInfoEs;
@@ -19,13 +25,13 @@ import com.jingdianjichi.subject.infra.basic.service.SubjectEsInfoService;
 import com.jingdianjichi.subject.infra.basic.service.SubjectInfoService;
 import com.jingdianjichi.subject.infra.basic.service.SubjectMappingService;
 import com.jingdianjichi.subject.infra.basic.service.impl.SubjectLabelServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.util.Collections;
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -47,6 +53,12 @@ public class SubjectInfoDomainServiceImpl implements SubjectInfoDomainService {
     private SubjectLabelServiceImpl subjectLabelService;
     @Resource
     private SubjectEsInfoService subjectEsInfoService;
+    @Qualifier("com.jingdianjichi.auth.api.service.UserFeignService")
+    @Autowired
+    private UserFeignService userFeignService;
+    @Autowired
+    private RedisUtil redisUtil;
+    private static final String CONTRIBUTE_RANK_KEY = "CONTRIBUTE_RANK_KEY";
 
     /**
      * 新增题目信息
@@ -85,6 +97,9 @@ public class SubjectInfoDomainServiceImpl implements SubjectInfoDomainService {
         // 插入ES
         SubjectInfoEs subjectInfoEs = convert2SubjectInfoEs(subjectInfoBO, subjectInfo);
         subjectEsInfoService.insert(subjectInfoEs);
+
+        // redis中对应用户贡献排行榜加一
+        redisUtil.addScore(CONTRIBUTE_RANK_KEY, UserContextHolder.getUserContext().getUserName(), 1);
     }
 
     private static SubjectInfoEs convert2SubjectInfoEs(SubjectInfoBO subjectInfoBO, SubjectInfo subjectInfo) {
@@ -202,5 +217,34 @@ public class SubjectInfoDomainServiceImpl implements SubjectInfoDomainService {
         subjectInfoEs.setPageNo(subjectInfoBO.getPageNo());
         subjectInfoEs.setPageSize(subjectInfoBO.getPageSize());
         return subjectEsInfoService.query(subjectInfoEs);
+    }
+
+    /**
+     * 查询贡献榜
+     *
+     * @return
+     */
+    @Override
+    public List<SubjectInfoBO> getContributeList() {
+        Set<ZSetOperations.TypedTuple<String>> rank = redisUtil.rank(CONTRIBUTE_RANK_KEY, 0, 5);
+        if (CollUtil.isEmpty(rank)) {
+            return Collections.emptyList();
+        }
+
+        List<SubjectInfoBO> boList = new ArrayList<>();
+        rank.forEach(entity -> {
+            AuthUserDTO authUserDTO = new AuthUserDTO();
+            authUserDTO.setUserName(entity.getValue());
+            Result<AuthUserDTO> result = userFeignService.getUserInfo(authUserDTO);
+            if (ObjectUtil.isNotNull(result) && ObjectUtil.isNotNull(result.getData())) {
+                SubjectInfoBO bo = new SubjectInfoBO();
+                bo.setCreateUser(result.getData().getNickName());
+                bo.setCreateUserAvatar(result.getData().getAvatar());
+                bo.setCreatedBy(result.getData().getUserName());
+                bo.setSubjectCount(entity.getScore().intValue());
+                boList.add(bo);
+            }
+        });
+        return boList;
     }
 }

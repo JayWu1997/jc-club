@@ -83,6 +83,18 @@ public class SubjectInfoDTO implements Serializable {
      * 当前页码
      */
     private Integer pageNo;
+    /**
+     * 创建人昵称
+     */
+    private String createUser;
+    /**
+     * 创建人头像链接
+     */
+    private String createUserAvatar;
+    /**
+     * 创建的题目数量
+     */
+    private Integer subjectCount;
 
     /**
      * 获取页码，如果页码为空或者小于1，则返回1

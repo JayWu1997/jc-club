@@ -1,11 +1,10 @@
 package com.jingdianjichi.subject.infra.basic.dao;
 
 import com.jingdianjichi.subject.infra.basic.entity.SubjectInfo;
+import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
-
-import org.apache.ibatis.annotations.Mapper;
 
 /**
  * 题目信息表(SubjectInfo)表数据库访问层
@@ -93,5 +92,6 @@ public interface SubjectInfoDao {
      */
     int deleteById(Long id);
 
+    List<SubjectInfo> getContributeList();
 }
 

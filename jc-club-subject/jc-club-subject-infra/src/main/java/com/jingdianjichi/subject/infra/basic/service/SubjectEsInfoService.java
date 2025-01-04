@@ -1,7 +1,10 @@
 package com.jingdianjichi.subject.infra.basic.service;
 
 import com.jingdianjichi.subject.common.entity.PageResult;
+import com.jingdianjichi.subject.infra.basic.entity.SubjectInfo;
 import com.jingdianjichi.subject.infra.basic.entity.SubjectInfoEs;
+
+import java.util.List;
 
 /**
  * @author jay
@@ -14,4 +17,6 @@ public interface SubjectEsInfoService {
     boolean update(SubjectInfoEs subjectInfoEs);
 
     public PageResult<SubjectInfoEs> query(SubjectInfoEs subjectInfoEs);
+
+    List<SubjectInfo> getContributeList();
 }
