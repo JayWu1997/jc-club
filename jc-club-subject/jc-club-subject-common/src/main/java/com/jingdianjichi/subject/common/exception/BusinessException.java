@@ -38,6 +38,17 @@ public class BusinessException extends RuntimeException {
     }
 
     /**
+     * 构造函数，初始化异常结果码和详细信息。
+     * @param resultCode 异常结果码，标识异常的类型和处理方式。
+     * @param message 异常的详细信息，用于描述异常的具体情况。
+     */
+    public BusinessException(BusinessErrorEnum resultCode, String message, Throwable cause) {
+        super(message, cause);
+        this.resultCode = resultCode;
+        this.data = new HashMap<>();
+    }
+
+    /**
      * 构造函数，初始化异常结果码、详细信息和相关数据。
      * @param resultCode 异常结果码，标识异常的类型和处理方式。
      * @param message 异常的详细信息，用于描述异常的具体情况。

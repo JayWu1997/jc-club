@@ -2,8 +2,8 @@ package com.jingdianjichi.subject.application.interceptor;
 
 import com.jingdianjichi.subject.common.context.UserContext;
 import com.jingdianjichi.subject.common.context.UserContextHolder;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.Nullable;
-import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import javax.servlet.http.HttpServletRequest;
@@ -14,12 +14,15 @@ import javax.servlet.http.HttpServletResponse;
  * @author jay
  * @since 2024/12/26 下午2:55
  */
-@Component
+@Slf4j
 public class UserContextInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         String loginId = request.getHeader("loginId");
+        if(log.isInfoEnabled()){
+            log.info("用户{}访问接口:{}", loginId, request.getRequestURI());
+        }
         UserContext userContext = new UserContext();
         userContext.setUserName(loginId);
         UserContextHolder.setUserContext(userContext);

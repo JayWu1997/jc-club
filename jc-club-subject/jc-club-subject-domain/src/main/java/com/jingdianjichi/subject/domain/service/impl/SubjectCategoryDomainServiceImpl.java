@@ -137,7 +137,7 @@ public class SubjectCategoryDomainServiceImpl implements SubjectCategoryDomainSe
     public List<SubjectCategoryBO> querySubcategoryAndLabelList(SubjectCategoryBO categoryBO) {
         String cacheKey = CACHE_KEY_PREFIX_SUBCATEGORY_AND_LABEL_LIST + categoryBO.getId();
         List<SubjectCategoryBO> boList = GuavaCacheUtil.getListFromCache(cacheKey, SubjectCategoryBO.class);
-        if (ObjectUtil.isNull(boList)){
+        if (ObjectUtil.isNull(boList)) {
             boList = querySubcategoryAndLabelListFromDB(categoryBO.getId());
             GuavaCacheUtil.put(cacheKey, boList);
         }

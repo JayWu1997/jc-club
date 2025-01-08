@@ -181,5 +181,27 @@
           AND m.is_deleted = 0
           AND l.is_deleted = 0
     </select>
+    <select id="queryLastSubjectId" resultType="java.lang.Long">
+        SELECT i.id
+        FROM subject_info i, subject_mapping m
+        WHERE i.id = m.subject_id
+          AND m.category_id = #{categoryId}
+          AND m.is_deleted = 0
+          AND i.is_deleted = 0
+          AND i.id <![CDATA[<]]> #{subjectId}
+        ORDER BY i.id DESC
+        LIMIT 1
+    </select>
+    <select id="queryNextSubjectId" resultType="java.lang.Long">
+        SELECT i.id
+        FROM subject_info i, subject_mapping m
+        WHERE i.id = m.subject_id
+          AND m.category_id = #{categoryId}
+          AND m.is_deleted = 0
+          AND i.is_deleted = 0
+          AND i.id <![CDATA[>]]> #{subjectId}
+        ORDER BY i.id ASC
+        LIMIT 1
+    </select>
 </mapper>
 

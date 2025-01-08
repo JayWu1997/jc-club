@@ -50,6 +50,9 @@
         <jackson-databind.version>2.11.4</jackson-databind.version>
         <commons-pool2.version>2.9.0</commons-pool2.version>
         <spring-boot-starter-data-redis.version>2.4.2</spring-boot-starter-data-redis.version>
+        <xxl-job-core.version>2.3.1</xxl-job-core.version>
+        <spring-context.version>5.3.27</spring-context.version>
+        <spring-boot-starter-json.sersion>2.3.8.RELEASE</spring-boot-starter-json.sersion>
     </properties>
 
     <dependencyManagement>
@@ -177,16 +180,6 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
-
-    <dependencies>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-dependencies</artifactId>
-            <version>${spring-boot-dependencies.version}</version>
-            <type>pom</type>
-            <scope>import</scope>
-        </dependency>
-    </dependencies>
 
     <!--  配置阿里云源  -->
     <repositories>

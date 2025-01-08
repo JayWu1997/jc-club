@@ -87,5 +87,9 @@ public interface SubjectMappingDao {
      * @return 符合条件的题目数量
      */
     Integer countByCategoryIdDistinctSubjectId(@Param("categoryId") Long categoryId);
+
+    Long queryLastSubjectId(SubjectMapping subjectMapping);
+
+    Long queryNextSubjectId(SubjectMapping subjectMapping);
 }
 

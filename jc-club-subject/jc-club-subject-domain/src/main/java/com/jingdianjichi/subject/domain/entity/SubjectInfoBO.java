@@ -89,6 +89,14 @@ public class SubjectInfoBO implements Serializable {
      */
     private String createUserAvatar;
     /**
+     * 点赞数量
+     */
+    private Integer likedCount;
+    /**
+     * 是否被当前用户点赞
+     */
+    private Boolean liked;
+    /**
      * 创建的题目数量
      */
     private Integer subjectCount;
@@ -101,7 +109,14 @@ public class SubjectInfoBO implements Serializable {
      * 当前页码
      */
     private Integer pageNo;
-
+    /**
+     * 刷题功能的上一题游标
+     */
+    private Long lastSubjectId;
+    /**
+     * 刷题功能的下一题游标
+     */
+    private Long nextSubjectId;
     /**
      * 获取页码，如果页码为空或者小于1，则返回1
      * @return 当前的页码

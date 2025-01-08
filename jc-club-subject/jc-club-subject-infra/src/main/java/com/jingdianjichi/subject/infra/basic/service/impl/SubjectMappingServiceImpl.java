@@ -102,4 +102,26 @@ public class SubjectMappingServiceImpl implements SubjectMappingService {
     public Integer countByCategoryIdDistinctSubjectId(Long categoryId) {
         return subjectMappingDao.countByCategoryIdDistinctSubjectId(categoryId);
     }
+
+    /**
+     * 查询上一题的id
+     *
+     * @param subjectMapping
+     * @return
+     */
+    @Override
+    public Long queryLastSubjectId(SubjectMapping subjectMapping) {
+        return subjectMappingDao.queryLastSubjectId(subjectMapping);
+    }
+
+    /**
+     * 查询下一题的id
+     *
+     * @param subjectMapping
+     * @return
+     */
+    @Override
+    public Long queryNextSubjectId(SubjectMapping subjectMapping) {
+        return subjectMappingDao.queryNextSubjectId(subjectMapping);
+    }
 }

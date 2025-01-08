@@ -12,11 +12,13 @@ import com.jingdianjichi.subject.common.enums.IsDeletedEnum;
 import com.jingdianjichi.subject.common.exception.BusinessException;
 import com.jingdianjichi.subject.domain.convert.SubjectInfoBOConverter;
 import com.jingdianjichi.subject.domain.entity.SubjectInfoBO;
+import com.jingdianjichi.subject.domain.entity.SubjectLikedBO;
 import com.jingdianjichi.subject.domain.entity.SubjectOptionBO;
 import com.jingdianjichi.subject.domain.handler.subject.SubjectTypeHandler;
 import com.jingdianjichi.subject.domain.handler.subject.SubjectTypeHandlerFactory;
 import com.jingdianjichi.subject.domain.redis.RedisUtil;
 import com.jingdianjichi.subject.domain.service.SubjectInfoDomainService;
+import com.jingdianjichi.subject.domain.service.SubjectLikedDomainService;
 import com.jingdianjichi.subject.infra.basic.entity.SubjectInfo;
 import com.jingdianjichi.subject.infra.basic.entity.SubjectInfoEs;
 import com.jingdianjichi.subject.infra.basic.entity.SubjectLabel;
@@ -43,6 +45,8 @@ import java.util.stream.Collectors;
 @Service
 public class SubjectInfoDomainServiceImpl implements SubjectInfoDomainService {
 
+    private static final String CONTRIBUTE_RANK_KEY = "CONTRIBUTE_RANK_KEY";
+
     @Resource
     private SubjectInfoService subjectInfoService;
     @Resource
@@ -56,9 +60,11 @@ public class SubjectInfoDomainServiceImpl implements SubjectInfoDomainService {
     @Qualifier("com.jingdianjichi.auth.api.service.UserFeignService")
     @Autowired
     private UserFeignService userFeignService;
-    @Autowired
+    @Resource
     private RedisUtil redisUtil;
-    private static final String CONTRIBUTE_RANK_KEY = "CONTRIBUTE_RANK_KEY";
+    @Resource
+    private SubjectLikedDomainService subjectLikedDomainService;
+
 
     /**
      * 新增题目信息
@@ -177,31 +183,60 @@ public class SubjectInfoDomainServiceImpl implements SubjectInfoDomainService {
     /**
      * 获取题目信息
      *
-     * @param subjectInfoBO 包含查询条件的主题信息对象，不能为空
+     * @param queryRequest 包含查询条件的主题信息对象，不能为空
      * @return 返回一个填充了详细信息的题目信息对象如果找不到相关信息，则返回null
      */
     @Override
-    public SubjectInfoBO querySubjectInfo(SubjectInfoBO subjectInfoBO) {
+    public SubjectInfoBO querySubjectInfo(SubjectInfoBO queryRequest) {
         // 查询题目信息
-        SubjectInfo subjectInfo = subjectInfoService.queryById(subjectInfoBO.getId());
+        SubjectInfo subjectInfo = subjectInfoService.queryById(queryRequest.getId());
         if (subjectInfo == null) {
             throw new BusinessException(BusinessErrorEnum.PARAM_ERROR, "题目信息不存在");
         }
         // 查询题目答案
-        subjectInfoBO = SubjectInfoBOConverter.INSTANCE.convertEntity2BO(subjectInfo);
+        SubjectInfoBO resultBO = SubjectInfoBOConverter.INSTANCE.convertEntity2BO(subjectInfo);
         SubjectTypeHandler subjectTypeHandler = subjectTypeHandlerFactory.getSubjectTypeHandler(subjectInfo.getSubjectType());
-        SubjectOptionBO subjectOptionBO = subjectTypeHandler.querySubjectOptions(subjectInfoBO.getId());
+        SubjectOptionBO subjectOptionBO = subjectTypeHandler.querySubjectOptions(resultBO.getId());
         if (subjectOptionBO != null) {
-            subjectInfoBO.setSubjectAnswer(subjectOptionBO.getSubjectAnswer());
-            subjectInfoBO.setOptionList(subjectOptionBO.getOptionList());
+            resultBO.setSubjectAnswer(subjectOptionBO.getSubjectAnswer());
+            resultBO.setOptionList(subjectOptionBO.getOptionList());
         }
         // 查询标签名称
         SubjectMapping subjectMapping = new SubjectMapping();
-        subjectMapping.setSubjectId(subjectInfoBO.getId());
+        subjectMapping.setSubjectId(resultBO.getId());
         List<Long> labelIds = subjectMappingService.queryDistinctLabelIdsByCondition(subjectMapping);
         List<String> labelNameList = subjectLabelService.queryBatchByIds(labelIds).stream().map(SubjectLabel::getLabelName).collect(Collectors.toList());
-        subjectInfoBO.setLabelNames(labelNameList);
-        return subjectInfoBO;
+        resultBO.setLabelNames(labelNameList);
+        // 查询是否被当前用户点赞过
+        SubjectLikedBO subjectLikedBO = new SubjectLikedBO();
+        subjectLikedBO.setSubjectId(resultBO.getId());
+        resultBO.setLiked(subjectLikedDomainService.isLiked(subjectLikedBO));
+        // 查询点赞数量
+        resultBO.setLikedCount(subjectLikedDomainService.likedNum(subjectLikedBO).intValue());
+        // 填充上一题和下一题 id
+        fillCursor(queryRequest, resultBO);
+        return resultBO;
+    }
+
+    /**
+     * 填充上一题和下一题 id
+     * @param request 查询条件
+     * @param resultBO 填充查询结果
+     */
+    private void fillCursor(SubjectInfoBO request, SubjectInfoBO resultBO) {
+        Long labelId = request.getLabelId();
+        Long categoryId = request.getCategoryId();
+        if (labelId != null || categoryId != null) {
+            return;
+        }
+        SubjectMapping queryParam = new SubjectMapping();
+        queryParam.setCategoryId(request.getCategoryId());
+        queryParam.setLabelId(request.getLabelId());
+        queryParam.setSubjectId(request.getId());
+        Long lastSubjectId = subjectMappingService.queryLastSubjectId(queryParam);
+        Long nextSubjectId = subjectMappingService.queryNextSubjectId(queryParam);
+        resultBO.setLastSubjectId(lastSubjectId);
+        resultBO.setNextSubjectId(nextSubjectId);
     }
 
     /**

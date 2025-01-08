@@ -1,11 +1,11 @@
 spring:
   datasource:
+    username: admin
+    password: SF9URzhVIt12Joi16nXpr/LzRxERNMifnJ57RHPzDTw7XodSqBanqpvpWTmzIeL0+2PdJDsto1ytO6eg9dN8YQ==
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://192.168.134.129:3306/jc-club?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf8&useSSL=true
     type: com.alibaba.druid.pool.DruidDataSource
     druid:
-      username: admin
-      password: SF9URzhVIt12Joi16nXpr/LzRxERNMifnJ57RHPzDTw7XodSqBanqpvpWTmzIeL0+2PdJDsto1ytO6eg9dN8YQ==
       initial-size: 20
       min-idle: 20
       max-active: 100
@@ -60,3 +60,16 @@ es:
   cluster[0]:
     name: 3baa79479703
     addr[0]: 192.168.134.129:9200
+
+xxl:
+  job:
+    admin:
+      addresses: http://192.168.134.129:8088/xxl-job-admin
+    accessToken: default_token
+    executor:
+      appname: jc-club-subject
+      address: http://192.168.134.1:9999/
+      ip: 192.168.134.1
+      port: 9999
+      logpath: /data/applogs/xxl-job/jobhandler
+      logretentiondays: 30

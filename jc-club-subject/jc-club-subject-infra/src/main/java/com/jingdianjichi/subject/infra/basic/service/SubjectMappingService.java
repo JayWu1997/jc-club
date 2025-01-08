@@ -67,4 +67,18 @@ public interface SubjectMappingService {
      * @return 符合条件的题目数量
      */
     Integer countByCategoryIdDistinctSubjectId(Long categoryId);
+
+    /**
+     * 查询上一题的id
+     * @param queryParam
+     * @return
+     */
+    Long queryLastSubjectId(SubjectMapping queryParam);
+
+    /**
+     * 查询下一题的id
+     * @param queryParam
+     * @return
+     */
+    Long queryNextSubjectId(SubjectMapping queryParam);
 }
