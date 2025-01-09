@@ -1,4 +1,4 @@
-package com.jingdianjichi.practice.api.vo;
+package com.jingdianjichi.practice.server.vo;
 
 import lombok.Data;
 

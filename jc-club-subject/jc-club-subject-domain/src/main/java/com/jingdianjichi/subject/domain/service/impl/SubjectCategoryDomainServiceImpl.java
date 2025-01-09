@@ -13,12 +13,13 @@ import com.jingdianjichi.subject.domain.entity.SubjectCategoryBO;
 import com.jingdianjichi.subject.domain.service.SubjectCategoryDomainService;
 import com.jingdianjichi.subject.infra.basic.entity.SubjectCategory;
 import com.jingdianjichi.subject.infra.basic.entity.SubjectLabel;
-import com.jingdianjichi.subject.infra.basic.entity.SubjectMapping;
 import com.jingdianjichi.subject.infra.basic.service.SubjectCategoryService;
 import com.jingdianjichi.subject.infra.basic.service.SubjectLabelService;
 import com.jingdianjichi.subject.infra.basic.service.SubjectMappingService;
+import com.jingdianjichi.subject.infra.basic.service.impl.SubjectLabelServiceImpl;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -45,6 +46,8 @@ public class SubjectCategoryDomainServiceImpl implements SubjectCategoryDomainSe
 
     @Resource
     private ThreadPoolExecutor labelThreadPool;
+    @Autowired
+    private SubjectLabelServiceImpl subjectLabelService;
 
     /**
      * 添加一个主题分类信息
@@ -177,12 +180,8 @@ public class SubjectCategoryDomainServiceImpl implements SubjectCategoryDomainSe
     }
 
     private SubjectCategoryBO querySubjectCategoryBO(SubjectCategory category) {
+        List<SubjectLabel> labelList = subjectLabelService.queryDistinctLabelListByCategoryId(category.getId());
         SubjectCategoryBO boTemp = SubjectCategoryBOConverter.INSTANCE.convertEntity2Bo(category);
-        SubjectMapping labelIdListQueryCondition = new SubjectMapping();
-        labelIdListQueryCondition.setIsDeleted(IsDeletedEnum.NOT_DELETED.getCode());
-        labelIdListQueryCondition.setCategoryId(boTemp.getId());
-        List<Long> labelIdList = mappingService.queryDistinctLabelIdsByCondition(labelIdListQueryCondition);
-        List<SubjectLabel> labelList = labelService.queryBatchByIds(labelIdList);
         boTemp.setLabelDTOList(SubjectLabelBOConverter.INSTANCE.convertEntity2BO(labelList));
         return boTemp;
     }

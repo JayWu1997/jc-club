@@ -98,15 +98,30 @@ public class CreateAndUpdateInterceptor implements Interceptor {
             try {
                 field.setAccessible(true);
                 UserContext userContext = UserContextHolder.getUserContext();
+                // 插入时设置创建人
                 if ((field.getName().equals("createBy") || field.getName().equals("createdBy"))
                         && field.getType() == String.class && ObjectUtil.isNotNull(userContext)) {
                     field.set(param, userContext.getUserName());
-                } else if ((field.getName().equals("createTime") || field.getName().equals("createdTime"))
-                        && field.getType() == Date.class) {
-                    field.set(param, new Date());
-                } else if ((field.getName().equals("isDeleted") || field.getName().equals("deleted"))
-                        && (field.getType() == Integer.class || field.getType() == int.class)) {
-                    field.set(param, 0);
+                }
+                // 插入时设置创建时间
+                else if (field.getName().equals("createTime") || field.getName().equals("createdTime")) {
+                    if (field.getType() == Date.class) {
+                        field.set(param, new Date());
+                    } else if (field.getType() == Long.class || field.getType() == long.class) {
+                        field.set(param, System.currentTimeMillis());
+                    }
+                }
+                // 插入时设置删除状态
+                else if (field.getName().equals("isDeleted") || field.getName().equals("deleted")) {
+                    if (field.getType() == Integer.class || field.getType() == int.class) {
+                        field.set(param, 0);
+                    } else if (field.getType() == Long.class || field.getType() == long.class) {
+                        field.set(param, 0L);
+                    } else if (field.getType() == Short.class || field.getType() == short.class) {
+                        field.set(param, (short) 0);
+                    } else if (field.getType() == Byte.class || field.getType() == byte.class) {
+                        field.set(param, (byte) 0);
+                    }
                 }
                 field.setAccessible(false);
             } catch (IllegalAccessException e) {

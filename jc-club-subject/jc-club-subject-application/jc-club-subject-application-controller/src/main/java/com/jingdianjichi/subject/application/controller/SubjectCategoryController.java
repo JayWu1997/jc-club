@@ -86,18 +86,14 @@ public class SubjectCategoryController {
      *
      * @return Result<List < SubjectCategoryDTO>> 返回查询结果，包含岗位信息的列表。
      */
-    @PostMapping("/queryPrimaryCategory")
-    public Result<List<SubjectCategoryDTO>> queryPrimaryCategory(@RequestBody SubjectCategoryDTO subjectCategoryDTO) {
+    @RequestMapping("/queryPrimaryCategory")
+    public Result<List<SubjectCategoryDTO>> queryPrimaryCategory() {
         try {
-            if (log.isInfoEnabled()) {
-                log.info("SubjectCategoryController.queryPrimaryCategory.dto:{}", JSON.toJSON(subjectCategoryDTO));
-            }
 
-            if (subjectCategoryDTO.getCategoryType() == null || !subjectCategoryDTO.getCategoryType().equals(CategoryTypeEnum.PRIMARY.getCode())) {
-                subjectCategoryDTO.setCategoryType(CategoryTypeEnum.PRIMARY.getCode());
-            }
+            SubjectCategoryBO bo = new SubjectCategoryBO();
+            bo.setCategoryType(CategoryTypeEnum.PRIMARY.getCode());
             // 调用领域服务查询所有岗位信息
-            List<SubjectCategoryBO> subjectCategoryBOList = subjectCategoryDomainService.queryCategory(SubjectCategoryDTOConverter.INSTANCE.convertDto2Bo(subjectCategoryDTO));
+            List<SubjectCategoryBO> subjectCategoryBOList = subjectCategoryDomainService.queryCategory(bo);
             // 将查询到的岗位信息BO转换为DTO，并包装在Result对象中返回
             Result<List<SubjectCategoryDTO>> result = Result.success(SubjectCategoryDTOConverter.INSTANCE.convertBo2Dto(subjectCategoryBOList));
             // 如果日志级别为INFO，则记录查询成功的结果
@@ -248,7 +244,8 @@ public class SubjectCategoryController {
 
     /**
      * 查询大类下的分类
-     * @param dto
+     * @param dto categoryType 分类类型
+     *            parentId 父级分类id
      * @return
      */
     @PostMapping("/queryCategoryByPrimary")

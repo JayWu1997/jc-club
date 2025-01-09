@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
  * @since 2024/12/26 下午4:53
  */
 @Service
-@FeignClient(value = "jc-club-auth-dev", contextId = "userClient")
+@FeignClient(value = "jc-club-auth-dev", contextId = "userFeignService")
 public interface UserFeignService {
 
     /**

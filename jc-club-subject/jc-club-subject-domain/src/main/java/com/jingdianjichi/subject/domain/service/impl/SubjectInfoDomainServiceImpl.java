@@ -27,8 +27,6 @@ import com.jingdianjichi.subject.infra.basic.service.SubjectEsInfoService;
 import com.jingdianjichi.subject.infra.basic.service.SubjectInfoService;
 import com.jingdianjichi.subject.infra.basic.service.SubjectMappingService;
 import com.jingdianjichi.subject.infra.basic.service.impl.SubjectLabelServiceImpl;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Service;
 
@@ -57,8 +55,7 @@ public class SubjectInfoDomainServiceImpl implements SubjectInfoDomainService {
     private SubjectLabelServiceImpl subjectLabelService;
     @Resource
     private SubjectEsInfoService subjectEsInfoService;
-    @Qualifier("com.jingdianjichi.auth.api.service.UserFeignService")
-    @Autowired
+    @Resource
     private UserFeignService userFeignService;
     @Resource
     private RedisUtil redisUtil;

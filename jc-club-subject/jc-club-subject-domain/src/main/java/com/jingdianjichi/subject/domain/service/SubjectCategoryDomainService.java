@@ -47,7 +47,6 @@ public interface SubjectCategoryDomainService {
 
     /**
      * 查询大类下的分类
-     * @param bo
      * @return
      */
     List<SubjectCategoryBO> queryPrimaryCategory(SubjectCategoryBO bo);

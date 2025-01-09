@@ -14,7 +14,7 @@ import java.util.List;
  * @author jay
  * @since 2025-01-08 18:21:21
  */
-@Service("practiceSetDetailService")
+@Service
 public class PracticeSetDetailServiceImpl implements PracticeSetDetailService {
     @Resource
     private PracticeSetDetailDao practiceSetDetailDao;

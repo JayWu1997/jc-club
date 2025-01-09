@@ -69,7 +69,7 @@
     <!--新增所有列-->
     <insert id="insert" keyProperty="id" useGeneratedKeys="true">
         insert into subject_label(<include refid="Base_Column_List_Without_Id"/>)
-        values (#{labelName}, #{entity.categoryId}, #{sortNum}, #{createdBy}, #{createdTime}, #{updateBy},
+        values (#{labelName}, #{categoryId}, #{sortNum}, #{createdBy}, #{createdTime}, #{updateBy},
         #{updateTime}, #{isDeleted})
     </insert>
 
@@ -155,13 +155,10 @@
     <!--  根据分类 id 查询与其关联的标签列表  -->
     <select id="queryDistinctLabelListByCategoryId"
             resultMap="SubjectLabelMap">
-        select distinct l.*
-        from subject_label l,
-             subject_mapping m
-        where l.id = m.label_id
-          and m.category_id = #{categoryId}
-          and l.is_deleted = 0
-          and m.is_deleted = 0
+        select *
+        from subject_label
+        where category_id = #{categoryId}
+          and is_deleted = 0
     </select>
 </mapper>
 

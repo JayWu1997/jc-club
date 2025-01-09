@@ -1,6 +1,6 @@
 package com.jingdianjichi.practice.server.service;
 
-import com.jingdianjichi.practice.api.vo.SpecialPracticeVO;
+import com.jingdianjichi.practice.server.vo.SpecialPracticeVO;
 import com.jingdianjichi.practice.server.entity.PracticeSet;
 
 import java.util.List;

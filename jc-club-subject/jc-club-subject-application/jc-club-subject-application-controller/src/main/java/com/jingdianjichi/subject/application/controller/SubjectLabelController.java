@@ -6,6 +6,7 @@ import com.jingdianjichi.subject.api.resp.Result;
 import com.jingdianjichi.subject.application.convert.SubjectLabelDTOConverter;
 import com.jingdianjichi.subject.common.enums.BusinessErrorEnum;
 import com.jingdianjichi.subject.common.exception.BusinessException;
+import com.jingdianjichi.subject.common.util.ParamCheckUtil;
 import com.jingdianjichi.subject.domain.entity.SubjectLabelBO;
 import com.jingdianjichi.subject.domain.service.SubjectLabelDomainService;
 import lombok.extern.slf4j.Slf4j;
@@ -32,7 +33,8 @@ public class SubjectLabelController {
     /**
      * 新增题目标签
      *
-     * @param subjectLabelDTO dto
+     * @param subjectLabelDTO labelName
+     *                        categoryId
      * @return 包装后的结果
      */
     @PostMapping("/add")
@@ -46,6 +48,7 @@ public class SubjectLabelController {
             if (!StringUtils.hasText(subjectLabelDTO.getLabelName())) {
                 throw new BusinessException(BusinessErrorEnum.PARAM_ERROR, "题目标签名称不能为空!");
             }
+            ParamCheckUtil.checkNotNull(subjectLabelDTO.getCategoryId(), BusinessErrorEnum.PARAM_ERROR, "题目标签分类 ID 不能为空!");
 
             Boolean insertResult = subjectLabelDomainService.insert(SubjectLabelDTOConverter.INSTANCE.convertDto2Bo(subjectLabelDTO));
             Result<Boolean> result = Result.success(insertResult);
@@ -134,7 +137,7 @@ public class SubjectLabelController {
     /**
      * 根据分类 ID 查询题目标签
      *
-     * @param subjectLabelDTO 包含分类ID
+     * @param subjectLabelDTO categoryId 分类 Id
      * @return 包装结果
      */
     @PostMapping("/queryLabelByCategoryId")

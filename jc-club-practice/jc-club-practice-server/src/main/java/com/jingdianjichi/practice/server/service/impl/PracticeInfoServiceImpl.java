@@ -1,13 +1,12 @@
 package com.jingdianjichi.practice.server.service.impl;
 
-import com.jingdianjichi.practice.server.entity.PracticeInfo;
 import com.jingdianjichi.practice.server.dao.PracticeInfoDao;
+import com.jingdianjichi.practice.server.entity.PracticeInfo;
 import com.jingdianjichi.practice.server.service.PracticeInfoService;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * 练习表(PracticeInfo)表服务实现类
@@ -15,7 +14,7 @@ import javax.annotation.Resource;
  * @author jay
  * @since 2025-01-08 18:21:20
  */
-@Service("practiceInfoService")
+@Service
 public class PracticeInfoServiceImpl implements PracticeInfoService {
     @Resource
     private PracticeInfoDao practiceInfoDao;

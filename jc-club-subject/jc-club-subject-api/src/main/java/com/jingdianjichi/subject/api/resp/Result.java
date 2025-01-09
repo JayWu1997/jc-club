@@ -1,8 +1,10 @@
 package com.jingdianjichi.subject.api.resp;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
 public class Result<T> {
     
     private static final String SUCCESS_MSG = "success";
