@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jingdianjichi.practice.server.dao.PracticeDetailDao">
+
+    <resultMap type="com.jingdianjichi.practice.server.entity.PracticeDetail" id="PracticeDetailMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="practiceId" column="practice_id" jdbcType="INTEGER"/>
+        <result property="subjectId" column="subject_id" jdbcType="INTEGER"/>
+        <result property="subjectType" column="subject_type" jdbcType="INTEGER"/>
+        <result property="answerStatus" column="answer_status" jdbcType="INTEGER"/>
+        <result property="answerContent" column="answer_content" jdbcType="VARCHAR"/>
+        <result property="createdBy" column="created_by" jdbcType="VARCHAR"/>
+        <result property="createdTime" column="created_time" jdbcType="TIMESTAMP"/>
+        <result property="updateBy" column="update_by" jdbcType="VARCHAR"/>
+        <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+        <result property="isDeleted" column="is_deleted" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="PracticeDetailMap">
+        select id,
+               practice_id,
+               subject_id,
+               subject_type,
+               answer_status,
+               answer_content,
+               created_by,
+               created_time,
+               update_by,
+               update_time,
+               is_deleted
+        from practice_detail
+        where id = #{id}
+          and is_deleted = 0
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryByPage" resultMap="PracticeDetailMap">
+        select * from practice_detail
+        <where>
+            <if test="entity.id != null">
+                and id = #{entity.id}
+            </if>
+            <if test="entity.practiceId != null">
+                and practice_id = #{entity.practiceId}
+            </if>
+            <if test="entity.subjectId != null">
+                and subject_id = #{entity.subjectId}
+            </if>
+            <if test="entity.subjectType != null">
+                and subject_type = #{entity.subjectType}
+            </if>
+            <if test="entity.answerStatus != null">
+                and answer_status = #{entity.answerStatus}
+            </if>
+            <if test="entity.answerContent != null and entity.answerContent != ''">
+                and answer_content = #{entity.answerContent}
+            </if>
+            <if test="entity.createdBy != null and entity.createdBy != ''">
+                and created_by = #{entity.createdBy}
+            </if>
+            <if test="entity.createdTime != null">
+                and created_time = #{entity.createdTime}
+            </if>
+            <if test="entity.updateBy != null and entity.updateBy != ''">
+                and update_by = #{entity.updateBy}
+            </if>
+            <if test="entity.updateTime != null">
+                and update_time = #{entity.updateTime}
+            </if>
+            <if test="entity.isDeleted != null">
+                and is_deleted = #{entity.isDeleted}
+            </if>
+        </where>
+        limit #{start}, #{size}
+    </select>
+
+    <!--统计总行数-->
+    <select id="count" resultType="java.lang.Long">
+        select count(1)
+        from practice_detail
+        <where>
+            <if test="id != null">
+                and id = #{id}
+            </if>
+            <if test="practiceId != null">
+                and practice_id = #{practiceId}
+            </if>
+            <if test="subjectId != null">
+                and subject_id = #{subjectId}
+            </if>
+            <if test="subjectType != null">
+                and subject_type = #{subjectType}
+            </if>
+            <if test="answerStatus != null">
+                and answer_status = #{answerStatus}
+            </if>
+            <if test="answerContent != null and answerContent != ''">
+                and answer_content = #{answerContent}
+            </if>
+            <if test="createdBy != null and createdBy != ''">
+                and created_by = #{createdBy}
+            </if>
+            <if test="createdTime != null">
+                and created_time = #{createdTime}
+            </if>
+            <if test="updateBy != null and updateBy != ''">
+                and update_by = #{updateBy}
+            </if>
+            <if test="updateTime != null">
+                and update_time = #{updateTime}
+            </if>
+            <if test="isDeleted != null">
+                and is_deleted = #{isDeleted}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+        insert into practice_detail(practice_id, subject_id, subject_type, answer_status, answer_content, created_by,
+                                    created_time, update_by, update_time, is_deleted)
+        values (#{practiceId}, #{subjectId}, #{subjectType}, #{answerStatus}, #{answerContent}, #{createdBy},
+                #{createdTime}, #{updateBy}, #{updateTime}, #{isDeleted})
+    </insert>
+
+    <insert id="insertBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into practice_detail(practice_id, subject_id, subject_type, answer_status, answer_content, created_by,
+        created_time, update_by, update_time, is_deleted)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.practiceId}, #{entity.subjectId}, #{entity.subjectType}, #{entity.answerStatus},
+            #{entity.answerContent}, #{entity.createdBy}, #{entity.createdTime}, #{entity.updateBy},
+            #{entity.updateTime}, #{entity.isDeleted})
+        </foreach>
+    </insert>
+
+    <insert id="insertOrUpdateBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into practice_detail(practice_id, subject_id, subject_type, answer_status, answer_content, created_by,
+        created_time, update_by, update_time, is_deleted)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.practiceId}, #{entity.subjectId}, #{entity.subjectType}, #{entity.answerStatus},
+            #{entity.answerContent}, #{entity.createdBy}, #{entity.createdTime}, #{entity.updateBy},
+            #{entity.updateTime}, #{entity.isDeleted})
+        </foreach>
+        on duplicate key update
+        practice_id = values(practice_id),
+        subject_id = values(subject_id),
+        subject_type = values(subject_type),
+        answer_status = values(answer_status),
+        answer_content = values(answer_content),
+        created_by = values(created_by),
+        created_time = values(created_time),
+        update_by = values(update_by),
+        update_time = values(update_time),
+        is_deleted = values(is_deleted)
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update practice_detail
+        <set>
+            <if test="practiceId != null">
+                practice_id = #{practiceId},
+            </if>
+            <if test="subjectId != null">
+                subject_id = #{subjectId},
+            </if>
+            <if test="subjectType != null">
+                subject_type = #{subjectType},
+            </if>
+            <if test="answerStatus != null">
+                answer_status = #{answerStatus},
+            </if>
+            <if test="answerContent != null and answerContent != ''">
+                answer_content = #{answerContent},
+            </if>
+            <if test="createdBy != null and createdBy != ''">
+                created_by = #{createdBy},
+            </if>
+            <if test="createdTime != null">
+                created_time = #{createdTime},
+            </if>
+            <if test="updateBy != null and updateBy != ''">
+                update_by = #{updateBy},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+            <if test="isDeleted != null">
+                is_deleted = #{isDeleted},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--通过主键删除-->
+    <update id="deleteById">
+        update practice_detail
+        set is_deleted = 1
+        where id = #{id}
+    </update>
+
+</mapper>
+

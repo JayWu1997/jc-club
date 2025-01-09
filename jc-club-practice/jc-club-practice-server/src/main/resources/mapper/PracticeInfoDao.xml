@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jingdianjichi.practice.server.dao.PracticeInfoDao">
+
+    <resultMap type="com.jingdianjichi.practice.server.entity.PracticeInfo" id="PracticeInfoMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="setId" column="set_id" jdbcType="INTEGER"/>
+        <result property="completeStatus" column="complete_status" jdbcType="INTEGER"/>
+        <result property="timeUse" column="time_use" jdbcType="VARCHAR"/>
+        <result property="submitTime" column="submit_time" jdbcType="TIMESTAMP"/>
+        <result property="correctRate" column="correct_rate" jdbcType="NUMERIC"/>
+        <result property="createdBy" column="created_by" jdbcType="VARCHAR"/>
+        <result property="createdTime" column="created_time" jdbcType="TIMESTAMP"/>
+        <result property="updateBy" column="update_by" jdbcType="VARCHAR"/>
+        <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+        <result property="isDeleted" column="is_deleted" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="PracticeInfoMap">
+        select id,
+               set_id,
+               complete_status,
+               time_use,
+               submit_time,
+               correct_rate,
+               created_by,
+               created_time,
+               update_by,
+               update_time,
+               is_deleted
+        from practice_info
+        where id = #{id}
+          and is_deleted = 0
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryByPage" resultMap="PracticeInfoMap">
+        select * from practice_info
+        <where>
+            <if test="entity.id != null">
+                and id = #{entity.id}
+            </if>
+            <if test="entity.setId != null">
+                and set_id = #{entity.setId}
+            </if>
+            <if test="entity.completeStatus != null">
+                and complete_status = #{entity.completeStatus}
+            </if>
+            <if test="entity.timeUse != null and entity.timeUse != ''">
+                and time_use = #{entity.timeUse}
+            </if>
+            <if test="entity.submitTime != null">
+                and submit_time = #{entity.submitTime}
+            </if>
+            <if test="entity.correctRate != null">
+                and correct_rate = #{entity.correctRate}
+            </if>
+            <if test="entity.createdBy != null and entity.createdBy != ''">
+                and created_by = #{entity.createdBy}
+            </if>
+            <if test="entity.createdTime != null">
+                and created_time = #{entity.createdTime}
+            </if>
+            <if test="entity.updateBy != null and entity.updateBy != ''">
+                and update_by = #{entity.updateBy}
+            </if>
+            <if test="entity.updateTime != null">
+                and update_time = #{entity.updateTime}
+            </if>
+            <if test="entity.isDeleted != null">
+                and is_deleted = #{entity.isDeleted}
+            </if>
+        </where>
+        limit #{start}, #{size}
+    </select>
+
+    <!--统计总行数-->
+    <select id="count" resultType="java.lang.Long">
+        select count(1)
+        from practice_info
+        <where>
+            <if test="id != null">
+                and id = #{id}
+            </if>
+            <if test="setId != null">
+                and set_id = #{setId}
+            </if>
+            <if test="completeStatus != null">
+                and complete_status = #{completeStatus}
+            </if>
+            <if test="timeUse != null and timeUse != ''">
+                and time_use = #{timeUse}
+            </if>
+            <if test="submitTime != null">
+                and submit_time = #{submitTime}
+            </if>
+            <if test="correctRate != null">
+                and correct_rate = #{correctRate}
+            </if>
+            <if test="createdBy != null and createdBy != ''">
+                and created_by = #{createdBy}
+            </if>
+            <if test="createdTime != null">
+                and created_time = #{createdTime}
+            </if>
+            <if test="updateBy != null and updateBy != ''">
+                and update_by = #{updateBy}
+            </if>
+            <if test="updateTime != null">
+                and update_time = #{updateTime}
+            </if>
+            <if test="isDeleted != null">
+                and is_deleted = #{isDeleted}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+        insert into practice_info(set_id, complete_status, time_use, submit_time, correct_rate, created_by,
+                                  created_time, update_by, update_time, is_deleted)
+        values (#{setId}, #{completeStatus}, #{timeUse}, #{submitTime}, #{correctRate}, #{createdBy}, #{createdTime},
+                #{updateBy}, #{updateTime}, #{isDeleted})
+    </insert>
+
+    <insert id="insertBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into practice_info(set_id, complete_status, time_use, submit_time, correct_rate, created_by,
+        created_time, update_by, update_time, is_deleted)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.setId}, #{entity.completeStatus}, #{entity.timeUse}, #{entity.submitTime}, #{entity.correctRate},
+            #{entity.createdBy}, #{entity.createdTime}, #{entity.updateBy}, #{entity.updateTime}, #{entity.isDeleted})
+        </foreach>
+    </insert>
+
+    <insert id="insertOrUpdateBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into practice_info(set_id, complete_status, time_use, submit_time, correct_rate, created_by,
+        created_time, update_by, update_time, is_deleted)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.setId}, #{entity.completeStatus}, #{entity.timeUse}, #{entity.submitTime}, #{entity.correctRate},
+            #{entity.createdBy}, #{entity.createdTime}, #{entity.updateBy}, #{entity.updateTime}, #{entity.isDeleted})
+        </foreach>
+        on duplicate key update
+        set_id = values(set_id),
+        complete_status = values(complete_status),
+        time_use = values(time_use),
+        submit_time = values(submit_time),
+        correct_rate = values(correct_rate),
+        created_by = values(created_by),
+        created_time = values(created_time),
+        update_by = values(update_by),
+        update_time = values(update_time),
+        is_deleted = values(is_deleted)
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update practice_info
+        <set>
+            <if test="setId != null">
+                set_id = #{setId},
+            </if>
+            <if test="completeStatus != null">
+                complete_status = #{completeStatus},
+            </if>
+            <if test="timeUse != null and timeUse != ''">
+                time_use = #{timeUse},
+            </if>
+            <if test="submitTime != null">
+                submit_time = #{submitTime},
+            </if>
+            <if test="correctRate != null">
+                correct_rate = #{correctRate},
+            </if>
+            <if test="createdBy != null and createdBy != ''">
+                created_by = #{createdBy},
+            </if>
+            <if test="createdTime != null">
+                created_time = #{createdTime},
+            </if>
+            <if test="updateBy != null and updateBy != ''">
+                update_by = #{updateBy},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+            <if test="isDeleted != null">
+                is_deleted = #{isDeleted},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--通过主键删除-->
+    <update id="deleteById">
+        update practice_info
+        set is_deleted = 1
+        where id = #{id}
+    </update>
+
+</mapper>
+
