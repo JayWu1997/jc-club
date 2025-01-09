@@ -144,6 +144,20 @@ public class SubjectCategoryDomainServiceImpl implements SubjectCategoryDomainSe
         return boList;
     }
 
+    /**
+     * 查询大类下的分类
+     *
+     * @param bo
+     * @return
+     */
+    @Override
+    public List<SubjectCategoryBO> queryPrimaryCategory(SubjectCategoryBO bo) {
+        SubjectCategory queryCondition = SubjectCategoryBOConverter.INSTANCE.convertBo2Entity(bo);
+        queryCondition.setIsDeleted(IsDeletedEnum.NOT_DELETED.getCode());
+        List<SubjectCategory> categoryList = subjectCategoryService.queryCategory(queryCondition);
+        return SubjectCategoryBOConverter.INSTANCE.convertEntity2Bo(categoryList);
+    }
+
     private List<SubjectCategoryBO> querySubcategoryAndLabelListFromDB(Long categoryId) {
         // 查询子分类
         SubjectCategory queryCondition = new SubjectCategory();

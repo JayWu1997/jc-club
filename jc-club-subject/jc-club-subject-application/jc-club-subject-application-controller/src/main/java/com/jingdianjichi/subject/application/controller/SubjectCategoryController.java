@@ -245,4 +245,31 @@ public class SubjectCategoryController {
             return Result.fail("删除题目分类信息失败！");
         }
     }
+
+    /**
+     * 查询大类下的分类
+     * @param dto
+     * @return
+     */
+    @PostMapping("/queryCategoryByPrimary")
+    public Result<List<SubjectCategoryDTO>> queryCategoryByPrimary(@RequestBody SubjectCategoryDTO dto) {
+        try{
+            if (log.isInfoEnabled()) {
+                log.info("SubjectCategoryController.queryCategoryByPrimary.dto:{}", JSON.toJSON(dto));
+            }
+
+            ParamCheckUtil.checkNotNull(dto.getCategoryType(), BusinessErrorEnum.PARAM_ERROR, "分类类型不能为空");
+            ParamCheckUtil.checkNotNull(dto.getParentId(), BusinessErrorEnum.PARAM_ERROR, "父级分类不能为空");
+
+            SubjectCategoryBO bo = SubjectCategoryDTOConverter.INSTANCE.convertDto2Bo(dto);
+            List<SubjectCategoryBO> categoryBOList = subjectCategoryDomainService.queryPrimaryCategory(bo);
+            return Result.success(SubjectCategoryDTOConverter.INSTANCE.convertBo2Dto(categoryBOList));
+        } catch (BusinessException e) {
+            log.error("SubjectCategoryController.queryCategoryByPrimary.error:{}", e.getMessage(), e);
+            return Result.fail(e.getMessage());
+        } catch (Exception e) {
+            log.error("SubjectCategoryController.queryCategoryByPrimary.error:{}", e.getMessage(), e);
+            return Result.fail("查询分类信息失败！");
+        }
+    }
 }

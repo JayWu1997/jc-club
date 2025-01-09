@@ -44,4 +44,11 @@ public interface SubjectCategoryDomainService {
      * @return 所有子类和子类的标签
      */
     List<SubjectCategoryBO> querySubcategoryAndLabelList(SubjectCategoryBO categoryBO);
+
+    /**
+     * 查询大类下的分类
+     * @param bo
+     * @return
+     */
+    List<SubjectCategoryBO> queryPrimaryCategory(SubjectCategoryBO bo);
 }
