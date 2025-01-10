@@ -80,10 +80,10 @@ public class SubjectController {
                 log.info("SubjectInfoController.querySubjectPage.subjectInfoDTO:{}", JSON.toJSON(subjectInfoDTO));
             }
 
-            ParamCheckUtil.checkNotNull(subjectInfoDTO.getCategoryId(), BusinessErrorEnum.PARAM_ERROR, "类型不能为空!");
             ParamCheckUtil.checkNotNull(subjectInfoDTO.getLabelId(), BusinessErrorEnum.PARAM_ERROR, "标签不能为空!");
 
             SubjectInfoBO subjectInfoBO = SubjectInfoDTOConverter.INSTANCE.convertDto2Bo(subjectInfoDTO);
+            subjectInfoBO.setCategoryId(null);
             PageResult<SubjectInfoBO> boPageResult = subjectInfoDomainService.getSubjectPage(subjectInfoBO);
             return Result.success(new PageResult<>(boPageResult.getPageNo(), boPageResult.getPageSize(), boPageResult.getTotal(), SubjectInfoDTOConverter.INSTANCE.convertBo2Dto(boPageResult.getResult())));
         } catch (BusinessException e) {
