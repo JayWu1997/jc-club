@@ -1,11 +1,10 @@
 package com.jingdianjichi.practice.server.dao;
 
 import com.jingdianjichi.practice.server.entity.PracticeSet;
+import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
-
-import org.apache.ibatis.annotations.Mapper;
 
 /**
  * 套题信息表(PracticeSet)表数据库访问层
@@ -83,5 +82,12 @@ public interface PracticeSetDao {
      */
     int deleteById(Long id);
 
+    /**
+     * 增加热度
+     *
+     * @param id
+     * @return
+     */
+    long upHeat(@Param("id") Long id);
 }
 

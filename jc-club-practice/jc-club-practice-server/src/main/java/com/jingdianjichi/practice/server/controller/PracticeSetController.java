@@ -41,6 +41,8 @@ public class PracticeSetController {
     @Resource
     private PracticeSetService practiceSetService;
 
+
+
     @RequestMapping("/getSpecialPracticeContent")
     public Result<List<SpecialPracticeVO>> getSpecialPracticeContent() {
         try {

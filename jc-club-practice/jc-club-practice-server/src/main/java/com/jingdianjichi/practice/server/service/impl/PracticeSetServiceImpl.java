@@ -81,9 +81,7 @@ public class PracticeSetServiceImpl implements PracticeSetService {
      * @return 查询结果集合
      */
     @Override
-    public List<PracticeSet> queryByPage(PracticeSet practiceSet
-            , int start
-            , int size) {
+    public List<PracticeSet> queryByPage(PracticeSet practiceSet, int start, int size) {
         return this.practiceSetDao.queryByPage(practiceSet, start, size);
     }
 
@@ -290,12 +288,14 @@ public class PracticeSetServiceImpl implements PracticeSetService {
         resultVO.setSubjectList(getSubjectList(req.getPracticeId(), req.getSetId()));
 
         // 若practiceId不为空，表示该练习已存在，填充信息
-        if(ObjectUtil.isNotNull(req.getPracticeId())) {
+        if (ObjectUtil.isNotNull(req.getPracticeId())) {
             updatePracticeSubmitTime(req);
             PracticeInfo practiceInfoQuery = practiceInfoDao.queryById(req.getPracticeId());
             resultVO.setTimeUse(practiceInfoQuery.getTimeUse());
             resultVO.setPracticeId(req.getPracticeId());
-        } else {
+        }
+        // 若practiceId为空，表示刚开始练习，插入一条练习记录
+        else {
             // 插入一条练习记录
             resultVO.setPracticeId(insertPracticeInfoAndGetPracticeId(req.getSetId()));
         }
@@ -314,6 +314,7 @@ public class PracticeSetServiceImpl implements PracticeSetService {
         insertEntity.setSetId(setId);
         insertEntity.setCompleteStatus(0);
         insertEntity.setCreatedBy(UserContextHolder.getUserContext().getUserName());
+        insertEntity.setTimeUse("00:00:00");
         practiceInfoDao.insert(insertEntity);
         return insertEntity.getId();
     }

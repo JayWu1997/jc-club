@@ -1,6 +1,7 @@
 package com.jingdianjichi.practice.server.service;
 
 import com.jingdianjichi.practice.server.entity.PracticeDetail;
+import com.jingdianjichi.practice.server.req.SubmitPracticeDetailReq;
 
 import java.util.List;
 
@@ -11,6 +12,8 @@ import java.util.List;
  * @since 2025-01-08 18:21:19
  */
 public interface PracticeDetailService {
+
+    Boolean submit(SubmitPracticeDetailReq req);
 
     /**
      * 通过ID查询单条数据

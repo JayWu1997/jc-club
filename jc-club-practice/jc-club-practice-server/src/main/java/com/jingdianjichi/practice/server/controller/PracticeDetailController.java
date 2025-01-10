@@ -9,6 +9,7 @@ import com.jingdianjichi.practice.server.common.exception.BusinessException;
 import com.jingdianjichi.practice.server.common.util.ParamCheckUtil;
 import com.jingdianjichi.practice.server.convert.PracticeDetailDTOConverter;
 import com.jingdianjichi.practice.server.entity.PracticeDetail;
+import com.jingdianjichi.practice.server.req.SubmitPracticeDetailReq;
 import com.jingdianjichi.practice.server.service.PracticeDetailService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -28,11 +29,38 @@ import java.util.List;
  */
 @Slf4j
 @RestController
-@RequestMapping("/practiceDetail")
+@RequestMapping("/practice/detail")
 public class PracticeDetailController {
 
     @Resource
     private PracticeDetailService practiceDetailService;
+
+    /**
+     * 提交
+     * @param req
+     * @return
+     */
+    @PostMapping("/submit")
+    public Result<Boolean> submit(@RequestBody SubmitPracticeDetailReq req) {
+        try {
+            if (log.isInfoEnabled()) {
+                log.info("PracticeSetController.submit.req:{}", JSON.toJSON(req));
+            }
+
+            ParamCheckUtil.checkNotNull(req.getPracticeId(), BusinessErrorEnum.PARAM_ERROR, "practiceId 不能为空!");
+            ParamCheckUtil.checkNotNull(req.getSetId(), BusinessErrorEnum.PARAM_ERROR, "setId 不能为空!");
+            ParamCheckUtil.checkNotNull(req.getTimeUse(), BusinessErrorEnum.PARAM_ERROR, "用时不能为空!");
+            ParamCheckUtil.checkNotNull(req.getSubmitTime(), BusinessErrorEnum.PARAM_ERROR, "提交时间不能为空!");
+
+            return Result.success(practiceDetailService.submit(req));
+        } catch (BusinessException e) {
+            log.error("PracticeSetController.submit.error:{}", e.getMessage(), e);
+            return Result.fail(e.getMessage(), Boolean.FALSE);
+        } catch (Exception e) {
+            log.error("PracticeSetController.submit.error:{}", e.getMessage(), e);
+            return Result.fail("提交失败！", Boolean.FALSE);
+        }
+    }
 
     /**
      * 新增
