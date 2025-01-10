@@ -1,9 +1,11 @@
 package com.jingdianjichi.practice.server.service;
 
 import com.jingdianjichi.practice.api.req.PracticeSetDTO;
+import com.jingdianjichi.practice.server.req.GetPracticeSubjectReq;
 import com.jingdianjichi.practice.server.req.GetSubjectsReq;
 import com.jingdianjichi.practice.server.vo.GetSubjectsVO;
 import com.jingdianjichi.practice.server.vo.PracticeSetVO;
+import com.jingdianjichi.practice.server.vo.PracticeSubjectVO;
 import com.jingdianjichi.practice.server.vo.SpecialPracticeVO;
 import com.jingdianjichi.practice.server.entity.PracticeSet;
 
@@ -88,4 +90,11 @@ public interface PracticeSetService {
      * @return
      */
     GetSubjectsVO getSubjects(GetSubjectsReq req);
+
+    /**
+     * 根据题目 id 获取题目信息
+     * @param req
+     * @return
+     */
+    PracticeSubjectVO getPracticeSubject(GetPracticeSubjectReq req);
 }

@@ -27,4 +27,17 @@ public interface SubjectInfoFeignService {
      */
     @PostMapping("/subject/queryByConditionInMultiTable")
     public Result<List<SubjectInfoDTO>> queryByConditionInMultiTable(@RequestBody SubjectInfoDTO dto);
+
+    /**
+     * 根据题目信息查询题目详情
+     * <p>
+     * 此方法通过POST请求接收一个SubjectInfoDTO对象作为参数，该对象包含了查询所需的信息，
+     * 包括题目ID、类别ID和标签ID。方法首先会检查这些参数是否为空，然后将DTO转换为BO，
+     * 并调用领域服务获取题目信息。最后，将结果转换回DTO并返回。
+     *
+     * @param subjectInfoDTO 包含查询信息的SubjectInfoDTO对象
+     * @return 返回一个Result对象，其中包含查询到的SubjectInfoDTO对象
+     */
+    @PostMapping("/subject/querySubjectInfo")
+    public Result<SubjectInfoDTO> querySubjectInfo(@RequestBody SubjectInfoDTO subjectInfoDTO);
 }

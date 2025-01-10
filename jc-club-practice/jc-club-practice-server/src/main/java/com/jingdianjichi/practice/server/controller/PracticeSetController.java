@@ -9,11 +9,13 @@ import com.jingdianjichi.practice.server.common.exception.BusinessException;
 import com.jingdianjichi.practice.server.common.util.ParamCheckUtil;
 import com.jingdianjichi.practice.server.convert.PracticeSetDTOConverter;
 import com.jingdianjichi.practice.server.entity.PracticeSet;
+import com.jingdianjichi.practice.server.req.AddPracticeReq;
+import com.jingdianjichi.practice.server.req.GetPracticeSubjectReq;
 import com.jingdianjichi.practice.server.req.GetSubjectsReq;
 import com.jingdianjichi.practice.server.service.PracticeSetService;
-import com.jingdianjichi.practice.server.vo.AddPracticeReq;
 import com.jingdianjichi.practice.server.vo.GetSubjectsVO;
 import com.jingdianjichi.practice.server.vo.PracticeSetVO;
+import com.jingdianjichi.practice.server.vo.PracticeSubjectVO;
 import com.jingdianjichi.practice.server.vo.SpecialPracticeVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -84,12 +86,13 @@ public class PracticeSetController {
 
     /**
      * 根据套题 id 获取题目列表
+     *
      * @param req - setId: not null
      * @return
      */
     @PostMapping("/getSubjects")
-    public Result<GetSubjectsVO> getSubjects(@RequestBody GetSubjectsReq req){
-        try{
+    public Result<GetSubjectsVO> getSubjects(@RequestBody GetSubjectsReq req) {
+        try {
             if (log.isInfoEnabled()) {
                 log.info("PracticeSetController.getSubjects.req:{}", JSON.toJSON(req));
             }
@@ -106,6 +109,37 @@ public class PracticeSetController {
             return Result.fail(e.getMessage());
         } catch (Exception e) {
             log.error("PracticeSetController.getSubjects.error:{}", e.getMessage(), e);
+            return Result.fail("获取题目列表失败！");
+        }
+    }
+
+    /**
+     * 根据题目 id 获取题目信息
+     *
+     * @param req subjectId : not null
+     *            subjectType: not null
+     * @return
+     */
+    @PostMapping("/getPracticeSubject")
+    public Result<PracticeSubjectVO> getPracticeSubject(@RequestBody GetPracticeSubjectReq req) {
+        try {
+            if (log.isInfoEnabled()) {
+                log.info("PracticeSetController.getPracticeSubject.req:{}", JSON.toJSON(req));
+            }
+
+            ParamCheckUtil.checkNotNull(req.getSubjectId(), BusinessErrorEnum.PARAM_ERROR, "题目 id 不能为空!");
+            ParamCheckUtil.checkNotNull(req.getSubjectType(), BusinessErrorEnum.PARAM_ERROR, "题目类型不能为空!");
+
+            PracticeSubjectVO vo = practiceSetService.getPracticeSubject(req);
+            if (log.isInfoEnabled()) {
+                log.info("PracticeSetController.getPracticeSubject.result:{}", JSON.toJSON(vo));
+            }
+            return Result.success(vo);
+        } catch (BusinessException e) {
+            log.error("PracticeSetController.getPracticeSubject.error:{}", e.getMessage(), e);
+            return Result.fail(e.getMessage());
+        } catch (Exception e) {
+            log.error("PracticeSetController.getPracticeSubject.error:{}", e.getMessage(), e);
             return Result.fail("获取题目列表失败！");
         }
     }

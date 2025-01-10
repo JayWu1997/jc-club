@@ -9,6 +9,7 @@ import com.jingdianjichi.practice.server.dao.PracticeSetDao;
 import com.jingdianjichi.practice.server.dao.PracticeSetDetailDao;
 import com.jingdianjichi.practice.server.entity.PracticeSet;
 import com.jingdianjichi.practice.server.entity.PracticeSetDetail;
+import com.jingdianjichi.practice.server.req.GetPracticeSubjectReq;
 import com.jingdianjichi.practice.server.req.GetSubjectsReq;
 import com.jingdianjichi.practice.server.service.PracticeSetService;
 import com.jingdianjichi.practice.server.vo.*;
@@ -294,6 +295,37 @@ public class PracticeSetServiceImpl implements PracticeSetService {
         }
 
         resultVO.setSubjectList(subjectList);
+        return resultVO;
+    }
+
+    /**
+     * 根据题目 id 获取题目信息
+     *
+     * @param req
+     * @return
+     */
+    @Override
+    public PracticeSubjectVO getPracticeSubject(GetPracticeSubjectReq req) {
+        PracticeSubjectVO resultVO = new PracticeSubjectVO();
+        SubjectInfoDTO query = new SubjectInfoDTO();
+        query.setId(req.getSubjectId());
+        query.setSubjectType(req.getSubjectType());
+        Result<SubjectInfoDTO> result = subjectInfoFeignService.querySubjectInfo(query);
+        if (ObjectUtil.isNotNull(result) && ObjectUtil.isNotNull(result.getData())) {
+            SubjectInfoDTO subjectInfoDTO = result.getData();
+            resultVO.setSubjectName(subjectInfoDTO.getSubjectName());
+            resultVO.setSubjectType(subjectInfoDTO.getSubjectType());
+            if (CollectionUtil.isNotEmpty(subjectInfoDTO.getOptionList())) {
+                List<SubjectOptionVO> optionVOList = new ArrayList<>();
+                subjectInfoDTO.getOptionList().forEach(option -> {
+                    SubjectOptionVO optionVO = new SubjectOptionVO();
+                    optionVO.setOptionContent(option.getOptionContent());
+                    optionVO.setOptionType(option.getOptionType());
+                    optionVOList.add(optionVO);
+                });
+                resultVO.setOptionList(optionVOList);
+            }
+        }
         return resultVO;
     }
 

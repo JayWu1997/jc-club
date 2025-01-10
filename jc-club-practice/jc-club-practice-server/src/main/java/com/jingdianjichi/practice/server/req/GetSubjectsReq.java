@@ -12,4 +12,9 @@ public class GetSubjectsReq {
      * 套题 id
      */
     private Long setId;
+
+    /**
+     * 练习 id
+     */
+    private Long practiceId;
 }
