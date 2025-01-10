@@ -3,7 +3,7 @@ package com.jingdianjichi.practice.server.common.util;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
-import com.jingdianjichi.practice.server.common.enums.BusinessErrorEnum;
+import com.jingdianjichi.practice.server.common.exception.BusinessErrorEnum;
 import com.jingdianjichi.practice.server.common.exception.BusinessException;
 
 import java.util.Collection;

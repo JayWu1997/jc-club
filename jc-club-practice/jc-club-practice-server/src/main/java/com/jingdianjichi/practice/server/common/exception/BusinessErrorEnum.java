@@ -1,4 +1,4 @@
-package com.jingdianjichi.practice.server.exception;
+package com.jingdianjichi.practice.server.common.exception;
 
 import lombok.Getter;
 

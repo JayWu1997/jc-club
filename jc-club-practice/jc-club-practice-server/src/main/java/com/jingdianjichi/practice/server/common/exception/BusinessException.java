@@ -1,6 +1,5 @@
 package com.jingdianjichi.practice.server.common.exception;
 
-import com.jingdianjichi.practice.server.common.enums.BusinessErrorEnum;
 import lombok.Getter;
 import lombok.Setter;
 

@@ -4,13 +4,15 @@ import com.alibaba.fastjson.JSON;
 import com.jingdianjichi.practice.api.common.PageResult;
 import com.jingdianjichi.practice.api.req.PracticeSetDTO;
 import com.jingdianjichi.practice.api.resp.Result;
-import com.jingdianjichi.practice.server.common.enums.BusinessErrorEnum;
+import com.jingdianjichi.practice.server.common.exception.BusinessErrorEnum;
 import com.jingdianjichi.practice.server.common.exception.BusinessException;
 import com.jingdianjichi.practice.server.common.util.ParamCheckUtil;
 import com.jingdianjichi.practice.server.convert.PracticeSetDTOConverter;
 import com.jingdianjichi.practice.server.entity.PracticeSet;
+import com.jingdianjichi.practice.server.req.GetSubjectsReq;
 import com.jingdianjichi.practice.server.service.PracticeSetService;
 import com.jingdianjichi.practice.server.vo.AddPracticeReq;
+import com.jingdianjichi.practice.server.vo.GetSubjectsVO;
 import com.jingdianjichi.practice.server.vo.PracticeSetVO;
 import com.jingdianjichi.practice.server.vo.SpecialPracticeVO;
 import lombok.extern.slf4j.Slf4j;
@@ -77,6 +79,34 @@ public class PracticeSetController {
         } catch (Exception e) {
             log.error("PracticeSetController.addPractice.error:{}", e.getMessage(), e);
             return Result.fail("添加失败！");
+        }
+    }
+
+    /**
+     * 根据套题 id 获取题目列表
+     * @param req - setId: not null
+     * @return
+     */
+    @PostMapping("/getSubjects")
+    public Result<GetSubjectsVO> getSubjects(@RequestBody GetSubjectsReq req){
+        try{
+            if (log.isInfoEnabled()) {
+                log.info("PracticeSetController.getSubjects.req:{}", JSON.toJSON(req));
+            }
+
+            ParamCheckUtil.checkNotNull(req.getSetId(), BusinessErrorEnum.PARAM_ERROR, "setId 不能为空!");
+
+            GetSubjectsVO vo = practiceSetService.getSubjects(req);
+            if (log.isInfoEnabled()) {
+                log.info("PracticeSetController.getSubjects.result:{}", JSON.toJSON(vo));
+            }
+            return Result.success(vo);
+        } catch (BusinessException e) {
+            log.error("PracticeSetController.getSubjects.error:{}", e.getMessage(), e);
+            return Result.fail(e.getMessage());
+        } catch (Exception e) {
+            log.error("PracticeSetController.getSubjects.error:{}", e.getMessage(), e);
+            return Result.fail("获取题目列表失败！");
         }
     }
 

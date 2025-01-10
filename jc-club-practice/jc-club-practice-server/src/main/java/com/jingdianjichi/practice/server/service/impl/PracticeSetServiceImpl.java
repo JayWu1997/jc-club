@@ -3,12 +3,13 @@ package com.jingdianjichi.practice.server.service.impl;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.jingdianjichi.practice.api.req.PracticeSetDTO;
+import com.jingdianjichi.practice.server.common.exception.BusinessErrorEnum;
+import com.jingdianjichi.practice.server.common.exception.BusinessException;
 import com.jingdianjichi.practice.server.dao.PracticeSetDao;
 import com.jingdianjichi.practice.server.dao.PracticeSetDetailDao;
 import com.jingdianjichi.practice.server.entity.PracticeSet;
 import com.jingdianjichi.practice.server.entity.PracticeSetDetail;
-import com.jingdianjichi.practice.server.exception.BusinessErrorEnum;
-import com.jingdianjichi.practice.server.exception.BusinessException;
+import com.jingdianjichi.practice.server.req.GetSubjectsReq;
 import com.jingdianjichi.practice.server.service.PracticeSetService;
 import com.jingdianjichi.practice.server.vo.*;
 import com.jingdianjichi.subject.api.req.SubjectCategoryDTO;
@@ -24,6 +25,7 @@ import org.springframework.transaction.support.DefaultTransactionDefinition;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -256,6 +258,43 @@ public class PracticeSetServiceImpl implements PracticeSetService {
             return vo;
         }).collect(Collectors.toList());
         return voList;
+    }
+
+    /**
+     * 根据 paracticeId 或者 setId 获取套题题目列表
+     *
+     * @param req
+     * @return
+     */
+    @Override
+    public GetSubjectsVO getSubjects(GetSubjectsReq req) {
+        GetSubjectsVO resultVO = new GetSubjectsVO();
+        List<PracticeSubjectDetailVO> subjectList = Collections.emptyList();
+
+        // 查询套题名称
+        PracticeSet practiceSet = practiceSetDao.queryById(req.getSetId());
+        if (ObjectUtil.isNull(practiceSet)) {
+            throw new BusinessException(BusinessErrorEnum.PARAM_ERROR, "此套题不存在");
+        }
+        resultVO.setTitle(practiceSet.getSetName());
+
+        // 查询套题下的所有题目
+        Long setId = req.getSetId();
+        PracticeSetDetail subjectQuery = new PracticeSetDetail();
+        subjectQuery.setSetId(setId);
+        subjectQuery.setIsDeleted(0);
+        List<PracticeSetDetail> detailList = practiceSetDetailDao.queryByPage(subjectQuery, 0, 100);
+        if (CollectionUtil.isNotEmpty(detailList)) {
+            subjectList = detailList.stream().map(detail -> {
+                PracticeSubjectDetailVO vo = new PracticeSubjectDetailVO();
+                vo.setSubjectId(detail.getSubjectId());
+                vo.setSubjectType(detail.getSubjectType());
+                return  vo;
+            }).collect(Collectors.toList());
+        }
+
+        resultVO.setSubjectList(subjectList);
+        return resultVO;
     }
 
     private void injectSecondaryCategoryListIntoPrimaryCategory(List<SubjectCategoryDTO> categoryDTOList, SpecialPracticeVO vo) {

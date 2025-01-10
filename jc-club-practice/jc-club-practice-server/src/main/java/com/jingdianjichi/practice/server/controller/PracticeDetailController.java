@@ -4,7 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.jingdianjichi.practice.api.common.PageResult;
 import com.jingdianjichi.practice.api.req.PracticeDetailDTO;
 import com.jingdianjichi.practice.api.resp.Result;
-import com.jingdianjichi.practice.server.common.enums.BusinessErrorEnum;
+import com.jingdianjichi.practice.server.common.exception.BusinessErrorEnum;
 import com.jingdianjichi.practice.server.common.exception.BusinessException;
 import com.jingdianjichi.practice.server.common.util.ParamCheckUtil;
 import com.jingdianjichi.practice.server.convert.PracticeDetailDTOConverter;
