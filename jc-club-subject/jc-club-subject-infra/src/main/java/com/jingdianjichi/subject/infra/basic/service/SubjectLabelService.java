@@ -53,10 +53,11 @@ public interface SubjectLabelService {
 
     /**
      * 根据分类 id 查询与其标签列表
-     * @param categoryId 分类 id
+     *
+     * @param categoryIdList 分类 id
      * @return 标签列表
      */
-    List<SubjectLabel> queryDistinctLabelListByCategoryId(Long categoryId);
+    List<SubjectLabel> queryDistinctLabelListByCategoryIds(List<Long> categoryIdList);
 
     /**
      * 根据条件查询数量

@@ -14,16 +14,24 @@ import com.jingdianjichi.practice.server.entity.PracticeDetail;
 import com.jingdianjichi.practice.server.entity.PracticeInfo;
 import com.jingdianjichi.practice.server.entity.PracticeSetDetail;
 import com.jingdianjichi.practice.server.req.SubmitPracticeDetailReq;
+import com.jingdianjichi.practice.server.req.SubmitSubjectReq;
 import com.jingdianjichi.practice.server.service.PracticeDetailService;
+import com.jingdianjichi.subject.api.req.SubjectAnswerDTO;
+import com.jingdianjichi.subject.api.req.SubjectInfoDTO;
+import com.jingdianjichi.subject.api.service.SubjectInfoFeignService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -46,6 +54,9 @@ public class PracticeDetailServiceImpl implements PracticeDetailService {
     private PlatformTransactionManager platformTransactionManager;
     @Resource
     private PracticeInfoDao practiceInfoDao;
+    @Qualifier("com.jingdianjichi.subject.api.service.SubjectInfoFeignService")
+    @Autowired
+    private SubjectInfoFeignService subjectInfoFeignService;
 
     /**
      * 提交
@@ -233,5 +244,60 @@ public class PracticeDetailServiceImpl implements PracticeDetailService {
     @Override
     public int deleteById(Long id) {
         return this.practiceDetailDao.deleteById(id);
+    }
+
+    /**
+     * 提交题目
+     *
+     * @param req
+     * @return
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public Boolean submitSubject(SubmitSubjectReq req) {
+        String timeUse = req.getTimeUse();
+        if ("0".equals(timeUse)) {
+            timeUse = "000000";
+        }
+        timeUse = timeUse.substring(0, 2) + ":" + timeUse.substring(2, 4) + ":" + timeUse.substring(4, 6);
+        PracticeInfo infoUpdate = new PracticeInfo();
+        infoUpdate.setId(req.getPracticeId());
+        infoUpdate.setSubmitTime(new Date());
+        infoUpdate.setTimeUse(timeUse);
+        practiceInfoDao.update(infoUpdate);
+
+        PracticeDetail practiceDetail = new PracticeDetail();
+        practiceDetail.setPracticeId(req.getPracticeId());
+        practiceDetail.setSubjectId(req.getSubjectId());
+        practiceDetail.setSubjectType(req.getSubjectType());
+        // 答案排序(eg: 1,3,4)
+        Collections.sort(req.getAnswerContents());
+        practiceDetail.setAnswerContent(req.getAnswerContents().toString());
+
+        SubjectInfoDTO subjectQuery = new SubjectInfoDTO();
+        subjectQuery.setId(req.getSubjectId());
+        SubjectInfoDTO subjectInfoDTO = subjectInfoFeignService.querySubjectInfo(subjectQuery).getData();
+        if (ObjectUtil.isNull(subjectInfoDTO)) {
+            throw new BusinessException(BusinessErrorEnum.FAIL, "提交的题目不存在");
+        }
+        if(req.getSubjectType() != 4) {
+            List<SubjectAnswerDTO> optionList = subjectInfoDTO.getOptionList();
+            List<Integer> correctOptionIdList = new ArrayList<>();
+            if (CollectionUtil.isNotEmpty(optionList)) {
+                optionList.forEach(item -> {
+                    if (item.getIsCorrect() == 1) {
+                        correctOptionIdList.add(item.getOptionType());
+                    }
+                });
+            }
+            if (CollectionUtil.isEqualList(req.getAnswerContents(), correctOptionIdList)) {
+                practiceDetail.setAnswerStatus(1);
+            } else {
+                practiceDetail.setAnswerStatus(0);
+            }
+        }
+        practiceDetailDao.insertOrUpdateBatch(Collections.singletonList(practiceDetail));
+
+        return Boolean.TRUE;
     }
 }

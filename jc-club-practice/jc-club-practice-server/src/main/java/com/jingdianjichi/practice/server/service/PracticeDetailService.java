@@ -2,6 +2,7 @@ package com.jingdianjichi.practice.server.service;
 
 import com.jingdianjichi.practice.server.entity.PracticeDetail;
 import com.jingdianjichi.practice.server.req.SubmitPracticeDetailReq;
+import com.jingdianjichi.practice.server.req.SubmitSubjectReq;
 
 import java.util.List;
 
@@ -73,4 +74,10 @@ public interface PracticeDetailService {
      */
     int deleteById(Long id);
 
+    /**
+     * 提交题目
+     * @param req
+     * @return
+     */
+    Boolean submitSubject(SubmitSubjectReq req);
 }

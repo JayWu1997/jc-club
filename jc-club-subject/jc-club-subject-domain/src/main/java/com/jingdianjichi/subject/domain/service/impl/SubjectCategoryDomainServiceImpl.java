@@ -226,7 +226,7 @@ public class SubjectCategoryDomainServiceImpl implements SubjectCategoryDomainSe
     }
 
     private SubjectCategoryBO querySubjectCategoryBO(SubjectCategory category) {
-        List<SubjectLabel> labelList = subjectLabelService.queryDistinctLabelListByCategoryId(category.getId());
+        List<SubjectLabel> labelList = subjectLabelService.queryDistinctLabelListByCategoryIds(CollectionUtil.newArrayList(category.getId()));
         SubjectCategoryBO boTemp = SubjectCategoryBOConverter.INSTANCE.convertEntity2Bo(category);
         boTemp.setLabelDTOList(SubjectLabelBOConverter.INSTANCE.convertEntity2BO(labelList));
         return boTemp;

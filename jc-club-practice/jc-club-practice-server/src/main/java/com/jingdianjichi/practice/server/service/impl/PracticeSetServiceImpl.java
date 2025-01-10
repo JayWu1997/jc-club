@@ -116,6 +116,7 @@ public class PracticeSetServiceImpl implements PracticeSetService {
         PracticeSet practiceSet = new PracticeSet();
         practiceSet.setSetType(1);
         practiceSet.setSetName(getSetName(dto));
+        practiceSet.setSetHeat(0);
 
         // 查询岗位名
         practiceSet.setPrimaryCategoryId(getPrimaryCategoryId(dto));

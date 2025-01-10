@@ -84,6 +84,6 @@ public interface SubjectLabelDao {
      * @param categoryId 分类 id
      * @return 与指定分类关联的所有标签
      */
-    List<SubjectLabel> queryDistinctLabelListByCategoryId(@Param("categoryId") Long categoryId);
+    List<SubjectLabel> queryDistinctLabelListByCategoryIds(@Param("categoryIdList") List<Long> categoryIdList);
 }
 

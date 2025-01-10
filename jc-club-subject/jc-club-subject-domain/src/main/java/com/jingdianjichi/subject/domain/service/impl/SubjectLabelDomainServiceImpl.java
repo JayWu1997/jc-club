@@ -7,15 +7,17 @@ import com.jingdianjichi.subject.common.exception.BusinessException;
 import com.jingdianjichi.subject.domain.convert.SubjectLabelBOConverter;
 import com.jingdianjichi.subject.domain.entity.SubjectLabelBO;
 import com.jingdianjichi.subject.domain.service.SubjectLabelDomainService;
+import com.jingdianjichi.subject.infra.basic.entity.SubjectCategory;
 import com.jingdianjichi.subject.infra.basic.entity.SubjectLabel;
+import com.jingdianjichi.subject.infra.basic.service.SubjectCategoryService;
 import com.jingdianjichi.subject.infra.basic.service.SubjectLabelService;
-import com.jingdianjichi.subject.infra.basic.service.SubjectMappingService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 题目标签领域服务接口的实现
@@ -26,9 +28,8 @@ public class SubjectLabelDomainServiceImpl implements SubjectLabelDomainService 
 
     @Resource
     private SubjectLabelService subjectLabelService;
-
     @Resource
-    private SubjectMappingService subjectMappingService;
+    private SubjectCategoryService subjectCategoryService;
 
     /**
      * 新增题目标签
@@ -81,7 +82,22 @@ public class SubjectLabelDomainServiceImpl implements SubjectLabelDomainService 
     @Override
     public List<SubjectLabelBO> queryBatchByCategoryId(SubjectLabelBO subjectLabelBO) {
         List<SubjectLabelBO> boList = new ArrayList<>();
-        List<SubjectLabel> labelList = subjectLabelService.queryDistinctLabelListByCategoryId(subjectLabelBO.getCategoryId());
+        SubjectCategory category = subjectCategoryService.queryById(subjectLabelBO.getCategoryId());
+        if (category == null) {
+            throw new BusinessException(BusinessErrorEnum.PARAM_ERROR, "分类不存在");
+        }
+        List<Long> categoryIdList = new ArrayList<>();
+        if (category.getParentId() == 0) {
+            SubjectCategory queryChildren = new SubjectCategory();
+            queryChildren.setParentId(subjectLabelBO.getCategoryId());
+            List<SubjectCategory> categoryList = subjectCategoryService.queryCategory(queryChildren);
+            if (CollectionUtil.isNotEmpty(categoryList)) {
+                categoryIdList.addAll(categoryList.stream().map(SubjectCategory::getId).collect(Collectors.toList()));
+            }
+        } else {
+            categoryIdList.add(subjectLabelBO.getCategoryId());
+        }
+        List<SubjectLabel> labelList = subjectLabelService.queryDistinctLabelListByCategoryIds(categoryIdList);
         if (CollectionUtil.isNotEmpty(labelList)) {
             boList = SubjectLabelBOConverter.INSTANCE.convertEntity2BO(labelList);
         }

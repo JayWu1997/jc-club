@@ -1,11 +1,13 @@
 package com.jingdianjichi.subject.infra.basic.service.impl;
 
+import cn.hutool.core.collection.CollectionUtil;
 import com.jingdianjichi.subject.infra.basic.dao.SubjectLabelDao;
 import com.jingdianjichi.subject.infra.basic.entity.SubjectLabel;
 import com.jingdianjichi.subject.infra.basic.service.SubjectLabelService;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -77,12 +79,15 @@ public class SubjectLabelServiceImpl implements SubjectLabelService {
     /**
      * 根据分类 id 查询与其标签列表
      *
-     * @param categoryId 分类 id
+     * @param categoryIdList 分类 id
      * @return 标签列表
      */
     @Override
-    public List<SubjectLabel> queryDistinctLabelListByCategoryId(Long categoryId) {
-        return subjectLabelDao.queryDistinctLabelListByCategoryId(categoryId);
+    public List<SubjectLabel> queryDistinctLabelListByCategoryIds(List<Long> categoryIdList) {
+        if (CollectionUtil.isEmpty(categoryIdList)) {
+            return new ArrayList<>();
+        }
+        return subjectLabelDao.queryDistinctLabelListByCategoryIds(categoryIdList);
     }
 
     /**

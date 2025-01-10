@@ -153,11 +153,14 @@
     </select>
 
     <!--  根据分类 id 查询与其关联的标签列表  -->
-    <select id="queryDistinctLabelListByCategoryId"
+    <select id="queryDistinctLabelListByCategoryIds"
             resultMap="SubjectLabelMap">
         select *
         from subject_label
-        where category_id = #{categoryId}
+        where category_id in
+        <foreach item="categoryId" collection="categoryIdList" open="(" separator="," close=")">
+            #{categoryId}
+        </foreach>
           and is_deleted = 0
     </select>
 </mapper>

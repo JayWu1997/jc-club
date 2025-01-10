@@ -10,6 +10,7 @@ import com.jingdianjichi.practice.server.common.util.ParamCheckUtil;
 import com.jingdianjichi.practice.server.convert.PracticeDetailDTOConverter;
 import com.jingdianjichi.practice.server.entity.PracticeDetail;
 import com.jingdianjichi.practice.server.req.SubmitPracticeDetailReq;
+import com.jingdianjichi.practice.server.req.SubmitSubjectReq;
 import com.jingdianjichi.practice.server.service.PracticeDetailService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -53,6 +54,29 @@ public class PracticeDetailController {
             ParamCheckUtil.checkNotNull(req.getSubmitTime(), BusinessErrorEnum.PARAM_ERROR, "提交时间不能为空!");
 
             return Result.success(practiceDetailService.submit(req));
+        } catch (BusinessException e) {
+            log.error("PracticeSetController.submit.error:{}", e.getMessage(), e);
+            return Result.fail(e.getMessage(), Boolean.FALSE);
+        } catch (Exception e) {
+            log.error("PracticeSetController.submit.error:{}", e.getMessage(), e);
+            return Result.fail("提交失败！", Boolean.FALSE);
+        }
+    }
+
+    @PostMapping("/submitSubject")
+    public Result<Boolean> submitSubject(@RequestBody SubmitSubjectReq req) {
+        try {
+            if (log.isInfoEnabled()) {
+                log.info("PracticeSetController.submit.req:{}", JSON.toJSON(req));
+            }
+
+            ParamCheckUtil.checkNotNull(req.getPracticeId(), BusinessErrorEnum.PARAM_ERROR, "practiceId 不能为空!");
+            ParamCheckUtil.checkNotNull(req.getSubjectId(), BusinessErrorEnum.PARAM_ERROR, "subjectId 不能为空!");
+            ParamCheckUtil.checkNotNull(req.getSubjectType(), BusinessErrorEnum.PARAM_ERROR, "subjectType 不能为空!");
+            ParamCheckUtil.checkCollNotEmpty(req.getAnswerContents(), BusinessErrorEnum.PARAM_ERROR, "answerContents 不能为空!");
+            ParamCheckUtil.checkStrNotEmpty(req.getTimeUse(), BusinessErrorEnum.PARAM_ERROR, "用时不能为空!");
+
+            return Result.success(practiceDetailService.submitSubject(req));
         } catch (BusinessException e) {
             log.error("PracticeSetController.submit.error:{}", e.getMessage(), e);
             return Result.fail(e.getMessage(), Boolean.FALSE);
