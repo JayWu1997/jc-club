@@ -21,6 +21,10 @@ public class SubjectInfoBO implements Serializable {
      */
     private Long id;
     /**
+     * 查询数量
+     */
+    private Integer queryCount;
+    /**
      * 题目名称
      */
     private String subjectName;

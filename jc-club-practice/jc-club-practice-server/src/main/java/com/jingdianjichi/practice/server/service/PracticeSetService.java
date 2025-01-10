@@ -1,5 +1,7 @@
 package com.jingdianjichi.practice.server.service;
 
+import com.jingdianjichi.practice.api.req.PracticeSetDTO;
+import com.jingdianjichi.practice.server.vo.PracticeSetVO;
 import com.jingdianjichi.practice.server.vo.SpecialPracticeVO;
 import com.jingdianjichi.practice.server.entity.PracticeSet;
 
@@ -42,10 +44,10 @@ public interface PracticeSetService {
     /**
      * 新增数据
      *
-     * @param practiceSet 实例对象
+     * @param dto 实例对象
      * @return 实例对象
      */
-    int insert(PracticeSet practiceSet);
+    PracticeSetVO insert(PracticeSetDTO dto);
 
     /**
      * 批量新增数据

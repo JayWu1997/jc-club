@@ -57,4 +57,11 @@ public interface SubjectLabelService {
      * @return 标签列表
      */
     List<SubjectLabel> queryDistinctLabelListByCategoryId(Long categoryId);
+
+    /**
+     * 根据条件查询数量
+     * @param subjectLabel
+     * @return
+     */
+    long countByCondition(SubjectLabel subjectLabel);
 }

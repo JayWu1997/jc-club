@@ -1,19 +1,20 @@
 package com.jingdianjichi.subject.domain.service.impl;
 
+import cn.hutool.core.collection.CollectionUtil;
+import com.jingdianjichi.subject.common.enums.BusinessErrorEnum;
 import com.jingdianjichi.subject.common.enums.IsDeletedEnum;
+import com.jingdianjichi.subject.common.exception.BusinessException;
 import com.jingdianjichi.subject.domain.convert.SubjectLabelBOConverter;
 import com.jingdianjichi.subject.domain.entity.SubjectLabelBO;
 import com.jingdianjichi.subject.domain.service.SubjectLabelDomainService;
 import com.jingdianjichi.subject.infra.basic.entity.SubjectLabel;
-import com.jingdianjichi.subject.infra.basic.entity.SubjectMapping;
 import com.jingdianjichi.subject.infra.basic.service.SubjectLabelService;
 import com.jingdianjichi.subject.infra.basic.service.SubjectMappingService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -37,6 +38,12 @@ public class SubjectLabelDomainServiceImpl implements SubjectLabelDomainService 
      */
     @Override
     public Boolean insert(SubjectLabelBO subjectLabelBO) {
+        SubjectLabel queryReq = new SubjectLabel();
+        queryReq.setLabelName(subjectLabelBO.getLabelName());
+        queryReq.setCategoryId(subjectLabelBO.getCategoryId());
+        if (subjectLabelService.countByCondition(queryReq) > 0) {
+            throw new BusinessException(BusinessErrorEnum.PARAM_ERROR, "该标签已存在");
+        }
         return subjectLabelService.insert(SubjectLabelBOConverter.INSTANCE.convertBO2Entity(subjectLabelBO)) > 0;
     }
 
@@ -73,14 +80,11 @@ public class SubjectLabelDomainServiceImpl implements SubjectLabelDomainService 
      */
     @Override
     public List<SubjectLabelBO> queryBatchByCategoryId(SubjectLabelBO subjectLabelBO) {
-        SubjectMapping subjectMapping = new SubjectMapping();
-        subjectMapping.setCategoryId(subjectLabelBO.getCategoryId());
-        subjectMapping.setIsDeleted(IsDeletedEnum.NOT_DELETED.getCode());
-        List<Long> labelIdList = subjectMappingService.queryDistinctLabelIdsByCondition(subjectMapping);
-        if(CollectionUtils.isEmpty(labelIdList)) {
-            return Collections.emptyList();
+        List<SubjectLabelBO> boList = new ArrayList<>();
+        List<SubjectLabel> labelList = subjectLabelService.queryDistinctLabelListByCategoryId(subjectLabelBO.getCategoryId());
+        if (CollectionUtil.isNotEmpty(labelList)) {
+            boList = SubjectLabelBOConverter.INSTANCE.convertEntity2BO(labelList);
         }
-        List<SubjectLabel> labelList = subjectLabelService.queryBatchByIds(labelIdList);
-        return SubjectLabelBOConverter.INSTANCE.convertEntity2BO(labelList);
+        return boList;
     }
 }

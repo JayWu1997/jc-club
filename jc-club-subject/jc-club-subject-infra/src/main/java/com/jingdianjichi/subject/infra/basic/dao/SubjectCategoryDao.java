@@ -1,12 +1,10 @@
 package com.jingdianjichi.subject.infra.basic.dao;
-import java.util.Date;
 
 import com.jingdianjichi.subject.infra.basic.entity.SubjectCategory;
+import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
-
-import org.apache.ibatis.annotations.Mapper;
 
 /**
  * 题目分类(SubjectCategory)表数据库访问层
@@ -82,5 +80,13 @@ public interface SubjectCategoryDao {
      */
     List<SubjectCategory> queryByAll(SubjectCategory subjectCategory);
 
+    List<SubjectCategory> queryByLabelIds(@Param("labelIdList") List<Long> labelIdList);
+
+    /**
+     * 根据主键批量查询 Category
+     * @param idList
+     * @return
+     */
+    List<SubjectCategory> queryByIdList(@Param("idList")List<Long> idList);
 }
 

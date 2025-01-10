@@ -29,5 +29,9 @@ public class SubjectMappingBO implements Serializable {
      * 标签id
      */
     private Long labelId;
+    /**
+     * 分类标签组合id，eg: 2-13
+     */
+    private String assembleId;
 }
 

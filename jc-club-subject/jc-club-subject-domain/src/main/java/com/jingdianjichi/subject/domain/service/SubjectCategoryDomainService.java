@@ -26,6 +26,7 @@ public interface SubjectCategoryDomainService {
 
     /**
      * 更新题目分类信息
+     *
      * @param subjectCategoryBO 待更新的主题类别信息，通过 categoryName 检索
      * @return 成功返回 true， 否则返回 false
      */
@@ -33,6 +34,7 @@ public interface SubjectCategoryDomainService {
 
     /**
      * 删除题目分类
+     *
      * @param subjectCategoryBO 待删除的主题类别信息，通过 id 检索
      * @return 成功返回 true， 否则返回 false
      */
@@ -40,6 +42,7 @@ public interface SubjectCategoryDomainService {
 
     /**
      * 查询所有子类和子类的标签
+     *
      * @param categoryBO 父类 id
      * @return 所有子类和子类的标签
      */
@@ -47,7 +50,31 @@ public interface SubjectCategoryDomainService {
 
     /**
      * 查询大类下的分类
+     *
      * @return
      */
     List<SubjectCategoryBO> queryPrimaryCategory(SubjectCategoryBO bo);
+
+    /**
+     * 根据标签批量查询分类
+     *
+     * @param bo
+     * @return
+     */
+    List<SubjectCategoryBO> queryByLabelIds(SubjectCategoryBO bo);
+
+    /**
+     * 根据传入的次级分类名 categoryId 查询此次级分类所属的岗位
+     *
+     * @param bo
+     * @return
+     */
+    SubjectCategoryBO queryPrimaryCategoryByCategoryId(SubjectCategoryBO bo);
+
+    /**
+     *
+     * @param bo
+     * @return
+     */
+    List<SubjectCategoryBO> queryByIdList(SubjectCategoryBO bo);
 }

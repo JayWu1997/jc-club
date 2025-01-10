@@ -1,10 +1,9 @@
 package com.jingdianjichi.subject.infra.basic.entity;
 
-import java.util.Date;
-
 import lombok.Data;
 
 import java.io.Serializable;
+import java.util.Date;
 
 /**
  * 题目分类关系表(SubjectMapping)实体类

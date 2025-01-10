@@ -64,4 +64,14 @@ public interface SubjectInfoService {
      * @return
      */
     List<SubjectInfo> queryByCondition(SubjectInfo subjectInfo, Long categoryId, Long labelId, Integer start, Integer pageSize);
+
+    /**
+     * 多表条件查询
+     *
+     * @param subjectType
+     * @param labelIdList
+     * @param queryCount
+     * @return
+     */
+    List<SubjectInfo> queryByConditionInMultiTable(Integer subjectType, List<Long> labelIdList, Integer queryCount);
 }

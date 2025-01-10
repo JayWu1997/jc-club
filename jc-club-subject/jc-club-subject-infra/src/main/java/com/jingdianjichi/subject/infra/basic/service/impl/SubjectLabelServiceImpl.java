@@ -84,4 +84,15 @@ public class SubjectLabelServiceImpl implements SubjectLabelService {
     public List<SubjectLabel> queryDistinctLabelListByCategoryId(Long categoryId) {
         return subjectLabelDao.queryDistinctLabelListByCategoryId(categoryId);
     }
+
+    /**
+     * 根据条件查询数量
+     *
+     * @param subjectLabel
+     * @return
+     */
+    @Override
+    public long countByCondition(SubjectLabel subjectLabel) {
+        return subjectLabelDao.count(subjectLabel);
+    }
 }

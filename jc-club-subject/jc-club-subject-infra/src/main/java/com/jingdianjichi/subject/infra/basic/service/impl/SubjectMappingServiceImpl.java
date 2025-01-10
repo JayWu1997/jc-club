@@ -1,7 +1,7 @@
 package com.jingdianjichi.subject.infra.basic.service.impl;
 
-import com.jingdianjichi.subject.infra.basic.entity.SubjectMapping;
 import com.jingdianjichi.subject.infra.basic.dao.SubjectMappingDao;
+import com.jingdianjichi.subject.infra.basic.entity.SubjectMapping;
 import com.jingdianjichi.subject.infra.basic.service.SubjectMappingService;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -9,7 +9,6 @@ import org.springframework.util.CollectionUtils;
 import javax.annotation.Resource;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * 题目分类关系表(SubjectMapping)表服务实现类
@@ -85,11 +84,11 @@ public class SubjectMappingServiceImpl implements SubjectMappingService {
      */
     @Override
     public List<Long> queryDistinctLabelIdsByCondition(SubjectMapping subjectMapping) {
-        List<SubjectMapping> mappingList = subjectMappingDao.queryDistinctLabelIdsByCondition(subjectMapping);
-        if (CollectionUtils.isEmpty(mappingList)) {
+        List<Long> idList = subjectMappingDao.queryDistinctLabelIdsByCondition(subjectMapping);
+        if (CollectionUtils.isEmpty(idList)) {
             return Collections.emptyList();
         }
-        return mappingList.stream().map(SubjectMapping::getLabelId).collect(Collectors.toList());
+        return idList;
     }
 
     /**

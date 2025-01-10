@@ -269,4 +269,79 @@ public class SubjectCategoryController {
             return Result.fail("查询分类信息失败！");
         }
     }
+
+    /**
+     * 根据标签id批量查询分类
+     * @param dto labelIdList
+     * @return
+     */
+    @PostMapping("/queryByLabelIds")
+    public Result<List<SubjectCategoryDTO>> queryByLabelIds(@RequestBody SubjectCategoryDTO dto) {
+        try{
+            if (log.isInfoEnabled()) {
+                log.info("SubjectCategoryController.queryByLabelIds.dto:{}", JSON.toJSON(dto));
+            }
+
+            ParamCheckUtil.checkCollNotEmpty(dto.getLabelIdList(), BusinessErrorEnum.PARAM_ERROR, "标签id不能为空");
+
+            SubjectCategoryBO bo = SubjectCategoryDTOConverter.INSTANCE.convertDto2Bo(dto);
+            List<SubjectCategoryBO> categoryBOList = subjectCategoryDomainService.queryByLabelIds(bo);
+            return Result.success(SubjectCategoryDTOConverter.INSTANCE.convertBo2Dto(categoryBOList));
+        } catch (BusinessException e) {
+            log.error("SubjectCategoryController.queryByLabelIds.error:{}", e.getMessage(), e);
+            return Result.fail(e.getMessage());
+        } catch (Exception e) {
+            log.error("SubjectCategoryController.queryByLabelIds.error:{}", e.getMessage(), e);
+            return Result.fail();
+        }
+    }
+
+    /**
+     * 根据传入的次级分类名 id 查询此次级分类所属的岗位
+     * @param dto id
+     * @return
+     */
+    @PostMapping("/queryPrimaryCategoryByCategoryId")
+    public Result<SubjectCategoryDTO> queryPrimaryCategoryByCategoryId(@RequestBody SubjectCategoryDTO dto) {
+        try {
+            if (log.isInfoEnabled()) {
+                log.info("SubjectCategoryController.queryPrimaryCategoryByCategoryId.dto:{}", JSON.toJSON(dto));
+            }
+            ParamCheckUtil.checkNotNull(dto.getId(), BusinessErrorEnum.PARAM_ERROR, "分类id不能为空");
+
+            SubjectCategoryBO bo = SubjectCategoryDTOConverter.INSTANCE.convertDto2Bo(dto);
+            return Result.success(SubjectCategoryDTOConverter.INSTANCE.convertBo2Dto(subjectCategoryDomainService.queryPrimaryCategoryByCategoryId(bo)));
+        } catch (BusinessException e) {
+            log.error("SubjectCategoryController.queryPrimaryCategoryByCategoryId.error:{}", e.getMessage(), e);
+            return Result.fail(e.getMessage());
+        } catch (Exception e) {
+            log.error("SubjectCategoryController.queryPrimaryCategoryByCategoryId.error:{}", e.getMessage(), e);
+            return Result.fail("查询岗位信息失败！");
+        }
+    }
+
+    /**
+     * 根据分类id批量查询分类
+     * @param dto idList
+     * @return
+     */
+    @PostMapping("/queryByIdList")
+    public Result<List<SubjectCategoryDTO>> queryByIdList(@RequestBody SubjectCategoryDTO dto) {
+        try {
+            if (log.isInfoEnabled()) {
+                log.info("SubjectCategoryController.queryByIdList.dto:{}", JSON.toJSON(dto));
+            }
+            ParamCheckUtil.checkCollNotEmpty(dto.getIdList(), BusinessErrorEnum.PARAM_ERROR, "分类id不能为空");
+
+            SubjectCategoryBO bo = SubjectCategoryDTOConverter.INSTANCE.convertDto2Bo(dto);
+            List<SubjectCategoryBO> categoryBOList = subjectCategoryDomainService.queryByIdList(bo);
+            return Result.success(SubjectCategoryDTOConverter.INSTANCE.convertBo2Dto(categoryBOList));
+        } catch (BusinessException e) {
+            log.error("SubjectCategoryController.queryByIdList.error:{}", e.getMessage(), e);
+            return Result.fail(e.getMessage());
+        } catch (Exception e) {
+            log.error("SubjectCategoryController.queryByIdList.error:{}", e.getMessage(), e);
+            return Result.fail("查询分类信息失败！");
+        }
+    }
 }

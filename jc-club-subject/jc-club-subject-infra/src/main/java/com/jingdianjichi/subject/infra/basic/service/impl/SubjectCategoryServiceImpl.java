@@ -1,10 +1,9 @@
 package com.jingdianjichi.subject.infra.basic.service.impl;
 
 import com.alibaba.fastjson.JSON;
-import com.jingdianjichi.subject.common.enums.CategoryTypeEnum;
 import com.jingdianjichi.subject.common.enums.IsDeletedEnum;
-import com.jingdianjichi.subject.infra.basic.entity.SubjectCategory;
 import com.jingdianjichi.subject.infra.basic.dao.SubjectCategoryDao;
+import com.jingdianjichi.subject.infra.basic.entity.SubjectCategory;
 import com.jingdianjichi.subject.infra.basic.service.SubjectCategoryService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -38,16 +37,13 @@ public class SubjectCategoryServiceImpl implements SubjectCategoryService {
     /**
      * 根据类别名称查询主题类别信息。
      *
-     * @param categoryName 要查询的主题类别的名称。
+     * @param subjectCategory 要查询的主题类别的名称。
      * @return 返回与给定类别名称匹配的主题类别对象。如果没有找到匹配的类别，则返回null。
      */
     @Override
-    public SubjectCategory queryByCategoryName(String categoryName) {
-        SubjectCategory category = new SubjectCategory();
-        category.setCategoryName(categoryName);
-        category.setIsDeleted(0);
-        List<SubjectCategory> categoryList = subjectCategoryDao.queryByAll(category);
-        return categoryList.size() == 1 ? categoryList.get(0) : null;
+    public Boolean exists(SubjectCategory subjectCategory) {
+        List<SubjectCategory> categoryList = subjectCategoryDao.queryByAll(subjectCategory);
+        return categoryList.size() > 0;
     }
 
     /**
@@ -98,5 +94,27 @@ public class SubjectCategoryServiceImpl implements SubjectCategoryService {
     public List<SubjectCategory> queryCategory(SubjectCategory subjectCategory) {
         subjectCategory.setIsDeleted(IsDeletedEnum.NOT_DELETED.getCode());
         return subjectCategoryDao.queryByAll(subjectCategory);
+    }
+
+    /**
+     * 根据标签id批量查询对应的题目分类
+     *
+     * @param labelIdList
+     * @return
+     */
+    @Override
+    public List<SubjectCategory> queryByLabelIds(List<Long> labelIdList) {
+        return subjectCategoryDao.queryByLabelIds(labelIdList);
+    }
+
+    /**
+     * 根据主键批量查询 Category
+     *
+     * @param idList
+     * @return
+     */
+    @Override
+    public List<SubjectCategory> queryByIdList(List<Long> idList) {
+        return subjectCategoryDao.queryByIdList(idList);
     }
 }

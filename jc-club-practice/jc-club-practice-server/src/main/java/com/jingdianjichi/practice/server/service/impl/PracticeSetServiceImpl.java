@@ -1,19 +1,30 @@
 package com.jingdianjichi.practice.server.service.impl;
 
 import cn.hutool.core.collection.CollectionUtil;
-import com.jingdianjichi.practice.server.vo.SpecialPracticeCategoryVO;
-import com.jingdianjichi.practice.server.vo.SpecialPracticeLabelVO;
-import com.jingdianjichi.practice.server.vo.SpecialPracticeVO;
+import cn.hutool.core.util.ObjectUtil;
+import com.jingdianjichi.practice.api.req.PracticeSetDTO;
 import com.jingdianjichi.practice.server.dao.PracticeSetDao;
+import com.jingdianjichi.practice.server.dao.PracticeSetDetailDao;
 import com.jingdianjichi.practice.server.entity.PracticeSet;
+import com.jingdianjichi.practice.server.entity.PracticeSetDetail;
+import com.jingdianjichi.practice.server.exception.BusinessErrorEnum;
+import com.jingdianjichi.practice.server.exception.BusinessException;
 import com.jingdianjichi.practice.server.service.PracticeSetService;
+import com.jingdianjichi.practice.server.vo.*;
 import com.jingdianjichi.subject.api.req.SubjectCategoryDTO;
+import com.jingdianjichi.subject.api.req.SubjectInfoDTO;
 import com.jingdianjichi.subject.api.req.SubjectLabelDTO;
+import com.jingdianjichi.subject.api.resp.Result;
 import com.jingdianjichi.subject.api.service.SubjectCategoryFeignService;
+import com.jingdianjichi.subject.api.service.SubjectInfoFeignService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.DefaultTransactionDefinition;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -30,6 +41,14 @@ public class PracticeSetServiceImpl implements PracticeSetService {
 
     @Resource
     private SubjectCategoryFeignService subjectCategoryFeignService;
+
+    @Resource
+    private SubjectInfoFeignService subjectInfoFeignService;
+    @Resource
+    private PracticeSetDetailDao practiceSetDetailDao;
+
+    @Resource
+    private PlatformTransactionManager platformTransactionManager;
 
     /**
      * 通过ID查询单条数据
@@ -69,12 +88,113 @@ public class PracticeSetServiceImpl implements PracticeSetService {
     /**
      * 新增数据
      *
-     * @param practiceSet 实例对象
+     * @param dto 实例对象
      * @return 实例对象
      */
     @Override
-    public int insert(PracticeSet practiceSet) {
-        return practiceSetDao.insert(practiceSet);
+    public PracticeSetVO insert(PracticeSetDTO dto) {
+        int total = 5;
+
+        // 查询题目
+        List<PracticeSubjectDetailVO> voList = queryPracticeSubjectDetailVO(dto, total);
+        if (CollectionUtil.isEmpty(voList) || voList.size() < total) {
+            throw new BusinessException(BusinessErrorEnum.FAIL, "题目数量不足" + total);
+        }
+
+        // 设置套题名字
+        PracticeSet practiceSet = new PracticeSet();
+        practiceSet.setSetType(1);
+        practiceSet.setSetName(getSetName(dto));
+
+        // 查询岗位名
+        practiceSet.setPrimaryCategoryId(getPrimaryCategoryId(dto));
+
+        // 事务提交
+        TransactionStatus status = platformTransactionManager.getTransaction(new DefaultTransactionDefinition());
+        try {
+            // 保存套题
+            practiceSetDao.insert(practiceSet);
+            //保存套题题目
+            List<PracticeSetDetail> practiceSetSubjectList = new ArrayList<>();
+            voList.forEach(vo -> {
+                PracticeSetDetail practiceSetSubject = new PracticeSetDetail();
+                practiceSetSubject.setSetId(practiceSet.getId());
+                practiceSetSubject.setSubjectId(vo.getSubjectId());
+                practiceSetSubject.setSubjectType(vo.getSubjectType());
+                practiceSetSubjectList.add(practiceSetSubject);
+            });
+            practiceSetDetailDao.insertBatch(practiceSetSubjectList);
+
+            platformTransactionManager.commit(status);
+        } catch (Exception e) {
+            platformTransactionManager.rollback(status);
+            throw new BusinessException(BusinessErrorEnum.FAIL, "保存套题失败", e);
+        }
+
+        PracticeSetVO vo = new PracticeSetVO();
+        vo.setSetId(practiceSet.getId());
+        vo.setSetName(practiceSet.getSetName());
+
+        return vo;
+    }
+
+    private Long getPrimaryCategoryId(PracticeSetDTO dto) {
+        List<Long> categoryIdList = dto.getAssembleIds().stream().map(assembleId -> Long.valueOf(assembleId.split("-")[0])).collect(Collectors.toList());
+        SubjectCategoryDTO query = new SubjectCategoryDTO();
+        query.setId(categoryIdList.get(0));
+        Result<SubjectCategoryDTO> subjectCategoryDTOResult = subjectCategoryFeignService.queryPrimaryCategoryByCategoryId(query);
+        if (ObjectUtil.isNotNull(subjectCategoryDTOResult) && ObjectUtil.isNotNull(subjectCategoryDTOResult.getData())) {
+            return subjectCategoryDTOResult.getData().getId();
+        }
+        return null;
+    }
+
+    private String getSetName(PracticeSetDTO dto) {
+
+
+        HashSet<Long> categoryIdSet = new HashSet<>();
+        dto.getAssembleIds().forEach(id -> {
+            categoryIdSet.add(Long.valueOf(id.split("-")[0]));
+        });
+        SubjectCategoryDTO categoryQuery = new SubjectCategoryDTO();
+        categoryQuery.setIdList(new ArrayList<>(categoryIdSet));
+        Result<List<SubjectCategoryDTO>> listResult = subjectCategoryFeignService.queryByIdList(categoryQuery);
+
+        String setName = null;
+        if (ObjectUtil.isNotNull(listResult) && CollectionUtil.isNotEmpty(listResult.getData())) {
+            List<SubjectCategoryDTO> categoryDTOList = listResult.getData();
+            int i = 0;
+            StringBuilder sb = new StringBuilder();
+            while (i < 2 && i < categoryDTOList.size()) {
+                sb.append(categoryDTOList.get(i).getCategoryName());
+                i++;
+            }
+            sb.append("专项练习");
+            setName = sb.toString();
+        }
+        return setName;
+    }
+
+    private List<Long> getLabelList(List<String> assembleIds) {
+        return assembleIds.stream().map(assembleId -> Long.valueOf(assembleId.split("-")[1])).collect(Collectors.toList());
+    }
+
+    private List<PracticeSubjectDetailVO> queryPracticeSubjectDetailVO(PracticeSetDTO dto, int total) {
+        List<PracticeSubjectDetailVO> voList = new ArrayList<>();
+
+        SubjectInfoDTO queryReq = new SubjectInfoDTO();
+        queryReq.setQueryCount(total);
+        queryReq.setLabelIds(getLabelList(dto.getAssembleIds()));
+        Result<List<SubjectInfoDTO>> listResult = subjectInfoFeignService.queryByConditionInMultiTable(queryReq);
+        if (ObjectUtil.isNotNull(listResult) && CollectionUtil.isNotEmpty(listResult.getData())) {
+            voList = listResult.getData().stream().map(subjectInfoDTO -> {
+                PracticeSubjectDetailVO vo = new PracticeSubjectDetailVO();
+                vo.setSubjectId(subjectInfoDTO.getId());
+                vo.setSubjectType(subjectInfoDTO.getSubjectType());
+                return vo;
+            }).collect(Collectors.toList());
+        }
+        return voList;
     }
 
     /**

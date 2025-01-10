@@ -279,4 +279,26 @@ public class SubjectInfoDomainServiceImpl implements SubjectInfoDomainService {
         });
         return boList;
     }
+
+    /**
+     * 根据条件查询题目信息   subjectType
+     *                     labelId
+     *                     queryCount
+     *
+     *
+     * @param bo
+     * @return
+     */
+    @Override
+    public List<SubjectInfoBO> queryByConditionInMultiTable(SubjectInfoBO bo) {
+        SubjectInfo queryReq = SubjectInfoBOConverter.INSTANCE.convertBO2Entity(bo);
+        List<SubjectInfoBO> boList = new ArrayList<>();
+
+        List<SubjectInfo> entityList = subjectInfoService.queryByConditionInMultiTable(
+                bo.getSubjectType(), bo.getLabelIds(), bo.getQueryCount());
+        if (CollUtil.isNotEmpty(entityList)) {
+            boList = SubjectInfoBOConverter.INSTANCE.convertEntity2BO(entityList);
+        }
+        return boList;
+    }
 }

@@ -198,6 +198,26 @@
             </if>
         </where>
     </select>
+    <select id="queryByLabelIds" resultType="com.jingdianjichi.subject.infra.basic.entity.SubjectCategory">
+        select
+        <include refid="Base_Column_List"/>
+        from subject_category
+        where id in
+        <foreach collection="labelIdList" item="labelId" open="(" close=")" separator=",">
+            #{labelId}
+        </foreach>
+        and is_deleted = 0
+    </select>
+    <select id="queryByIdList" resultType="com.jingdianjichi.subject.infra.basic.entity.SubjectCategory">
+        select
+        <include refid="Base_Column_List"/>
+        from subject_category
+        where id in
+        <foreach collection="idList" item="id" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+        and is_deleted = 0
+    </select>
 
 </mapper>
 

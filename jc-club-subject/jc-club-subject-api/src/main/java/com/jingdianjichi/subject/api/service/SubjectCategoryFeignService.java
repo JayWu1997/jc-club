@@ -45,4 +45,28 @@ public interface SubjectCategoryFeignService {
      */
     @PostMapping("/subject/category/queryCategoryAndLabel")
     public Result<List<SubjectCategoryDTO>> queryCategoryAndLabel(@RequestBody SubjectCategoryDTO categoryDTO);
+
+    /**
+     * 根据标签id批量查询分类
+     * @param dto labelIdList
+     * @return
+     */
+    @PostMapping("/subject/category/queryByLabelIds")
+    public Result<List<SubjectCategoryDTO>> queryByLabelIds(@RequestBody SubjectCategoryDTO dto);
+
+    /**
+     * 根据传入的次级分类名 id 查询此次级分类所属的岗位
+     * @param dto id
+     * @return
+     */
+    @PostMapping("/subject/category/queryPrimaryCategoryByCategoryId")
+    public Result<SubjectCategoryDTO> queryPrimaryCategoryByCategoryId(@RequestBody SubjectCategoryDTO dto);
+
+    /**
+     * 根据分类id批量查询分类
+     * @param dto idList
+     * @return
+     */
+    @PostMapping("/subject/category/queryByIdList")
+    public Result<List<SubjectCategoryDTO>> queryByIdList(@RequestBody SubjectCategoryDTO dto);
 }

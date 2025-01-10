@@ -60,4 +60,11 @@ public interface SubjectInfoDomainService {
      * @return
      */
     List<SubjectInfoBO> getContributeList();
+
+    /**
+     * 根据条件查询题目信息
+     * @param subjectInfoBO
+     * @return
+     */
+    List<SubjectInfoBO> queryByConditionInMultiTable(SubjectInfoBO subjectInfoBO);
 }

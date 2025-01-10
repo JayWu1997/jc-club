@@ -20,6 +20,14 @@ public class SubjectCategoryBO implements Serializable {
      */
     private Long id;
     /**
+     * 标签id列表
+     */
+    private List<Long> labelIdList;
+    /**
+     * 主键列表
+     */
+    private List<Long> idList;
+    /**
      * 分类名称
      */
     private String categoryName;

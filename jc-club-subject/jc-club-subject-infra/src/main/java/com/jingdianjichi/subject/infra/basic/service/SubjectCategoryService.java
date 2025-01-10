@@ -23,10 +23,10 @@ public interface SubjectCategoryService {
     /**
      * 根据类别名称查询主题类别。
      *
-     * @param categoryName 要查询的主题类别的名称。
+     * @param subjectCategory 要查询的主题类别的名称。
      * @return 返回与给定类别名称匹配的主题类别对象。如果找不到匹配项，可能返回null。
      */
-    SubjectCategory queryByCategoryName(String categoryName);
+    Boolean exists(SubjectCategory subjectCategory);
 
 
     /**
@@ -58,4 +58,18 @@ public interface SubjectCategoryService {
      * @return 所有岗位信息
      */
     List<SubjectCategory> queryCategory(SubjectCategory subjectCategory);
+
+    /**
+     * 根据标签id批量查询对应的题目分类
+     * @param labelIdList
+     * @return
+     */
+    List<SubjectCategory> queryByLabelIds(List<Long> labelIdList);
+
+    /**
+     * 根据主键批量查询 Category
+     * @param idList
+     * @return
+     */
+    List<SubjectCategory> queryByIdList(List<Long> idList);
 }

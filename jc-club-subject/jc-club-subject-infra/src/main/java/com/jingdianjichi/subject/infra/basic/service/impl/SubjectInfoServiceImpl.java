@@ -91,4 +91,17 @@ public class SubjectInfoServiceImpl implements SubjectInfoService {
     public List<SubjectInfo> queryByCondition(SubjectInfo subjectInfo, Long categoryId, Long labelId, Integer start, Integer pageSize) {
         return subjectInfoDao.queryPage(subjectInfo, categoryId, labelId, start, pageSize);
     }
+
+    /**
+     * 多表条件查询
+     *
+     * @param subjectType
+     * @param labelIdList
+     * @param queryCount
+     * @return
+     */
+    @Override
+    public List<SubjectInfo> queryByConditionInMultiTable(Integer subjectType, List<Long> labelIdList, Integer queryCount) {
+        return subjectInfoDao.queryByConditionInMultiTable(subjectType, labelIdList, queryCount);
+    }
 }

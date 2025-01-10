@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.jingdianjichi.subject.infra.basic.dao.SubjectMappingDao">
+
     <resultMap type="com.jingdianjichi.subject.infra.basic.entity.SubjectMapping" id="SubjectMappingMap">
         <result property="id" column="id" jdbcType="INTEGER"/>
         <result property="subjectId" column="subject_id" jdbcType="INTEGER"/>
@@ -26,6 +27,42 @@
                is_deleted
         from subject_mapping
         where id = #{id}
+          and is_deleted = 0
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryByPage" resultMap="SubjectMappingMap">
+        select * from subject_mapping
+        <where>
+            <if test="entity.id != null">
+                and id = #{entity.id}
+            </if>
+            <if test="entity.subjectId != null">
+                and subject_id = #{entity.subjectId}
+            </if>
+            <if test="entity.categoryId != null">
+                and category_id = #{entity.categoryId}
+            </if>
+            <if test="entity.labelId != null">
+                and label_id = #{entity.labelId}
+            </if>
+            <if test="entity.createdBy != null and entity.createdBy != ''">
+                and created_by = #{entity.createdBy}
+            </if>
+            <if test="entity.createdTime != null">
+                and created_time = #{entity.createdTime}
+            </if>
+            <if test="entity.updateBy != null and entity.updateBy != ''">
+                and update_by = #{entity.updateBy}
+            </if>
+            <if test="entity.updateTime != null">
+                and update_time = #{entity.updateTime}
+            </if>
+            <if test="entity.isDeleted != null">
+                and is_deleted = #{entity.isDeleted}
+            </if>
+        </where>
+        limit #{start}, #{size}
     </select>
 
     <!--统计总行数-->
@@ -126,26 +163,25 @@
                 update_time = #{updateTime},
             </if>
             <if test="isDeleted != null">
-                is_deleted = #{isDeleted}
+                is_deleted = #{isDeleted},
             </if>
         </set>
         where id = #{id}
     </update>
 
     <!--通过主键删除-->
-    <delete id="deleteById">
-        delete
-        from subject_mapping
+    <update id="deleteById">
+        update subject_mapping
+        set is_deleted = 1
         where id = #{id}
-    </delete>
-
-    <!--通过分类id查询labelid-->
-    <select id="queryDistinctLabelIdsByCondition" resultMap="SubjectMappingMap">
+    </update>
+    <!--条件查询labelid-->
+    <select id="queryDistinctLabelIdsByCondition" resultType="java.lang.Long">
         select
         distinct label_id
         from subject_mapping
         where
-            is_deleted = 0
+        is_deleted = 0
         <if test="id != null">
             and id = #{id}
         </if>

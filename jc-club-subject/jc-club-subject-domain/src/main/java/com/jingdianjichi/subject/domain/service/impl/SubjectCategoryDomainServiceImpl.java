@@ -1,5 +1,6 @@
 package com.jingdianjichi.subject.domain.service.impl;
 
+import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
@@ -19,10 +20,10 @@ import com.jingdianjichi.subject.infra.basic.service.SubjectMappingService;
 import com.jingdianjichi.subject.infra.basic.service.impl.SubjectLabelServiceImpl;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -46,7 +47,7 @@ public class SubjectCategoryDomainServiceImpl implements SubjectCategoryDomainSe
 
     @Resource
     private ThreadPoolExecutor labelThreadPool;
-    @Autowired
+    @Resource
     private SubjectLabelServiceImpl subjectLabelService;
 
     /**
@@ -63,8 +64,11 @@ public class SubjectCategoryDomainServiceImpl implements SubjectCategoryDomainSe
         // 将业务对象转换为实体对象
         SubjectCategory subjectCategory = SubjectCategoryBOConverter.INSTANCE.convertBo2Entity(subjectCategoryBO);
         // 查询当前分类名对应的分类是否存在
-        if (subjectCategoryService.queryByCategoryName(subjectCategory.getCategoryName()) != null) {
-            throw new BusinessException(BusinessErrorEnum.PARAM_ERROR, "分类名已存在");
+        SubjectCategory existsQueryReq = new SubjectCategory();
+        existsQueryReq.setCategoryName(subjectCategoryBO.getCategoryName());
+        existsQueryReq.setParentId(subjectCategoryBO.getParentId());
+        if (subjectCategoryService.exists(existsQueryReq)) {
+            throw new BusinessException(BusinessErrorEnum.PARAM_ERROR, "当前岗位下该分类名已存在");
         }
         // 调用服务插入实体对象到数据库
         subjectCategory.setIsDeleted(0);
@@ -159,6 +163,48 @@ public class SubjectCategoryDomainServiceImpl implements SubjectCategoryDomainSe
         queryCondition.setIsDeleted(IsDeletedEnum.NOT_DELETED.getCode());
         List<SubjectCategory> categoryList = subjectCategoryService.queryCategory(queryCondition);
         return SubjectCategoryBOConverter.INSTANCE.convertEntity2Bo(categoryList);
+    }
+
+    /**
+     * 根据标签批量查询分类
+     *
+     * @param bo
+     * @return
+     */
+    @Override
+    public List<SubjectCategoryBO> queryByLabelIds(SubjectCategoryBO bo) {
+        List<SubjectCategoryBO> boList = new ArrayList<>();
+        List<SubjectCategory> entityList = subjectCategoryService.queryByLabelIds(bo.getLabelIdList());
+        if (CollectionUtil.isNotEmpty(entityList)) {
+            boList = SubjectCategoryBOConverter.INSTANCE.convertEntity2Bo(entityList);
+        }
+        return boList;
+    }
+
+    /**
+     * 根据传入的次级分类名 categoryId 查询此次级分类所属的岗位
+     *
+     * @param bo
+     * @return
+     */
+    @Override
+    public SubjectCategoryBO queryPrimaryCategoryByCategoryId(SubjectCategoryBO bo) {
+        SubjectCategory category = subjectCategoryService.queryById(bo.getId());
+        while(category.getParentId() != 0) {
+            category = subjectCategoryService.queryById(category.getParentId());
+        }
+        return SubjectCategoryBOConverter.INSTANCE.convertEntity2Bo(category);
+    }
+
+    /**
+     * 根据主键批量查询 Category
+     * @param bo
+     * @return
+     */
+    @Override
+    public List<SubjectCategoryBO> queryByIdList(SubjectCategoryBO bo) {
+        List<SubjectCategory> entityList = subjectCategoryService.queryByIdList(bo.getIdList());
+        return SubjectCategoryBOConverter.INSTANCE.convertEntity2Bo(entityList);
     }
 
     private List<SubjectCategoryBO> querySubcategoryAndLabelListFromDB(Long categoryId) {

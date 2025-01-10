@@ -73,12 +73,12 @@ public interface SubjectMappingDao {
     int deleteById(Long id);
 
     /**
-     * 通过分类 id 查询
+     * 条件查询
      *
      * @param subjectMapping 查询条件
      * @return 实例对象列表
      */
-    List<SubjectMapping> queryDistinctLabelIdsByCondition(SubjectMapping subjectMapping);
+    List<Long> queryDistinctLabelIdsByCondition(SubjectMapping subjectMapping);
 
     /**
      * 通过分类 id 查询题目数量

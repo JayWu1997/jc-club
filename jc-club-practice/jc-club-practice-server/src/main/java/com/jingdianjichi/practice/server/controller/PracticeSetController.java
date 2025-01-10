@@ -4,13 +4,15 @@ import com.alibaba.fastjson.JSON;
 import com.jingdianjichi.practice.api.common.PageResult;
 import com.jingdianjichi.practice.api.req.PracticeSetDTO;
 import com.jingdianjichi.practice.api.resp.Result;
-import com.jingdianjichi.practice.server.vo.SpecialPracticeVO;
 import com.jingdianjichi.practice.server.common.enums.BusinessErrorEnum;
 import com.jingdianjichi.practice.server.common.exception.BusinessException;
 import com.jingdianjichi.practice.server.common.util.ParamCheckUtil;
 import com.jingdianjichi.practice.server.convert.PracticeSetDTOConverter;
 import com.jingdianjichi.practice.server.entity.PracticeSet;
 import com.jingdianjichi.practice.server.service.PracticeSetService;
+import com.jingdianjichi.practice.server.vo.AddPracticeReq;
+import com.jingdianjichi.practice.server.vo.PracticeSetVO;
+import com.jingdianjichi.practice.server.vo.SpecialPracticeVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -52,22 +54,28 @@ public class PracticeSetController {
     /**
      * 新增
      *
-     * @param practiceSetDTO dto
+     * @param req dto
      * @return 分页结果
      */
-    @PostMapping("/add")
-    public Result<Boolean> add(@RequestBody PracticeSetDTO practiceSetDTO) {
+    @PostMapping("/addPractice")
+    public Result<PracticeSetVO> addPractice(@RequestBody AddPracticeReq req) {
         try {
             if (log.isInfoEnabled()) {
-                log.info("PracticeSetController.add.dto:{}", JSON.toJSON(practiceSetDTO));
+                log.info("PracticeSetController.addPractice.req:{}", JSON.toJSON(req));
             }
-            PracticeSet practiceSet = PracticeSetDTOConverter.INSTANCE.convertDto2Entity(practiceSetDTO);
-            return Result.success(practiceSetService.insert(practiceSet) == 1);
+            ParamCheckUtil.checkCollNotEmpty(req.getAssembleIds(), BusinessErrorEnum.PARAM_ERROR, "assembleIds 不能为空!");
+            PracticeSetDTO dto = new PracticeSetDTO();
+            dto.setAssembleIds(req.getAssembleIds());
+            Result<PracticeSetVO> result = Result.success(practiceSetService.insert(dto));
+            if (log.isInfoEnabled()) {
+                log.info("PracticeSetController.addPractice.result:{}", JSON.toJSON(result));
+            }
+            return result;
         } catch (BusinessException e) {
-            log.error("PracticeSetController.add.error:{}", e.getMessage(), e);
+            log.error("PracticeSetController.addPractice.error:{}", e.getMessage(), e);
             return Result.fail(e.getMessage());
         } catch (Exception e) {
-            log.error("PracticeSetController.add.error:{}", e.getMessage(), e);
+            log.error("PracticeSetController.addPractice.error:{}", e.getMessage(), e);
             return Result.fail("添加失败！");
         }
     }

@@ -161,6 +161,7 @@
         limit 0, 5
     </select>
 
+
     <!--新增所有列-->
     <insert id="insert" keyProperty="id" useGeneratedKeys="true">
         insert into subject_info(subject_name, subject_difficult, settle_name, subject_type, subject_score,
@@ -250,5 +251,23 @@
         from subject_info
         where id = #{id}
     </delete>
+
+    <select id="queryByConditionInMultiTable"
+            resultType="com.jingdianjichi.subject.infra.basic.entity.SubjectInfo">
+        select distinct i.id, i.subject_type
+        from subject_info i inner join subject_mapping m on i.id = m.subject_id
+        where i.is_deleted = 0
+        and m.is_deleted = 0
+        <if test="subjectType != null">
+            and i.subject_type = #{subjectType}
+        </if>
+        <if test="labelIdList != null and labelIdList.size() > 0">
+            and m.label_id in
+            <foreach collection="labelIdList" item="labelId" separator="," open="(" close=")">
+                #{labelId}
+            </foreach>
+        </if>
+        limit #{queryCount}
+    </select>
 </mapper>
 

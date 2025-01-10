@@ -241,4 +241,28 @@ public class SubjectController {
         }
     }
 
+    /**
+     * 条件查询题目
+     * 根据条件查询题目信息   subjectType
+     *                     labelId
+     *                     queryCount
+     *
+     * @return
+     */
+    @PostMapping("/queryByConditionInMultiTable")
+    public Result<List<SubjectInfoDTO>> queryByConditionInMultiTable(@RequestBody SubjectInfoDTO dto) {
+        try {
+            if (log.isInfoEnabled()) {
+                log.info("SubjectInfoController.queryByCondition.subjectInfoDTO:{}", JSON.toJSON(dto));
+            }
+
+            SubjectInfoBO subjectInfoBO = SubjectInfoDTOConverter.INSTANCE.convertDto2Bo(dto);
+            List<SubjectInfoBO> boList = subjectInfoDomainService.queryByConditionInMultiTable(subjectInfoBO);
+            return Result.success(SubjectInfoDTOConverter.INSTANCE.convertBo2Dto(boList));
+        } catch (BusinessException e) {
+            log.error("SubjectInfoController.queryByCondition.error:{}", e.getMessage(), e);
+            return Result.fail(e.getMessage());
+        }
+    }
+
 }

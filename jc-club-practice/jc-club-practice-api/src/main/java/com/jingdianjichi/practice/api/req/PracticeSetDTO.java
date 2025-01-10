@@ -1,10 +1,10 @@
 package com.jingdianjichi.practice.api.req;
 
-import java.util.Date;
-
 import lombok.Data;
 
 import java.io.Serializable;
+import java.util.Date;
+import java.util.List;
 
 /**
  * 套题信息表(PracticeSet)实体类DTO
@@ -15,6 +15,10 @@ import java.io.Serializable;
 @Data
 public class PracticeSetDTO implements Serializable {
     private static final long serialVersionUID = -31371053431248924L;
+    /**
+     * 组装id集合, eg: ["categoryId-labelId"]
+     */
+    private List<String> assembleIds;
     /**
      * 每页显示的记录数
      */
