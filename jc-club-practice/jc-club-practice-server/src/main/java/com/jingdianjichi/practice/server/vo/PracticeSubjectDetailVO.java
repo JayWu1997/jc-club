@@ -16,4 +16,9 @@ public class PracticeSubjectDetailVO {
      * 题目类型
      */
     private Integer subjectType;
+
+    /**
+     * 是否作答了
+     */
+    private Integer isAnswer;
 }

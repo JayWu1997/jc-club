@@ -16,5 +16,18 @@ public class GetSubjectsVO {
      */
     private String title;
 
+    /**
+     * 题目列表
+     */
     private List<PracticeSubjectDetailVO> subjectList;
+
+    /**
+     * 练习 id
+     */
+    private Long practiceId;
+
+    /**
+     * 已答题时长
+     */
+    private String timeUse;
 }
