@@ -3,18 +3,19 @@ package com.jingdianjichi.auth.application.controller;
 import cn.dev33.satoken.stp.SaTokenInfo;
 import cn.dev33.satoken.stp.StpUtil;
 import com.alibaba.fastjson.JSON;
-import com.jingdianjichi.auth.application.converter.AuthUserDTOConverter;
+import com.jingdianjichi.auth.api.req.AuthUserDTO;
 import com.jingdianjichi.auth.api.resp.Result;
+import com.jingdianjichi.auth.application.converter.AuthUserDTOConverter;
 import com.jingdianjichi.auth.common.enums.BusinessErrorEnum;
 import com.jingdianjichi.auth.common.exception.BusinessException;
 import com.jingdianjichi.auth.common.util.ParamCheckUtil;
 import com.jingdianjichi.auth.domain.entity.AuthUserBO;
 import com.jingdianjichi.auth.domain.service.AuthUserDomainService;
-import com.jingdianjichi.auth.api.req.AuthUserDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 @RestController
 @RequestMapping("/user/")
@@ -143,6 +144,34 @@ public class AuthUserController {
     }
 
     /**
+     * 批量查询用户信息
+     * @param authUserDTO
+     * @return
+     */
+    @PostMapping("/batchQueryByUserNames")
+    public Result<List<AuthUserDTO>> batchQueryByUserNames(@RequestBody AuthUserDTO authUserDTO) {
+        try {
+            if (log.isInfoEnabled()) {
+                log.info("AuthUserController.batchQueryByUserNames.authUserDTO:{}", JSON.toJSON(authUserDTO));
+            }
+            ParamCheckUtil.checkCollNotEmpty(authUserDTO.getUserNameList(), BusinessErrorEnum.PARAM_ERROR, "用户名列表不能为空!");
+
+            List<AuthUserBO> userBOList = authUserDomainService.batchQueryByUserNames(AuthUserDTOConverter.INSTANCE.convertDto2Bo(authUserDTO));
+            return Result.success(AuthUserDTOConverter.INSTANCE.convertBo2Dto(userBOList));
+        } catch (BusinessException e) {
+            if (log.isErrorEnabled()) {
+                log.error("AuthUserController.batchQueryByUserNames.error:{}", e.getMessage(), e);
+            }
+            return Result.fail(e.getMessage());
+        } catch (Exception e) {
+            if (log.isErrorEnabled()) {
+                log.error("AuthUserController.batchQueryByUserNames.error:{}", e.getMessage(), e);
+            }
+            return Result.fail("操作失败！");
+        }
+    }
+
+    /**
      * 用户信息更新
      * @param authUserDTO 用户信息
      * @return 成功标志
@@ -169,7 +198,6 @@ public class AuthUserController {
             return Result.fail("信息更新失败！");
         }
     }
-
 
     @PostMapping("delete")
     public Result<Boolean> delete(@RequestBody AuthUserDTO authUserDTO) {

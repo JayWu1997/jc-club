@@ -116,6 +116,15 @@
         </where>
     </select>
 
+    <select id="queryPracticeRank" resultType="com.jingdianjichi.practice.server.entity.PracticeRankUserPO">
+        select count(1) as count, created_by
+        from practice_info
+        where is_deleted = 0
+        group by created_by
+        order by count desc
+        limit 5
+    </select>
+
     <!--新增所有列-->
     <insert id="insert" keyProperty="id" useGeneratedKeys="true">
         insert into practice_info(set_id, complete_status, time_use, submit_time, correct_rate, created_by,

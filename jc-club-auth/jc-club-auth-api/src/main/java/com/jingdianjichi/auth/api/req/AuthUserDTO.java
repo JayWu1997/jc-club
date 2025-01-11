@@ -1,10 +1,10 @@
 package com.jingdianjichi.auth.api.req;
 
-import java.util.Date;
-
 import lombok.Data;
 
 import java.io.Serializable;
+import java.util.Date;
+import java.util.List;
 
 /**
  * 用户信息表(AuthUser)实体类DTO
@@ -23,6 +23,10 @@ public class AuthUserDTO implements Serializable {
      * 用户名称/账号
      */
     private String userName;
+    /**
+     * 用户名列表
+     */
+    private List<String> userNameList;
     /**
      * 昵称
      */

@@ -7,8 +7,8 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.collection.CollectionUtil;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.google.gson.Gson;
-import com.jingdianjichi.auth.common.enums.IsDeletedEnum;
 import com.jingdianjichi.auth.common.enums.BusinessErrorEnum;
+import com.jingdianjichi.auth.common.enums.IsDeletedEnum;
 import com.jingdianjichi.auth.common.enums.UserStatusEnum;
 import com.jingdianjichi.auth.common.util.ParamCheckUtil;
 import com.jingdianjichi.auth.domain.converter.AuthUserBOConverter;
@@ -251,5 +251,16 @@ public class AuthUserDomainServiceImpl implements AuthUserDomainService {
             return authUserService.update(authUser) > 0;
         }
         return Boolean.FALSE;
+    }
+
+    /**
+     * 批量查询用户信息
+     *
+     * @return
+     */
+    @Override
+    public List<AuthUserBO> batchQueryByUserNames(AuthUserBO bo) {
+        List<AuthUser> userList = authUserService.batchQueryByUserNames(bo.getUserNameList());
+        return CollUtil.isNotEmpty(userList) ? AuthUserBOConverter.INSTANCE.convertEntity2Bo(userList) : new ArrayList<>();
     }
 }

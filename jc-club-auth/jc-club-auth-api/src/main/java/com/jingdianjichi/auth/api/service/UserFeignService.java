@@ -7,6 +7,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import java.util.List;
+
 /**
  * @author jay
  * @since 2024/12/26 下午4:53
@@ -22,4 +24,12 @@ public interface UserFeignService {
      */
     @PostMapping("/user/getUserInfo")
     public Result<AuthUserDTO> getUserInfo(@RequestBody AuthUserDTO authUserDTO);
+
+    /**
+     * 批量查询用户信息
+     * @param authUserDTO
+     * @return
+     */
+    @PostMapping("/user/batchQueryByUserNames")
+    public Result<List<AuthUserDTO>> batchQueryByUserNames(@RequestBody AuthUserDTO authUserDTO);
 }

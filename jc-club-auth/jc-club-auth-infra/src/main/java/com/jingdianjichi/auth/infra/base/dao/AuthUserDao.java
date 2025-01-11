@@ -80,5 +80,12 @@ public interface AuthUserDao {
      */
     int deleteById(Long id);
 
+    /**
+     * 根据用户名批量查询
+     *
+     * @param userNameList
+     * @return
+     */
+    List<AuthUser> batchQueryByUserNames(@Param("userNameList") List<String> userNameList);
 }
 

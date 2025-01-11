@@ -1,10 +1,10 @@
 package com.jingdianjichi.auth.domain.entity;
 
-import java.util.Date;
-
 import lombok.Data;
 
 import java.io.Serializable;
+import java.util.Date;
+import java.util.List;
 
 /**
  * 用户信息表(AuthUser)实体类BO
@@ -15,6 +15,10 @@ import java.io.Serializable;
 @Data
 public class AuthUserBO implements Serializable {
     private static final long serialVersionUID = 105897061072643689L;
+    /**
+     * 用户名列表
+     */
+    private List<String> userNameList;
     /**
      * 主键
      */

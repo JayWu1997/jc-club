@@ -60,4 +60,10 @@ public interface AuthUserService {
      */
     boolean deleteById(Long id);
 
+    /**
+     * 根据用户名批量查询用户信息
+     * @param userNameList
+     * @return
+     */
+    List<AuthUser> batchQueryByUserNames(List<String> userNameList);
 }

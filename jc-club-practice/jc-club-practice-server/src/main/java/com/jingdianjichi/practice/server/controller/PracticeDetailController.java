@@ -11,6 +11,7 @@ import com.jingdianjichi.practice.server.convert.PracticeDetailDTOConverter;
 import com.jingdianjichi.practice.server.entity.PracticeDetail;
 import com.jingdianjichi.practice.server.req.*;
 import com.jingdianjichi.practice.server.service.PracticeDetailService;
+import com.jingdianjichi.practice.server.vo.PracticeRankVO;
 import com.jingdianjichi.practice.server.vo.ReportVO;
 import com.jingdianjichi.practice.server.vo.ScoreDetailVO;
 import com.jingdianjichi.practice.server.vo.SubjectDetailVO;
@@ -293,6 +294,23 @@ public class PracticeDetailController {
             return Result.fail(e.getMessage());
         } catch (Exception e) {
             log.error("PracticeDetailController.getReport.error:{}", e.getMessage(), e);
+            return Result.fail("获取失败！");
+        }
+    }
+
+    /**
+     * 获取答题排行榜
+     * @return
+     */
+    @RequestMapping("/getPracticeRankList")
+    public Result<List<PracticeRankVO>> getPracticeRankList() {
+        try{
+            return Result.success(practiceDetailService.getPracticeRankList());
+        } catch (BusinessException e) {
+            log.error("PracticeDetailController.getPracticeRankList.error:{}", e.getMessage(), e);
+            return Result.fail(e.getMessage());
+        } catch (Exception e) {
+            log.error("PracticeDetailController.getPracticeRankList.error:{}", e.getMessage(), e);
             return Result.fail("获取失败！");
         }
     }

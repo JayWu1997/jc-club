@@ -1,11 +1,13 @@
 package com.jingdianjichi.auth.infra.base.service.impl;
 
-import com.jingdianjichi.auth.infra.base.entity.AuthUser;
+import cn.hutool.core.collection.CollUtil;
 import com.jingdianjichi.auth.infra.base.dao.AuthUserDao;
+import com.jingdianjichi.auth.infra.base.entity.AuthUser;
 import com.jingdianjichi.auth.infra.base.service.AuthUserService;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -81,5 +83,17 @@ public class AuthUserServiceImpl implements AuthUserService {
     @Override
     public boolean deleteById(Long id) {
         return this.authUserDao.deleteById(id) > 0;
+    }
+
+    /**
+     * 根据用户名批量查询用户信息
+     *
+     * @param userNameList
+     * @return
+     */
+    @Override
+    public List<AuthUser> batchQueryByUserNames(List<String> userNameList) {
+        List<AuthUser> userList = authUserDao.batchQueryByUserNames(userNameList);
+        return CollUtil.isNotEmpty(userList) ? userList: new ArrayList<>();
     }
 }

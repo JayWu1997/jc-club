@@ -2,6 +2,7 @@ package com.jingdianjichi.practice.server.service;
 
 import com.jingdianjichi.practice.server.entity.PracticeDetail;
 import com.jingdianjichi.practice.server.req.*;
+import com.jingdianjichi.practice.server.vo.PracticeRankVO;
 import com.jingdianjichi.practice.server.vo.ReportVO;
 import com.jingdianjichi.practice.server.vo.ScoreDetailVO;
 import com.jingdianjichi.practice.server.vo.SubjectDetailVO;
@@ -103,4 +104,10 @@ public interface PracticeDetailService {
      * @return
      */
     ReportVO getReport(GetReportReq req);
+
+    /**
+     * 获取练习排行榜
+     * @return
+     */
+    List<PracticeRankVO> getPracticeRankList();
 }

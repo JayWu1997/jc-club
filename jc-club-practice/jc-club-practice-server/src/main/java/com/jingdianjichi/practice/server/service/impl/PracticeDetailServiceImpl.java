@@ -7,6 +7,8 @@ import cn.hutool.core.util.ObjUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson.JSON;
+import com.jingdianjichi.auth.api.req.AuthUserDTO;
+import com.jingdianjichi.auth.api.service.UserFeignService;
 import com.jingdianjichi.practice.server.common.context.UserContextHolder;
 import com.jingdianjichi.practice.server.common.exception.BusinessErrorEnum;
 import com.jingdianjichi.practice.server.common.exception.BusinessException;
@@ -14,10 +16,7 @@ import com.jingdianjichi.practice.server.dao.PracticeDetailDao;
 import com.jingdianjichi.practice.server.dao.PracticeInfoDao;
 import com.jingdianjichi.practice.server.dao.PracticeSetDao;
 import com.jingdianjichi.practice.server.dao.PracticeSetDetailDao;
-import com.jingdianjichi.practice.server.entity.PracticeDetail;
-import com.jingdianjichi.practice.server.entity.PracticeInfo;
-import com.jingdianjichi.practice.server.entity.PracticeSet;
-import com.jingdianjichi.practice.server.entity.PracticeSetDetail;
+import com.jingdianjichi.practice.server.entity.*;
 import com.jingdianjichi.practice.server.req.*;
 import com.jingdianjichi.practice.server.service.PracticeDetailService;
 import com.jingdianjichi.practice.server.vo.*;
@@ -70,6 +69,9 @@ public class PracticeDetailServiceImpl implements PracticeDetailService {
     @Qualifier("com.jingdianjichi.subject.api.service.SubjectMappingFeignService")
     @Autowired
     private SubjectMappingFeignService subjectMappingFeignService;
+    @Qualifier("com.jingdianjichi.auth.api.service.UserFeignService")
+    @Autowired
+    private UserFeignService userFeignService;
 
     /**
      * 提交
@@ -452,6 +454,37 @@ public class PracticeDetailServiceImpl implements PracticeDetailService {
         resultVO.setCorrectSubject(String.valueOf(correctSubjectCount));
         resultVO.setSkill(skillVOList);
         return resultVO;
+    }
+
+    /**
+     * 获取练习排行榜
+     *
+     * @return
+     */
+    @Override
+    public List<PracticeRankVO> getPracticeRankList() {
+        List<PracticeRankVO> rankVOList = new ArrayList<>();
+        List<PracticeRankUserPO> practiceRankList = practiceInfoDao.queryPracticeRank();
+        if (CollUtil.isNotEmpty(practiceRankList)) {
+            List<String> userIdList = practiceRankList.stream().map(PracticeRankUserPO::getCreatedBy).collect(Collectors.toList());
+            AuthUserDTO userQuery = new AuthUserDTO();
+            userQuery.setUserNameList(userIdList);
+            com.jingdianjichi.auth.api.resp.Result<List<AuthUserDTO>> userListResult = userFeignService.batchQueryByUserNames(userQuery);
+            if (ObjUtil.isNotNull(userListResult) && CollUtil.isNotEmpty(userListResult.getData())) {
+                List<AuthUserDTO> userInfoList = userListResult.getData();
+                practiceRankList.forEach(practiceInfo -> {
+                    PracticeRankVO rankVO = new PracticeRankVO();
+                    AuthUserDTO userInfo = userInfoList.stream().filter(user -> user.getUserName().equals(practiceInfo.getCreatedBy())).findFirst().orElse(null);
+                    if (ObjectUtil.isNotNull(userInfo)) {
+                        rankVO.setAvatar(userInfo.getAvatar());
+                        rankVO.setName(userInfo.getNickName());
+                        rankVO.setCount(practiceInfo.getCount().intValue());
+                        rankVOList.add(rankVO);
+                    }
+                });
+            }
+        }
+        return rankVOList;
     }
 
     private void genSkillVOList(List<PracticeDetail> allSubjectPracticeDetalList, List<ReportSkillVO> skillVOList) {

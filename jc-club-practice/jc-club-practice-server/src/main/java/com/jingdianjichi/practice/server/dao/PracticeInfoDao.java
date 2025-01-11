@@ -1,11 +1,11 @@
 package com.jingdianjichi.practice.server.dao;
 
 import com.jingdianjichi.practice.server.entity.PracticeInfo;
+import com.jingdianjichi.practice.server.entity.PracticeRankUserPO;
+import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
-
-import org.apache.ibatis.annotations.Mapper;
 
 /**
  * 练习表(PracticeInfo)表数据库访问层
@@ -83,5 +83,11 @@ public interface PracticeInfoDao {
      */
     int deleteById(Long id);
 
+    /**
+     * 查询练习排行榜
+     *
+     * @return
+     */
+    List<PracticeRankUserPO> queryPracticeRank();
 }
 

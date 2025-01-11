@@ -3,6 +3,8 @@ package com.jingdianjichi.auth.domain.service;
 import cn.dev33.satoken.stp.SaTokenInfo;
 import com.jingdianjichi.auth.domain.entity.AuthUserBO;
 
+import java.util.List;
+
 /**
  * 用户领域服务
  * @author jay
@@ -59,4 +61,10 @@ public interface AuthUserDomainService {
      * @return 是否成功
      */
     Boolean updateByUserName(AuthUserBO authUserBO);
+
+    /**
+     * 批量查询用户信息
+     * @return
+     */
+    List<AuthUserBO> batchQueryByUserNames(AuthUserBO bo);
 }
