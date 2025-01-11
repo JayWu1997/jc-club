@@ -170,7 +170,16 @@ public class SubjectInfoDomainServiceImpl implements SubjectInfoDomainService {
         }
         List<SubjectInfo> subjectInfoList = subjectInfoService.queryByCondition(subjectInfo, subjectInfoBO.getCategoryId(), subjectInfoBO.getLabelId(), start, subjectInfoBO.getPageSize());
         List<SubjectInfoBO> subjectInfoBOList = SubjectInfoBOConverter.INSTANCE.convertEntity2BO(subjectInfoList);
-
+        List<Long> subjectIdList = subjectInfoList.stream().map(SubjectInfo::getId).collect(Collectors.toList());
+        List<SubjectMapping> mappingList = subjectMappingService.queryBatchBySubjectIds(subjectIdList);
+        Map<Long, Set<Long>> subjectId2LabelIdSetMap = mappingList.stream().collect(Collectors.groupingBy(SubjectMapping::getSubjectId, Collectors.mapping(SubjectMapping::getLabelId, Collectors.toSet())));
+        List<SubjectLabel> labelList = subjectLabelService.queryBatchBySubjectIds(subjectIdList);
+        subjectInfoBOList.forEach(infoBO ->
+                infoBO.setLabelName(
+                        labelList.stream()
+                                .filter(label -> subjectId2LabelIdSetMap.get(infoBO.getId()).contains(label.getId()))
+                                .map(SubjectLabel::getLabelName).collect(Collectors.toList()))
+        );
         return new PageResult<>(subjectInfoBO.getPageNo(),
                 subjectInfoBO.getPageSize(),
                 total,
