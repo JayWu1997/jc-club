@@ -487,6 +487,20 @@ public class PracticeDetailServiceImpl implements PracticeDetailService {
         return rankVOList;
     }
 
+    /**
+     * 放弃练习
+     *
+     * @param practiceId
+     * @return
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public Boolean giveUp(Long practiceId) {
+        practiceInfoDao.deleteById(practiceId);
+        practiceDetailDao.deleteByPracticeId(practiceId);
+        return Boolean.TRUE;
+    }
+
     private void genSkillVOList(List<PracticeDetail> allSubjectPracticeDetalList, List<ReportSkillVO> skillVOList) {
         SubjectMappingDTO subjectMappingQuery = new SubjectMappingDTO();
         List<Long> allSubjectIdList = allSubjectPracticeDetalList.stream().map(PracticeDetail::getSubjectId).collect(Collectors.toList());

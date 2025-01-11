@@ -15,6 +15,11 @@
         <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
         <result property="isDeleted" column="is_deleted" jdbcType="INTEGER"/>
     </resultMap>
+    <update id="deleteByPracticeId">
+        update practice_detail
+        set is_deleted = 1
+        where practice_id = #{practiceId}
+    </update>
 
     <!--查询单个-->
     <select id="queryById" resultMap="PracticeDetailMap">

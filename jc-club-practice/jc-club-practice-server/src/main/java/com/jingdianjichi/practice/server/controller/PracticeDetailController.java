@@ -16,10 +16,7 @@ import com.jingdianjichi.practice.server.vo.ReportVO;
 import com.jingdianjichi.practice.server.vo.ScoreDetailVO;
 import com.jingdianjichi.practice.server.vo.SubjectDetailVO;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
@@ -312,6 +309,23 @@ public class PracticeDetailController {
         } catch (Exception e) {
             log.error("PracticeDetailController.getPracticeRankList.error:{}", e.getMessage(), e);
             return Result.fail("获取失败！");
+        }
+    }
+
+    @PostMapping("/giveUp")
+    public Result<Boolean> giveUp(@RequestParam("practiceId") Long practiceId) {
+        try {
+            if (log.isInfoEnabled()) {
+                log.info("PracticeDetailController.giveUp.practiceId:{}", JSON.toJSON(practiceId));
+            }
+            ParamCheckUtil.checkNotNull(practiceId, BusinessErrorEnum.PARAM_ERROR, "practiceId 不能为空!");
+            return Result.success(practiceDetailService.giveUp(practiceId));
+        } catch (BusinessException e) {
+            log.error("PracticeDetailController.giveUp.error:{}", e.getMessage(), e);
+            return Result.fail(e.getMessage());
+        } catch (Exception e) {
+            log.error("PracticeDetailController.giveUp.error:{}", e.getMessage(), e);
+            return Result.fail("放弃失败！");
         }
     }
 }

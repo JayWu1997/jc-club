@@ -110,4 +110,11 @@ public interface PracticeDetailService {
      * @return
      */
     List<PracticeRankVO> getPracticeRankList();
+
+    /**
+     * 放弃练习
+     * @param practiceId
+     * @return
+     */
+    Boolean giveUp(Long practiceId);
 }

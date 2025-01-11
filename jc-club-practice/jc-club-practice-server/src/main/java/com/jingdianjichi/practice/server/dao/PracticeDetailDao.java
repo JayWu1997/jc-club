@@ -82,5 +82,12 @@ public interface PracticeDetailDao {
      */
     int deleteById(Long id);
 
+    /**
+     * 通过practiceId删除数据
+     *
+     * @param practiceId practiceId
+     * @return 影响行数
+     */
+    void deleteByPracticeId(@Param("practiceId")Long practiceId);
 }
 
