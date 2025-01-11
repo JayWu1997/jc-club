@@ -10,10 +10,12 @@ import com.jingdianjichi.practice.server.common.util.ParamCheckUtil;
 import com.jingdianjichi.practice.server.convert.PracticeDetailDTOConverter;
 import com.jingdianjichi.practice.server.entity.PracticeDetail;
 import com.jingdianjichi.practice.server.req.GetScoreDetailReq;
+import com.jingdianjichi.practice.server.req.GetSubjectDetailReq;
 import com.jingdianjichi.practice.server.req.SubmitPracticeDetailReq;
 import com.jingdianjichi.practice.server.req.SubmitSubjectReq;
 import com.jingdianjichi.practice.server.service.PracticeDetailService;
 import com.jingdianjichi.practice.server.vo.ScoreDetailVO;
+import com.jingdianjichi.practice.server.vo.SubjectDetailVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -254,6 +256,24 @@ public class PracticeDetailController {
         } catch (Exception e) {
             log.error("PracticeDetailController.delete.error:{}", e.getMessage(), e);
             return Result.fail("删除失败！");
+        }
+    }
+
+    @PostMapping("/getSubjectDetail")
+    public Result<SubjectDetailVO> getSubjectDetail(@RequestBody GetSubjectDetailReq req) {
+        try {
+            if (log.isInfoEnabled()) {
+                log.info("PracticeDetailController.getSubjectDetail.req:{}", JSON.toJSON(req));
+            }
+            ParamCheckUtil.checkNotNull(req.getPracticeId(), BusinessErrorEnum.PARAM_ERROR, "practiceId 不能为空!");
+            ParamCheckUtil.checkNotNull(req.getSubjectId(), BusinessErrorEnum.PARAM_ERROR, "subjectId 不能为空!");
+            return Result.success(practiceDetailService.getSubjectDetail(req));
+        } catch (BusinessException e) {
+            log.error("PracticeDetailController.getSubjectDetail.error:{}", e.getMessage(), e);
+            return Result.fail(e.getMessage());
+        } catch (Exception e) {
+            log.error("PracticeDetailController.getSubjectDetail.error:{}", e.getMessage(), e);
+            return Result.fail("获取失败！");
         }
     }
 }

@@ -10,4 +10,5 @@ import lombok.Data;
 public class SubjectOptionVO {
     private int optionType;
     private String optionContent;
+    private Integer isCorrect;
 }

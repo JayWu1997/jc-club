@@ -2,9 +2,11 @@ package com.jingdianjichi.practice.server.service;
 
 import com.jingdianjichi.practice.server.entity.PracticeDetail;
 import com.jingdianjichi.practice.server.req.GetScoreDetailReq;
+import com.jingdianjichi.practice.server.req.GetSubjectDetailReq;
 import com.jingdianjichi.practice.server.req.SubmitPracticeDetailReq;
 import com.jingdianjichi.practice.server.req.SubmitSubjectReq;
 import com.jingdianjichi.practice.server.vo.ScoreDetailVO;
+import com.jingdianjichi.practice.server.vo.SubjectDetailVO;
 
 import java.util.List;
 
@@ -89,4 +91,11 @@ public interface PracticeDetailService {
      * @return
      */
     List<ScoreDetailVO> getScoreDetail(GetScoreDetailReq req);
+
+    /**
+     * 获取题目解析
+     * @param req
+     * @return
+     */
+    SubjectDetailVO getSubjectDetail(GetSubjectDetailReq req);
 }

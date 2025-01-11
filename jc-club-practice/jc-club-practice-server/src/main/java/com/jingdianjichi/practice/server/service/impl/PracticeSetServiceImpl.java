@@ -104,7 +104,7 @@ public class PracticeSetServiceImpl implements PracticeSetService {
      */
     @Override
     public PracticeSetVO insert(PracticeSetDTO dto) {
-        int total = 5;
+        int total = 10;
 
         // 查询题目
         List<PracticeSubjectDetailVO> voList = queryPracticeSubjectDetailVO(dto, total);

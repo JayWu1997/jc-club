@@ -3,6 +3,8 @@ package com.jingdianjichi.practice.server.service.impl;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.core.util.StrUtil;
+import com.alibaba.fastjson.JSON;
 import com.jingdianjichi.practice.server.common.context.UserContextHolder;
 import com.jingdianjichi.practice.server.common.exception.BusinessErrorEnum;
 import com.jingdianjichi.practice.server.common.exception.BusinessException;
@@ -14,12 +16,16 @@ import com.jingdianjichi.practice.server.entity.PracticeDetail;
 import com.jingdianjichi.practice.server.entity.PracticeInfo;
 import com.jingdianjichi.practice.server.entity.PracticeSetDetail;
 import com.jingdianjichi.practice.server.req.GetScoreDetailReq;
+import com.jingdianjichi.practice.server.req.GetSubjectDetailReq;
 import com.jingdianjichi.practice.server.req.SubmitPracticeDetailReq;
 import com.jingdianjichi.practice.server.req.SubmitSubjectReq;
 import com.jingdianjichi.practice.server.service.PracticeDetailService;
 import com.jingdianjichi.practice.server.vo.ScoreDetailVO;
+import com.jingdianjichi.practice.server.vo.SubjectDetailVO;
+import com.jingdianjichi.practice.server.vo.SubjectOptionVO;
 import com.jingdianjichi.subject.api.req.SubjectAnswerDTO;
 import com.jingdianjichi.subject.api.req.SubjectInfoDTO;
+import com.jingdianjichi.subject.api.resp.Result;
 import com.jingdianjichi.subject.api.service.SubjectInfoFeignService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -32,10 +38,7 @@ import org.springframework.transaction.support.DefaultTransactionDefinition;
 import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -114,7 +117,7 @@ public class PracticeDetailServiceImpl implements PracticeDetailService {
         }
     }
 
-    private static PracticeInfo initPracticeInfo(SubmitPracticeDetailReq req) {
+    private PracticeInfo initPracticeInfo(SubmitPracticeDetailReq req) {
         PracticeInfo info = new PracticeInfo();
         info.setCompleteStatus(1);
         String timeUse = req.getTimeUse().substring(0, 2) + ":" + req.getTimeUse().substring(2, 4) + ":" + req.getTimeUse().substring(4, 6);
@@ -147,7 +150,7 @@ public class PracticeDetailServiceImpl implements PracticeDetailService {
         }
     }
 
-    private static PracticeDetail convertPracticeSetDetail2PracticeDetail(Long practiceId, PracticeSetDetail item) {
+    private PracticeDetail convertPracticeSetDetail2PracticeDetail(Long practiceId, PracticeSetDetail item) {
         PracticeDetail practiceDetail = new PracticeDetail();
         practiceDetail.setPracticeId(practiceId);
         practiceDetail.setSubjectId(item.getSubjectId());
@@ -282,7 +285,7 @@ public class PracticeDetailServiceImpl implements PracticeDetailService {
         if (ObjectUtil.isNull(subjectInfoDTO)) {
             throw new BusinessException(BusinessErrorEnum.FAIL, "提交的题目不存在");
         }
-        if(req.getSubjectType() != 4) {
+        if (req.getSubjectType() != 4) {
             List<SubjectAnswerDTO> optionList = subjectInfoDTO.getOptionList();
             List<Integer> correctOptionIdList = new ArrayList<>();
             if (CollectionUtil.isNotEmpty(optionList)) {
@@ -326,5 +329,70 @@ public class PracticeDetailServiceImpl implements PracticeDetailService {
             });
         }
         return scoreDetailVOList;
+    }
+
+    /**
+     * 获取题目解析
+     *
+     * @param req
+     * @return
+     */
+    @Override
+    public SubjectDetailVO getSubjectDetail(GetSubjectDetailReq req) {
+
+        SubjectDetailVO resultVO = new SubjectDetailVO();
+        // 1. 填充正确答案信息
+        SubjectInfoDTO subjectInfoQuery = new SubjectInfoDTO();
+        subjectInfoQuery.setId(req.getSubjectId());
+        Result<SubjectInfoDTO> infoResult = subjectInfoFeignService.querySubjectInfo(subjectInfoQuery);
+        if (ObjectUtil.isNull(infoResult) || ObjectUtil.isNull(infoResult.getData())) {
+            throw new BusinessException(BusinessErrorEnum.FAIL, "该题目不存在或题目查询失败");
+        }
+        SubjectInfoDTO subjectInfoDTO = infoResult.getData();
+        resultVO.setSubjectName(subjectInfoDTO.getSubjectName());
+        List<SubjectAnswerDTO> optionList = subjectInfoDTO.getOptionList();
+        if (CollectionUtil.isNotEmpty(optionList)) {
+            if (subjectInfoDTO.getSubjectType() == 3) {
+                List<SubjectOptionVO> optionVOList = new ArrayList<>();
+                SubjectOptionVO optionVO = new SubjectOptionVO();
+                optionVO.setOptionContent("正确");
+                optionVO.setOptionType(1);
+                optionVO.setIsCorrect(optionList.get(0).getIsCorrect());
+                optionVOList.add(optionVO);
+                optionVO = new SubjectOptionVO();
+                optionVO.setOptionContent("错误");
+                optionVO.setOptionType(2);
+                optionVO.setIsCorrect(optionList.get(0).getIsCorrect() == 1 ? 0 : 1);
+                optionVOList.add(optionVO);
+                resultVO.setOptionList(optionVOList);
+                resultVO.setCorrectAnswer(Arrays.asList(optionList.get(0).getIsCorrect() == 1 ? 1 : 2));
+            } else {
+                resultVO.setOptionList(optionList.stream().map(item -> {
+                    SubjectOptionVO optionVO = new SubjectOptionVO();
+                    optionVO.setOptionContent(item.getOptionContent());
+                    optionVO.setOptionType(item.getOptionType());
+                    optionVO.setIsCorrect(item.getIsCorrect());
+                    return optionVO;
+                }).collect(Collectors.toList()));
+                resultVO.setCorrectAnswer(optionList.stream()
+                        .filter(item -> item.getIsCorrect() == 1).map(SubjectAnswerDTO::getOptionType).collect(Collectors.toList()));
+            }
+        }
+        resultVO.setLabelNames(subjectInfoDTO.getLabelNames());
+
+        // 2. 填充用户答案信息
+        PracticeDetail practiceDetailQuery = new PracticeDetail();
+        practiceDetailQuery.setPracticeId(req.getPracticeId());
+        practiceDetailQuery.setSubjectId(req.getSubjectId());
+        practiceDetailQuery.setIsDeleted(0);
+        List<PracticeDetail> practiceDetailList = practiceDetailDao.queryByPage(practiceDetailQuery, 0, 1);
+        if (CollectionUtil.isEmpty(practiceDetailList)) {
+            throw new BusinessException(BusinessErrorEnum.FAIL, "用户未作答或题目查询失败");
+        }
+        PracticeDetail practiceDetail = practiceDetailList.get(0);
+        if (StrUtil.isNotBlank(practiceDetail.getAnswerContent())) {
+            resultVO.setRespondAnswer(JSON.parseArray(practiceDetail.getAnswerContent(), Integer.class));
+        }
+        return resultVO;
     }
 }
