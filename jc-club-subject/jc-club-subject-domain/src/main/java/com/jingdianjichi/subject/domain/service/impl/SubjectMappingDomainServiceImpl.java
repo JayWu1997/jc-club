@@ -1,5 +1,6 @@
 package com.jingdianjichi.subject.domain.service.impl;
 
+import cn.hutool.core.collection.CollectionUtil;
 import com.jingdianjichi.subject.common.enums.IsDeletedEnum;
 import com.jingdianjichi.subject.domain.convert.SubjectMappingBOConverter;
 import com.jingdianjichi.subject.domain.entity.SubjectMappingBO;
@@ -10,6 +11,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 题目、分类、标签映射领域服务接口的实现
@@ -55,5 +58,17 @@ public class SubjectMappingDomainServiceImpl implements SubjectMappingDomainServ
         subjectMapping.setId(subjectsMappingBO.getId());
         subjectMapping.setIsDeleted(IsDeletedEnum.DELETED.getCode());
         return subjectMappingService.update(subjectMapping) > 0;
+    }
+
+    /**
+     * 根据题目ID批量查询映射
+     *
+     * @param subjectMappingBO
+     * @return
+     */
+    @Override
+    public List<SubjectMappingBO> queryBatchBySubjectIds(SubjectMappingBO subjectMappingBO) {
+        List<SubjectMapping> entityList = subjectMappingService.queryBatchBySubjectIds(subjectMappingBO.getSubjectIdList());
+        return CollectionUtil.isNotEmpty(entityList) ? SubjectMappingBOConverter.INSTANCE.convertEntity2BO(entityList) : new ArrayList<>();
     }
 }

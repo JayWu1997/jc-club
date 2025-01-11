@@ -1,5 +1,6 @@
 package com.jingdianjichi.subject.infra.basic.service.impl;
 
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.collection.CollectionUtil;
 import com.jingdianjichi.subject.infra.basic.dao.SubjectLabelDao;
 import com.jingdianjichi.subject.infra.basic.entity.SubjectLabel;
@@ -99,5 +100,16 @@ public class SubjectLabelServiceImpl implements SubjectLabelService {
     @Override
     public long countByCondition(SubjectLabel subjectLabel) {
         return subjectLabelDao.count(subjectLabel);
+    }
+
+    /**
+     * 根据题目 id 批量查询标签列表
+     *
+     * @param subjectIdList @return
+     */
+    @Override
+    public List<SubjectLabel> queryBatchBySubjectIds(List<Long> subjectIdList) {
+        List<SubjectLabel> entityList = subjectLabelDao.queryBatchBySubjectIds(subjectIdList);
+        return CollUtil.isNotEmpty(entityList) ? entityList : new ArrayList<>();
     }
 }

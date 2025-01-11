@@ -239,5 +239,16 @@
         ORDER BY i.id ASC
         LIMIT 1
     </select>
+
+    <select id="queryBatchBySubjectIds"
+            resultType="com.jingdianjichi.subject.infra.basic.entity.SubjectMapping">
+        select distinct *
+        from subject_mapping
+        where subject_id in
+        <foreach collection="subjectIdList" item="subjectId" open="(" separator="," close=")">
+            #{subjectId}
+        </foreach>
+        and is_deleted = 0
+    </select>
 </mapper>
 

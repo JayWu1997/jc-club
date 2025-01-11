@@ -103,4 +103,16 @@ public class SubjectLabelDomainServiceImpl implements SubjectLabelDomainService 
         }
         return boList;
     }
+
+    /**
+     * 根据题目 ID 批量查询标签
+     *
+     * @param subjectLabelBO
+     * @return
+     */
+    @Override
+    public List<SubjectLabelBO> queryBatchBySubjectId(SubjectLabelBO subjectLabelBO) {
+        List<SubjectLabel> entityList = subjectLabelService.queryBatchBySubjectIds(subjectLabelBO.getSubjectIdList());
+        return CollectionUtil.isNotEmpty(entityList) ? SubjectLabelBOConverter.INSTANCE.convertEntity2BO(entityList) : new ArrayList<>();
+    }
 }

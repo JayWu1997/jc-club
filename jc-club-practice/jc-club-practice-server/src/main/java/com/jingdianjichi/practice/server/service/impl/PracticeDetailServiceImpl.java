@@ -1,7 +1,9 @@
 package com.jingdianjichi.practice.server.service.impl;
 
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.util.ObjUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson.JSON;
@@ -14,19 +16,19 @@ import com.jingdianjichi.practice.server.dao.PracticeSetDao;
 import com.jingdianjichi.practice.server.dao.PracticeSetDetailDao;
 import com.jingdianjichi.practice.server.entity.PracticeDetail;
 import com.jingdianjichi.practice.server.entity.PracticeInfo;
+import com.jingdianjichi.practice.server.entity.PracticeSet;
 import com.jingdianjichi.practice.server.entity.PracticeSetDetail;
-import com.jingdianjichi.practice.server.req.GetScoreDetailReq;
-import com.jingdianjichi.practice.server.req.GetSubjectDetailReq;
-import com.jingdianjichi.practice.server.req.SubmitPracticeDetailReq;
-import com.jingdianjichi.practice.server.req.SubmitSubjectReq;
+import com.jingdianjichi.practice.server.req.*;
 import com.jingdianjichi.practice.server.service.PracticeDetailService;
-import com.jingdianjichi.practice.server.vo.ScoreDetailVO;
-import com.jingdianjichi.practice.server.vo.SubjectDetailVO;
-import com.jingdianjichi.practice.server.vo.SubjectOptionVO;
+import com.jingdianjichi.practice.server.vo.*;
 import com.jingdianjichi.subject.api.req.SubjectAnswerDTO;
 import com.jingdianjichi.subject.api.req.SubjectInfoDTO;
+import com.jingdianjichi.subject.api.req.SubjectLabelDTO;
+import com.jingdianjichi.subject.api.req.SubjectMappingDTO;
 import com.jingdianjichi.subject.api.resp.Result;
 import com.jingdianjichi.subject.api.service.SubjectInfoFeignService;
+import com.jingdianjichi.subject.api.service.SubjectLabelFeignService;
+import com.jingdianjichi.subject.api.service.SubjectMappingFeignService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -62,6 +64,12 @@ public class PracticeDetailServiceImpl implements PracticeDetailService {
     @Qualifier("com.jingdianjichi.subject.api.service.SubjectInfoFeignService")
     @Autowired
     private SubjectInfoFeignService subjectInfoFeignService;
+    @Qualifier("com.jingdianjichi.subject.api.service.SubjectLabelFeignService")
+    @Autowired
+    private SubjectLabelFeignService subjectLabelFeignService;
+    @Qualifier("com.jingdianjichi.subject.api.service.SubjectMappingFeignService")
+    @Autowired
+    private SubjectMappingFeignService subjectMappingFeignService;
 
     /**
      * 提交
@@ -394,5 +402,80 @@ public class PracticeDetailServiceImpl implements PracticeDetailService {
             resultVO.setRespondAnswer(JSON.parseArray(practiceDetail.getAnswerContent(), Integer.class));
         }
         return resultVO;
+    }
+
+    /**
+     * 获取报告
+     *
+     * @param req practiceId
+     * @return
+     */
+    @Override
+    public ReportVO getReport(GetReportReq req) {
+        ReportVO resultVO = new ReportVO();
+        long correctSubjectCount = 0;
+        String setName = "";
+        List<ReportSkillVO> skillVOList = new ArrayList<>();
+
+        PracticeInfo practiceInfo = practiceInfoDao.queryById(req.getPracticeId());
+        if (ObjectUtil.isNull(practiceInfo)) {
+            throw new BusinessException(BusinessErrorEnum.FAIL, "该次练习不存在");
+        }
+        if (practiceInfo.getCompleteStatus() == 0) {
+            throw new BusinessException(BusinessErrorEnum.FAIL, "该次练习还未完成");
+        }
+
+        // 获取套题名称
+        PracticeSet practiceSet = practiceSetDao.queryById(practiceInfo.getSetId());
+        if (ObjectUtil.isNull(practiceSet)) {
+            throw new BusinessException(BusinessErrorEnum.FAIL, "该套题不存在");
+        }
+        setName = practiceSet.getSetName();
+
+        // 查询该次练习中的所有题目
+        PracticeDetail practiceDetailQuery = new PracticeDetail();
+        practiceDetailQuery.setPracticeId(req.getPracticeId());
+        practiceDetailQuery.setIsDeleted(0);
+        List<PracticeDetail> allSubjectPracticeDetalList = practiceDetailDao.queryByPage(practiceDetailQuery, 0, 1000);
+        if (CollectionUtil.isEmpty(allSubjectPracticeDetalList)) {
+            throw new BusinessException(BusinessErrorEnum.FAIL, "该次练习题目查询失败");
+        }
+
+        // 计算正确题目数量
+        correctSubjectCount = allSubjectPracticeDetalList.stream().filter(item -> item.getAnswerStatus() == 1).count();
+
+        // 生成 skillVOList
+        genSkillVOList(allSubjectPracticeDetalList, skillVOList);
+
+
+        resultVO.setTitle(setName);
+        resultVO.setCorrectSubject(String.valueOf(correctSubjectCount));
+        resultVO.setSkill(skillVOList);
+        return resultVO;
+    }
+
+    private void genSkillVOList(List<PracticeDetail> allSubjectPracticeDetalList, List<ReportSkillVO> skillVOList) {
+        SubjectMappingDTO subjectMappingQuery = new SubjectMappingDTO();
+        List<Long> allSubjectIdList = allSubjectPracticeDetalList.stream().map(PracticeDetail::getSubjectId).collect(Collectors.toList());
+        subjectMappingQuery.setSubjectIdList(allSubjectIdList);
+        Result<List<SubjectMappingDTO>> mappingListResult = subjectMappingFeignService.queryBatchBySubjectIds(subjectMappingQuery);
+        if (ObjUtil.isNotNull(mappingListResult) && CollUtil.isNotEmpty(mappingListResult.getData())) {
+            List<SubjectMappingDTO> mappingList = mappingListResult.getData();
+            Map<Long, List<Long>> labelId2SubjectIdsMap = mappingList.stream().collect(Collectors.groupingBy(SubjectMappingDTO::getLabelId, Collectors.mapping(SubjectMappingDTO::getSubjectId, Collectors.toList())));
+            SubjectLabelDTO labelQuery = new SubjectLabelDTO();
+            labelQuery.setSubjectIdList(allSubjectIdList);
+            Result<List<SubjectLabelDTO>> labelListResult = subjectLabelFeignService.queryBatchBySubjectIds(labelQuery);
+            if (ObjUtil.isNotNull(labelListResult) && CollUtil.isNotEmpty(labelListResult.getData())) {
+                List<SubjectLabelDTO> labelList = labelListResult.getData();
+                labelId2SubjectIdsMap.forEach((labelId, subjectIdList) -> {
+                    ReportSkillVO skillVO = new ReportSkillVO();
+                    skillVO.setName(labelList.stream().filter(item -> item.getId().equals(labelId)).findFirst().map(SubjectLabelDTO::getLabelName).orElse(""));
+                    int correctCount = (int) allSubjectPracticeDetalList.stream().filter(item -> item.getAnswerStatus() == 1 && subjectIdList.contains(item.getSubjectId())).count();
+                    skillVO.setStar(new BigDecimal(correctCount).divide(new BigDecimal(subjectIdList.size()), 4, RoundingMode.HALF_UP)
+                            .multiply(new BigDecimal("100")));
+                    skillVOList.add(skillVO);
+                });
+            }
+        }
     }
 }

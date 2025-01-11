@@ -65,4 +65,11 @@ public interface SubjectLabelService {
      * @return
      */
     long countByCondition(SubjectLabel subjectLabel);
+
+    /**
+     * 根据题目 id 批量查询标签列表
+     *
+     * @param subjectIdList @return
+     */
+    List<SubjectLabel> queryBatchBySubjectIds(List<Long> subjectIdList);
 }

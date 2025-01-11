@@ -81,4 +81,11 @@ public interface SubjectMappingService {
      * @return
      */
     Long queryNextSubjectId(SubjectMapping queryParam);
+
+    /**
+     * 根据题目id批量查询
+     * @param subjectIdList
+     * @return
+     */
+    List<SubjectMapping> queryBatchBySubjectIds(List<Long> subjectIdList);
 }

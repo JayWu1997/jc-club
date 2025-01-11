@@ -91,5 +91,13 @@ public interface SubjectMappingDao {
     Long queryLastSubjectId(SubjectMapping subjectMapping);
 
     Long queryNextSubjectId(SubjectMapping subjectMapping);
+
+    /**
+     * 根据subjectId列表批量查询
+     *
+     * @param subjectIdList
+     * @return
+     */
+    List<SubjectMapping> queryBatchBySubjectIds(@Param("subjectIdList") List<Long> subjectIdList);
 }
 

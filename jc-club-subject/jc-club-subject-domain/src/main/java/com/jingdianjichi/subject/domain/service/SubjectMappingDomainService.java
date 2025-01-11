@@ -2,6 +2,8 @@ package com.jingdianjichi.subject.domain.service;
 
 import com.jingdianjichi.subject.domain.entity.SubjectMappingBO;
 
+import java.util.List;
+
 /**
  * 题目、分类、标签映射领域服务接口
  * 该接口定义了与三者映射相关的领域业务操作。
@@ -28,4 +30,11 @@ public interface SubjectMappingDomainService {
      * @return 是否删除成功
      */
     Boolean delete(SubjectMappingBO subjectsMappingBO);
+
+    /**
+     * 根据题目ID批量查询映射
+     * @param subjectMappingBO
+     * @return
+     */
+    List<SubjectMappingBO> queryBatchBySubjectIds(SubjectMappingBO subjectMappingBO);
 }

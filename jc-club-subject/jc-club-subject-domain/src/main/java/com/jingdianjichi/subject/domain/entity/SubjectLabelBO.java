@@ -3,6 +3,7 @@ package com.jingdianjichi.subject.domain.entity;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * 题目标签表(SubjectLabel)实体类
@@ -29,5 +30,9 @@ public class SubjectLabelBO implements Serializable {
      * 分类ID
      */
     private Long categoryId;
+    /**
+     * 题目 id
+     */
+    private List<Long> subjectIdList;
 }
 

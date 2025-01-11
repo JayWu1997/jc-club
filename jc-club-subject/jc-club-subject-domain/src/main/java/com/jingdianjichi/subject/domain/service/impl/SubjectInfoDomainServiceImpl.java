@@ -217,7 +217,8 @@ public class SubjectInfoDomainServiceImpl implements SubjectInfoDomainService {
 
     /**
      * 填充上一题和下一题 id
-     * @param request 查询条件
+     *
+     * @param request  查询条件
      * @param resultBO 填充查询结果
      */
     private void fillCursor(SubjectInfoBO request, SubjectInfoBO resultBO) {
@@ -282,9 +283,8 @@ public class SubjectInfoDomainServiceImpl implements SubjectInfoDomainService {
 
     /**
      * 根据条件查询题目信息   subjectType
-     *                     labelId
-     *                     queryCount
-     *
+     * labelId
+     * queryCount
      *
      * @param bo
      * @return

@@ -168,4 +168,29 @@ public class SubjectLabelController {
             return Result.fail("根据分类 ID 查询题目标签失败！");
         }
     }
+
+    /**
+     * 根据题目 ID 批量查询题目标签
+     * @param subjectLabelDTO
+     * @return
+     */
+    @PostMapping("/queryBatchBySubjectIds")
+    public Result<List<SubjectLabelDTO>> queryBatchBySubjectIds(@RequestBody SubjectLabelDTO subjectLabelDTO) {
+        try {
+            if (log.isInfoEnabled()) {
+                log.info("SubjectLabelController.queryLabelListBySubjectId.dto:{}", JSON.toJSON(subjectLabelDTO));
+            }
+
+            ParamCheckUtil.checkCollNotEmpty(subjectLabelDTO.getSubjectIdList(), BusinessErrorEnum.PARAM_ERROR, "题目 ID 列表不能为空!");
+
+            List<SubjectLabelBO> boList = subjectLabelDomainService.queryBatchBySubjectId(SubjectLabelDTOConverter.INSTANCE.convertDto2Bo(subjectLabelDTO));
+            return Result.success(SubjectLabelDTOConverter.INSTANCE.convertBo2Dto(boList));
+        } catch (BusinessException e) {
+            log.error("SubjectLabelController.queryLabelListBySubjectId.error:{}", e.getMessage(), e);
+            return Result.fail(e.getMessage());
+        } catch (Exception e) {
+            log.error("SubjectLabelController.queryLabelListBySubjectId.error:{}", e.getMessage(), e);
+            return Result.fail("根据题目 ID 查询题目标签列表失败！");
+        }
+    }
 }

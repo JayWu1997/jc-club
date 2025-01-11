@@ -25,4 +25,12 @@ public interface SubjectLabelFeignService {
      */
     @PostMapping("/subject/label/queryLabelByCategoryId")
     public Result<List<SubjectLabelDTO>> queryLabelByCategoryId(@RequestBody SubjectLabelDTO subjectLabelDTO);
+
+    /**
+     * 根据题目 ID 批量查询题目标签
+     * @param subjectLabelDTO
+     * @return
+     */
+    @PostMapping("/subject/label/queryBatchBySubjectIds")
+    public Result<List<SubjectLabelDTO>> queryBatchBySubjectIds(@RequestBody SubjectLabelDTO subjectLabelDTO);
 }

@@ -37,4 +37,11 @@ public interface SubjectLabelDomainService {
      * @return 标签列表
      */
     List<SubjectLabelBO> queryBatchByCategoryId(SubjectLabelBO subjectLabelBO);
+
+    /**
+     * 根据题目 ID 批量查询标签
+     * @param subjectLabelBO
+     * @return
+     */
+    List<SubjectLabelBO> queryBatchBySubjectId(SubjectLabelBO subjectLabelBO);
 }

@@ -1,10 +1,8 @@
 package com.jingdianjichi.practice.server.service;
 
 import com.jingdianjichi.practice.server.entity.PracticeDetail;
-import com.jingdianjichi.practice.server.req.GetScoreDetailReq;
-import com.jingdianjichi.practice.server.req.GetSubjectDetailReq;
-import com.jingdianjichi.practice.server.req.SubmitPracticeDetailReq;
-import com.jingdianjichi.practice.server.req.SubmitSubjectReq;
+import com.jingdianjichi.practice.server.req.*;
+import com.jingdianjichi.practice.server.vo.ReportVO;
 import com.jingdianjichi.practice.server.vo.ScoreDetailVO;
 import com.jingdianjichi.practice.server.vo.SubjectDetailVO;
 
@@ -98,4 +96,11 @@ public interface PracticeDetailService {
      * @return
      */
     SubjectDetailVO getSubjectDetail(GetSubjectDetailReq req);
+
+    /**
+     * 获取报告
+     * @param req practiceId
+     * @return
+     */
+    ReportVO getReport(GetReportReq req);
 }

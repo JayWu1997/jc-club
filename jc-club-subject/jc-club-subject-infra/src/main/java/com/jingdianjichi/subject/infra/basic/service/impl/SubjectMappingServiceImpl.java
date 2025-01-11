@@ -1,5 +1,6 @@
 package com.jingdianjichi.subject.infra.basic.service.impl;
 
+import cn.hutool.core.collection.CollUtil;
 import com.jingdianjichi.subject.infra.basic.dao.SubjectMappingDao;
 import com.jingdianjichi.subject.infra.basic.entity.SubjectMapping;
 import com.jingdianjichi.subject.infra.basic.service.SubjectMappingService;
@@ -7,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -122,5 +124,17 @@ public class SubjectMappingServiceImpl implements SubjectMappingService {
     @Override
     public Long queryNextSubjectId(SubjectMapping subjectMapping) {
         return subjectMappingDao.queryNextSubjectId(subjectMapping);
+    }
+
+    /**
+     * 根据题目id批量查询
+     *
+     * @param subjectIdList
+     * @return
+     */
+    @Override
+    public List<SubjectMapping> queryBatchBySubjectIds(List<Long> subjectIdList) {
+        List<SubjectMapping> entityList = subjectMappingDao.queryBatchBySubjectIds(subjectIdList);
+        return CollUtil.isNotEmpty(entityList) ? entityList : new ArrayList<>();
     }
 }

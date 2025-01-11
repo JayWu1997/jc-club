@@ -3,6 +3,7 @@ package com.jingdianjichi.subject.api.req;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * 题目分类关系表(SubjectMapping) DTO
@@ -21,6 +22,10 @@ public class SubjectMappingDTO implements Serializable {
      * 题目id
      */
     private Long subjectId;
+    /**
+     * 题目id列表
+     */
+    private List<Long> subjectIdList;
     /**
      * 分类id
      */
