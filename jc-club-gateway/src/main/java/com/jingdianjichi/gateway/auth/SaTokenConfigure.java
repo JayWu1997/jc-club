@@ -30,7 +30,9 @@ public class SaTokenConfigure {
                             .notMatch("/auth/user/isLogin")
                             .check(r -> StpUtil.checkLogin());
                     SaRouter.match("/subject/subject/add", r -> StpUtil.checkPermission("subject:add"));
-                    SaRouter.match("/auth/permission/**", r -> StpUtil.checkRole("admin"));
+                    SaRouter.match("/auth/permission/**")
+                            .notMatch("/auth/permission/getPermission")
+                            .check(r -> StpUtil.checkRole("admin"));
                     SaRouter.match("/auth/rolePermission/**", r -> StpUtil.checkRole("admin"));
                     ;
                 })
