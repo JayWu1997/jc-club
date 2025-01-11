@@ -13,9 +13,11 @@ import com.jingdianjichi.practice.server.dao.PracticeSetDetailDao;
 import com.jingdianjichi.practice.server.entity.PracticeDetail;
 import com.jingdianjichi.practice.server.entity.PracticeInfo;
 import com.jingdianjichi.practice.server.entity.PracticeSetDetail;
+import com.jingdianjichi.practice.server.req.GetScoreDetailReq;
 import com.jingdianjichi.practice.server.req.SubmitPracticeDetailReq;
 import com.jingdianjichi.practice.server.req.SubmitSubjectReq;
 import com.jingdianjichi.practice.server.service.PracticeDetailService;
+import com.jingdianjichi.practice.server.vo.ScoreDetailVO;
 import com.jingdianjichi.subject.api.req.SubjectAnswerDTO;
 import com.jingdianjichi.subject.api.req.SubjectInfoDTO;
 import com.jingdianjichi.subject.api.service.SubjectInfoFeignService;
@@ -299,5 +301,30 @@ public class PracticeDetailServiceImpl implements PracticeDetailService {
         practiceDetailDao.insertOrUpdateBatch(Collections.singletonList(practiceDetail));
 
         return Boolean.TRUE;
+    }
+
+    /**
+     * 获取答题详情
+     *
+     * @param req
+     * @return
+     */
+    @Override
+    public List<ScoreDetailVO> getScoreDetail(GetScoreDetailReq req) {
+        List<ScoreDetailVO> scoreDetailVOList = new ArrayList<>();
+        PracticeDetail subjectQuery = new PracticeDetail();
+        subjectQuery.setPracticeId(req.getPracticeId());
+        subjectQuery.setIsDeleted(0);
+        List<PracticeDetail> practiceDetailList = practiceDetailDao.queryByPage(subjectQuery, 0, 1000);
+        if (CollectionUtil.isNotEmpty(practiceDetailList)) {
+            practiceDetailList.forEach(item -> {
+                ScoreDetailVO scoreDetailVO = new ScoreDetailVO();
+                scoreDetailVO.setSubjectId(item.getSubjectId());
+                scoreDetailVO.setIsCorrect(item.getAnswerStatus());
+                scoreDetailVO.setSubjectType(item.getSubjectType());
+                scoreDetailVOList.add(scoreDetailVO);
+            });
+        }
+        return scoreDetailVOList;
     }
 }

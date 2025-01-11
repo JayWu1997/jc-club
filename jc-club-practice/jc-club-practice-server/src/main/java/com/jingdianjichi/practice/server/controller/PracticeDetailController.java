@@ -9,9 +9,11 @@ import com.jingdianjichi.practice.server.common.exception.BusinessException;
 import com.jingdianjichi.practice.server.common.util.ParamCheckUtil;
 import com.jingdianjichi.practice.server.convert.PracticeDetailDTOConverter;
 import com.jingdianjichi.practice.server.entity.PracticeDetail;
+import com.jingdianjichi.practice.server.req.GetScoreDetailReq;
 import com.jingdianjichi.practice.server.req.SubmitPracticeDetailReq;
 import com.jingdianjichi.practice.server.req.SubmitSubjectReq;
 import com.jingdianjichi.practice.server.service.PracticeDetailService;
+import com.jingdianjichi.practice.server.vo.ScoreDetailVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -35,6 +37,34 @@ public class PracticeDetailController {
 
     @Resource
     private PracticeDetailService practiceDetailService;
+
+    /**
+     * 获取答题详情
+     * @param req
+     * @return
+     */
+    @PostMapping("/getScoreDetail")
+    public Result<List<ScoreDetailVO>> getScoreDetail(@RequestBody GetScoreDetailReq req) {
+        try{
+            if (log.isInfoEnabled()) {
+                log.info("PracticeDetailController.getScoreDetail.req:{}", JSON.toJSON(req));
+            }
+
+            ParamCheckUtil.checkNotNull(req.getPracticeId(), BusinessErrorEnum.PARAM_ERROR, "practiceId 不能为空!");
+
+            List<ScoreDetailVO> scoreDetailVOList = practiceDetailService.getScoreDetail(req);
+            if (log.isInfoEnabled()) {
+                log.info("PracticeDetailController.getScoreDetail.result:{}", JSON.toJSON(scoreDetailVOList));
+            }
+            return Result.success(scoreDetailVOList);
+        } catch (BusinessException e) {
+            log.error("PracticeDetailController.getScoreDetail.error:{}", e.getMessage(), e);
+            return Result.fail(e.getMessage());
+        } catch (Exception e) {
+            log.error("PracticeDetailController.getScoreDetail.error:{}", e.getMessage(), e);
+            return Result.fail("获取答题详情失败！");
+        }
+    }
 
     /**
      * 提交
