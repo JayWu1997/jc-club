@@ -11,12 +11,10 @@ import com.jingdianjichi.practice.server.convert.PracticeSetDTOConverter;
 import com.jingdianjichi.practice.server.entity.PracticeSet;
 import com.jingdianjichi.practice.server.req.AddPracticeReq;
 import com.jingdianjichi.practice.server.req.GetPracticeSubjectReq;
+import com.jingdianjichi.practice.server.req.GetPreSetContentReq;
 import com.jingdianjichi.practice.server.req.GetSubjectsReq;
 import com.jingdianjichi.practice.server.service.PracticeSetService;
-import com.jingdianjichi.practice.server.vo.GetSubjectsVO;
-import com.jingdianjichi.practice.server.vo.PracticeSetVO;
-import com.jingdianjichi.practice.server.vo.PracticeSubjectVO;
-import com.jingdianjichi.practice.server.vo.SpecialPracticeVO;
+import com.jingdianjichi.practice.server.vo.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -261,6 +259,33 @@ public class PracticeSetController {
         } catch (Exception e) {
             log.error("PracticeSetController.delete.error:{}", e.getMessage(), e);
             return Result.fail("删除失败！");
+        }
+    }
+
+    /**
+     * 获取预设套题列表
+     * @param req
+     * @return
+     */
+    @PostMapping("/getPreSetContent")
+    public Result<PageResult<PreSetContentVO>> getPreSetContent(@RequestBody GetPreSetContentReq req) {
+        try {
+            if (log.isInfoEnabled()) {
+                log.info("PracticeDetailController.getPreSetContent.req:{}", JSON.toJSON(req));
+            }
+            ParamCheckUtil.checkNotNull(req.getOrderType(), BusinessErrorEnum.PARAM_ERROR, "排序方式不能为空");
+            ParamCheckUtil.checkNotNull(req.getPageInfo(), BusinessErrorEnum.PARAM_ERROR, "分页信息不能为空");
+            ParamCheckUtil.checkNotNull(req.getPageInfo().getPageNo(), BusinessErrorEnum.PARAM_ERROR, "页码不能为空");
+            ParamCheckUtil.checkNotNull(req.getPageInfo().getPageSize(), BusinessErrorEnum.PARAM_ERROR, "每页数量不能为空");
+            List<PreSetContentVO> preSetContentList = practiceSetService.getPreSetContent(req);
+            PageResult<PreSetContentVO> pageResult = new PageResult<>(req.getPageInfo().getPageNo(), req.getPageInfo().getPageSize(), preSetContentList.size(), preSetContentList);
+            return Result.success(pageResult);
+        } catch (BusinessException e) {
+            log.error("PracticeDetailController.getPreSetContent.error:{}", e.getMessage(), e);
+            return Result.fail(e.getMessage());
+        } catch (Exception e) {
+            log.error("PracticeDetailController.getPreSetContent.error:{}", e.getMessage(), e);
+            return Result.fail("获取失败！");
         }
     }
 }

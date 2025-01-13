@@ -116,6 +116,27 @@
         </where>
     </select>
 
+    <select id="queryPreSetContent" resultType="com.jingdianjichi.practice.server.entity.PracticeSet">
+        select *
+        from practice_set
+        where is_deleted = 0
+        and set_type = 2
+        <if test="setName != null">
+            and set_name like concat('%',#{setName,jdbcType=VARCHAR},'%')
+        </if>
+        <if test="orderType != null and orderType == 1">
+            order by set_name desc
+        </if>
+        <if test="orderType != null and orderType == 2">
+            order by created_time desc
+        </if>
+        <if test="orderType != null and orderType == 3">
+            order by set_heat desc
+        </if>
+        limit #{start}, #{pageSize}
+    </select>
+
+
     <!--新增所有列-->
     <insert id="insert" keyProperty="id" useGeneratedKeys="true">
         insert into practice_set(set_name, set_type, set_heat, set_desc, primary_category_id, created_by, created_time,

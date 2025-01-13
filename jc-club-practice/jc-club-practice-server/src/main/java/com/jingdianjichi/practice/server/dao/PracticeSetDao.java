@@ -89,5 +89,10 @@ public interface PracticeSetDao {
      * @return
      */
     long upHeat(@Param("id") Long id);
+
+    List<PracticeSet> queryPreSetContent(@Param("start") int start,
+                                         @Param("pageSize") Integer pageSize,
+                                         @Param("orderType") String orderType,
+                                         @Param("setName") String setName);
 }
 

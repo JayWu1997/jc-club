@@ -1,5 +1,6 @@
 package com.jingdianjichi.practice.server.service.impl;
 
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.jingdianjichi.practice.api.req.PracticeSetDTO;
@@ -16,6 +17,7 @@ import com.jingdianjichi.practice.server.entity.PracticeInfo;
 import com.jingdianjichi.practice.server.entity.PracticeSet;
 import com.jingdianjichi.practice.server.entity.PracticeSetDetail;
 import com.jingdianjichi.practice.server.req.GetPracticeSubjectReq;
+import com.jingdianjichi.practice.server.req.GetPreSetContentReq;
 import com.jingdianjichi.practice.server.req.GetSubjectsReq;
 import com.jingdianjichi.practice.server.service.PracticeSetService;
 import com.jingdianjichi.practice.server.vo.*;
@@ -31,10 +33,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -383,6 +382,32 @@ public class PracticeSetServiceImpl implements PracticeSetService {
                 });
                 resultVO.setOptionList(optionVOList);
             }
+        }
+        return resultVO;
+    }
+
+    /**
+     * 获取套题列表
+     *
+     * @param req
+     * @return
+     */
+    @Override
+    public List<PreSetContentVO> getPreSetContent(GetPreSetContentReq req) {
+        List<PreSetContentVO> resultVO = new ArrayList<>();
+
+        Integer pageNo = req.getPageInfo().getPageNo();
+        Integer pageSize = req.getPageInfo().getPageSize();
+        List<PracticeSet> preSetList = practiceSetDao.queryPreSetContent((pageNo - 1) * pageSize, pageSize, req.getOrderType(), req.getSetName());
+        if(CollUtil.isNotEmpty(preSetList)) {
+            preSetList.forEach(item -> {
+                PreSetContentVO preSetContentVO = new PreSetContentVO();
+                preSetContentVO.setId(item.getId());
+                preSetContentVO.setSetName(item.getSetName());
+                preSetContentVO.setSetHeat(item.getSetHeat());
+                preSetContentVO.setSetDesc(item.getSetDesc());
+                resultVO.add(preSetContentVO);
+            });
         }
         return resultVO;
     }
