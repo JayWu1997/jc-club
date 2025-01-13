@@ -1,10 +1,12 @@
 package com.jingdianjichi.practice.server.service;
 
+import com.jingdianjichi.practice.api.common.PageResult;
 import com.jingdianjichi.practice.api.req.PracticeSetDTO;
 import com.jingdianjichi.practice.server.entity.PracticeSet;
 import com.jingdianjichi.practice.server.req.GetPracticeSubjectReq;
 import com.jingdianjichi.practice.server.req.GetPreSetContentReq;
 import com.jingdianjichi.practice.server.req.GetSubjectsReq;
+import com.jingdianjichi.practice.server.req.GetUnCompletePracticeReq;
 import com.jingdianjichi.practice.server.vo.*;
 
 import java.util.List;
@@ -102,4 +104,11 @@ public interface PracticeSetService {
      * @return
      */
     List<PreSetContentVO> getPreSetContent(GetPreSetContentReq req);
+
+    /**
+     * 获取未完成的练习
+     *
+     * @return
+     */
+    PageResult<GetUnCompletePracticeVO> getUnCompletePractice(GetUnCompletePracticeReq req);
 }

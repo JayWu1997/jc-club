@@ -9,10 +9,7 @@ import com.jingdianjichi.practice.server.common.exception.BusinessException;
 import com.jingdianjichi.practice.server.common.util.ParamCheckUtil;
 import com.jingdianjichi.practice.server.convert.PracticeSetDTOConverter;
 import com.jingdianjichi.practice.server.entity.PracticeSet;
-import com.jingdianjichi.practice.server.req.AddPracticeReq;
-import com.jingdianjichi.practice.server.req.GetPracticeSubjectReq;
-import com.jingdianjichi.practice.server.req.GetPreSetContentReq;
-import com.jingdianjichi.practice.server.req.GetSubjectsReq;
+import com.jingdianjichi.practice.server.req.*;
 import com.jingdianjichi.practice.server.service.PracticeSetService;
 import com.jingdianjichi.practice.server.vo.*;
 import lombok.extern.slf4j.Slf4j;
@@ -286,6 +283,36 @@ public class PracticeSetController {
         } catch (Exception e) {
             log.error("PracticeDetailController.getPreSetContent.error:{}", e.getMessage(), e);
             return Result.fail("获取失败！");
+        }
+    }
+
+    /**
+     * 获取未完成练习
+     * @param req
+     * @return
+     */
+    @PostMapping("/getUnCompletePractice")
+    public Result<PageResult<GetUnCompletePracticeVO>> getUnCompletePractice(@RequestBody GetUnCompletePracticeReq req) {
+        try{
+            if (log.isInfoEnabled()) {
+                log.info("PracticeDetailController.getUnCompletePractice.req:{}", JSON.toJSON(req));
+            }
+
+            ParamCheckUtil.checkNotNull(req.getPageInfo(), BusinessErrorEnum.PARAM_ERROR, "分页信息不能为空");
+            ParamCheckUtil.checkNotNull(req.getPageInfo().getPageNo(), BusinessErrorEnum.PARAM_ERROR, "页码不能为空");
+            ParamCheckUtil.checkNotNull(req.getPageInfo().getPageSize(), BusinessErrorEnum.PARAM_ERROR, "每页数量不能为空");
+
+            PageResult<GetUnCompletePracticeVO> pageResult = practiceSetService.getUnCompletePractice(req);
+            if (log.isInfoEnabled()) {
+                log.info("PracticeDetailController.getUnCompletePractice.pageResult:{}", JSON.toJSON(pageResult));
+            }
+            return Result.success(pageResult);
+        } catch (BusinessException e) {
+            log.error("PracticeDetailController.getUnCompletePractice.error:{}", e.getMessage(), e);
+            return Result.fail(e.getMessage());
+        } catch (Exception e) {
+            log.error("PracticeDetailController.getUnCompletePractice.error:{}", e.getMessage(), e);
+            return Result.fail("获取未完成练习失败！");
         }
     }
 }

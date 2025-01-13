@@ -3,7 +3,9 @@ package com.jingdianjichi.practice.server.service.impl;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.ObjectUtil;
+import com.jingdianjichi.practice.api.common.PageResult;
 import com.jingdianjichi.practice.api.req.PracticeSetDTO;
+import com.jingdianjichi.practice.server.common.context.UserContext;
 import com.jingdianjichi.practice.server.common.context.UserContextHolder;
 import com.jingdianjichi.practice.server.common.exception.BusinessErrorEnum;
 import com.jingdianjichi.practice.server.common.exception.BusinessException;
@@ -19,6 +21,7 @@ import com.jingdianjichi.practice.server.entity.PracticeSetDetail;
 import com.jingdianjichi.practice.server.req.GetPracticeSubjectReq;
 import com.jingdianjichi.practice.server.req.GetPreSetContentReq;
 import com.jingdianjichi.practice.server.req.GetSubjectsReq;
+import com.jingdianjichi.practice.server.req.GetUnCompletePracticeReq;
 import com.jingdianjichi.practice.server.service.PracticeSetService;
 import com.jingdianjichi.practice.server.vo.*;
 import com.jingdianjichi.subject.api.req.SubjectCategoryDTO;
@@ -410,6 +413,51 @@ public class PracticeSetServiceImpl implements PracticeSetService {
             });
         }
         return resultVO;
+    }
+
+    /**
+     * 获取未完成的练习
+     *
+     * @return
+     */
+    @Override
+    public PageResult<GetUnCompletePracticeVO> getUnCompletePractice(GetUnCompletePracticeReq req) {
+        List<GetUnCompletePracticeVO> voList = new ArrayList<>();
+        long count;
+
+        Integer pageNo = req.getPageInfo().getPageNo();
+        Integer pageSize = req.getPageInfo().getPageSize();
+        UserContext userContext = UserContextHolder.getUserContext();
+        ParamCheckUtil.checkNotNull(userContext, BusinessErrorEnum.PARAM_ERROR, "用户信息不能为空");
+
+        PracticeInfo infoQuery = new PracticeInfo();
+        infoQuery.setCreatedBy(userContext.getUserName());
+        infoQuery.setCompleteStatus(0);
+        infoQuery.setIsDeleted(0);
+
+        count = practiceInfoDao.count(infoQuery);
+        if (count != 0) {
+            Map<Long, PracticeSet> setMap = new HashMap<>();
+            voList = practiceInfoDao.queryByPage(infoQuery, (pageNo - 1) * pageSize, pageSize).stream().map(
+                    practiceInfo -> {
+                        GetUnCompletePracticeVO vo = new GetUnCompletePracticeVO();
+                        vo.setPracticeId(practiceInfo.getId());
+                        vo.setPracticeTime(practiceInfo.getTimeUse());
+                        vo.setSetId(practiceInfo.getSetId());
+                        PracticeSet set = setMap.get(practiceInfo.getSetId());
+                        if (ObjectUtil.isNull(set)) {
+                            set = practiceSetDao.queryById(vo.getSetId());
+                            if (ObjectUtil.isNull(set)) {
+                                throw new BusinessException(BusinessErrorEnum.FAIL, "该套题不存在");
+                            }
+                            setMap.put(practiceInfo.getSetId(), set);
+                        }
+                        vo.setTitle(set.getSetName());
+                        return vo;
+                    }
+            ).collect(Collectors.toList());
+        }
+        return new PageResult<>(pageNo, pageSize, (int) count, voList);
     }
 
     private void injectSecondaryCategoryListIntoPrimaryCategory(List<SubjectCategoryDTO> categoryDTOList, SpecialPracticeVO vo) {
