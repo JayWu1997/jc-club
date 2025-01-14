@@ -178,15 +178,13 @@ public class AuthPermissionController {
     }
 
     @RequestMapping("getPermission")
-    public Result<List<AuthPermissionDTO>> getPermission(String userName) {
+    public Result<List<String>> getPermission(String userName) {
         try {
             if (log.isInfoEnabled()) {
                 log.info("AuthPermissionController.getPermission.userName:{}", userName);
             }
             ParamCheckUtil.checkStrNotEmpty(userName, BusinessErrorEnum.PARAM_ERROR, "用户名不能为空!");
-
-            List<AuthPermissionBO> permissionDTOList =  authPermissionDomainService.getPermission(userName);
-            return Result.success(AuthPermissionDTOConverter.INSTANCE.convertBo2Dto(permissionDTOList));
+            return Result.success(authPermissionDomainService.getPermission(userName));
         } catch (BusinessException e) {
             if (log.isErrorEnabled()) {
                 log.error("AuthPermissionController.getPermission.error:{}", e.getMessage(), e);

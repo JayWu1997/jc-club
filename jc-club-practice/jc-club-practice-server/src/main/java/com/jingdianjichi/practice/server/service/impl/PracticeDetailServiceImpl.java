@@ -402,6 +402,8 @@ public class PracticeDetailServiceImpl implements PracticeDetailService {
         PracticeDetail practiceDetail = practiceDetailList.get(0);
         if (StrUtil.isNotBlank(practiceDetail.getAnswerContent())) {
             resultVO.setRespondAnswer(JSON.parseArray(practiceDetail.getAnswerContent(), Integer.class));
+        } else {
+            resultVO.setRespondAnswer(new ArrayList<>());
         }
         return resultVO;
     }

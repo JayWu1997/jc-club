@@ -264,6 +264,9 @@
         from subject_info i inner join subject_mapping m on i.id = m.subject_id
         where i.is_deleted = 0
         and m.is_deleted = 0
+        <if test="subjectType == null">
+            and i.subject_type != 4
+        </if>
         <if test="subjectType != null">
             and i.subject_type = #{subjectType}
         </if>

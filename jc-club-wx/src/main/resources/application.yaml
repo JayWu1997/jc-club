@@ -3,11 +3,11 @@ server:
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://192.168.134.129:3306/jc-club?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf8&useSSL=true
+    url: jdbc:mysql://localhost:3306/jc-club?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf8&useSSL=true
     type: com.alibaba.druid.pool.DruidDataSource
     druid:
-      username: admin
-      password: SF9URzhVIt12Joi16nXpr/LzRxERNMifnJ57RHPzDTw7XodSqBanqpvpWTmzIeL0+2PdJDsto1ytO6eg9dN8YQ==
+      username: root
+      password: Wyj199751
       initial-size: 20
       min-idle: 20
       max-active: 100
@@ -15,8 +15,8 @@ spring:
       stat-view-servlet:
         enabled: true
         url-pattern: /druid/*
-        login-username: admin
-        login-password: 123456
+        login-username: root
+        login-password: Wyj199751
       filter:
         stat:
           enabled: true
@@ -26,19 +26,16 @@ spring:
           enabled: true
         config:
           enabled: true
-      connect-properties:
-        config.decrypt: true
-        config.decrypt.key: MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAIGeeIuwv7bWTvWWQsgC7tLHd/aqR4+pw1Ut3i7hRUFEg+EmE1+mNw2WhGr47MCrDZqGFjNQEsjdPIoOhMezkPMCAwEAAQ==
-  # redis配置
+# redis配置
   redis:
     # Redis数据库索引（默认为0）
     database: 1
     # Redis服务器地址
-    host: 192.168.134.129
+    host: localhost
     # Redis服务器连接端口
     port: 6379
     # Redis服务器连接密码（默认为空）
-    password: jichi1234
+    password: Wyj199751
     # 连接超时时间
     timeout: 2s
     lettuce:

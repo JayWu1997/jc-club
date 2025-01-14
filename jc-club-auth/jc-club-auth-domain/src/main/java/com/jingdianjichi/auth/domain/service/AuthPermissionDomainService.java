@@ -48,8 +48,9 @@ public interface AuthPermissionDomainService {
 
     /**
      * 获取指定用户的权限列表
+     *
      * @param userName 用户名
      * @return 权限列表
      */
-    List<AuthPermissionBO> getPermission(String userName);
+    List<String> getPermission(String userName);
 }

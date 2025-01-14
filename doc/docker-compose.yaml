@@ -1,0 +1,178 @@
+name: jc_club
+
+networks:
+  backend:
+
+volumes:
+  mysql_data:
+  nacos_logs:
+  redis_data:
+  xxl-job_logs:
+  es_data:
+  es_logs:
+  minio_data:
+  jenkins_data:
+
+services:
+  mysql:
+    image: 'bitnami/mysql:latest'
+    container_name: mysql
+    environment:
+      TZ: Asia/Shanghai # 设置时区
+      MYSQL_ROOT_PASSWORD: Wyj199751
+    restart: always
+    ports:
+      - "3306:3306"
+    volumes:
+      # 指定的mysql_data volume之前不存在，则会执行 /docker-entrypoint-initdb.d/ 目录下的sql
+      - ./sql/:/docker-entrypoint-initdb.d/
+      # 只要是创建容器都会执行 /docker-entrypoint-startdb.d/ 目录下的sql
+      # - ./sql/:/docker-entrypoint-startdb.d
+      - mysql_data:/var/lib/mysql
+    networks:
+      - backend
+
+  nacos:
+    image: nacos/nacos-server:latest
+    container_name: nacos
+    restart: always
+    ports:
+      # web 界面访问端口
+      - 8848:8848
+      # 程序使用 grpc 连接的端口
+      - 9848:9848
+    environment:
+      - MODE=standalone
+    volumes:
+      - nacos_logs:/home/nacos/logs
+    networks:
+      - backend
+
+  redis:
+    image: bitnami/redis:latest
+    container_name: redis # 容器名称
+    restart: always # 重启方式
+    environment:
+      - TZ=Asia/Shanghai # 设置时区
+      - REDIS_PASSWORD=Wyj199751
+      - REDIS_DISABLE_COMMANDS=FLUSHDB,FLUSHALL
+    ports:
+      - '6379:6379'
+    volumes:
+      - 'redis_data:/bitnami/redis/data'
+    networks:
+      - backend
+
+  xxl-job-admin:
+    image: xuxueli/xxl-job-admin:2.3.0
+    container_name: xxl-job-admin # 容器名称
+    restart: always
+    volumes:
+      - xxl-job_logs:/data/applogs
+    ports:
+      - "8800:8800"
+    environment:
+      PARAMS: '
+        --server.port=8800
+        --server.servlet.context-path=/xxl-job-admin
+        --spring.datasource.url=jdbc:mysql://mysql:3306/xxl_job?useUnicode=true&characterEncoding=UTF-8&autoReconnect=true&serverTimezone=Asia/Shanghai
+        --spring.datasource.username=root
+        --spring.datasource.password=Wyj199751
+        --xxl.job.accessToken=Wyj199751'  #代码里面需要指定的token
+    networks:
+      - backend
+    depends_on:
+      - mysql
+
+  namesrv:
+    image: apache/rocketmq:latest
+    container_name: rmqnamesrv
+    restart: always
+    ports:
+      - 9876:9876
+    networks:
+      - backend
+    command: sh mqnamesrv
+  broker:
+    image: apache/rocketmq:latest
+    container_name: rmqbroker
+    restart: always
+    ports:
+      - 10909:10909
+      - 10911:10911
+      - 10912:10912
+    environment:
+      - NAMESRV_ADDR=rmqnamesrv:9876
+    depends_on:
+      - namesrv
+    networks:
+      - backend
+    command: sh mqbroker
+  proxy:
+    image: apache/rocketmq:latest
+    container_name: rmqproxy
+    restart: always
+    depends_on:
+      - broker
+      - namesrv
+    ports:
+      - 9800:8080
+      - 9801:8081
+    environment:
+      - NAMESRV_ADDR=rmqnamesrv:9876
+    command: sh mqproxy
+    networks:
+      - backend
+
+  elasticsearch:
+    image: bitnami/elasticsearch:latest
+    container_name: elasticsearch
+    restart: always
+    volumes:
+#      - ./es/etc/localtime:/etc/localtime
+      - ./es/plugins:/opt/bitnami/elasticsearch/plugins #插件文件挂载
+      - es_data:/bitnami/elasticsearch/data #数据文件挂载
+      - es_logs:/opt/bitnami/elasticsearch/logs
+    ports:
+      - '9200:9200'
+      - '9300:9300'
+    environment:
+      - ES_JAVA_OPTS=-Xms1024m -Xmx1024m #设置使用jvm内存大小
+      - DB_BASE_DIR=/bitnami/elasticsearch
+    networks:
+      - backend
+
+  minio:
+    image: 'bitnami/minio:latest'
+    container_name: minio
+    ports:
+      - '9000:9000'
+      - '9001:9001'
+    environment:
+      - MINIO_ROOT_USER=root
+      - MINIO_ROOT_PASSWORD=Wyj199751
+    volumes:
+      - minio_data:/bitnami/minio/data
+    networks:
+      - backend
+
+  jenkins:
+    image: jenkins/jenkins:lts
+    container_name: jenkins
+    restart: always
+    volumes:    # 挂载目录  本地文件夹目录:容器文件夹目录
+     - jenkins_data:/var/jenkins_home
+#     - /var/run/docker.sock:/var/run/docker.sock
+#     - /usr/bin/docker:/usr/bin/docker
+#     - /usr/lib/x86_64-linux-gnu/libltdl.so.7:/usr/lib/x86_64-linux-gnu/libltdl.so.7
+    ports:  # 绑定端口
+     - "8080:8080"
+    expose:  # 暴露端口
+     - "8080"
+     - "50000"
+    privileged: true
+    user: root
+    environment:
+     JAVA_OPTS: '-Djava.util.logging.config.file=/var/jenkins_home/log.properties'
+    networks:
+      - backend

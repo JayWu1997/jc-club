@@ -1,9 +1,9 @@
 server:
   port: 4000
 minio:
-  url: http://192.168.134.129:9000
-  accessKey: minioadmin
-  secretKey: minioadmin
+  url: http://localhost:9000
+  accessKey: admin
+  secretKey: Wyj199751
 storage:
   service:
     type: minio

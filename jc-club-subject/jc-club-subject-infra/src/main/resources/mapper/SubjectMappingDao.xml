@@ -221,7 +221,9 @@
         SELECT i.id
         FROM subject_info i, subject_mapping m
         WHERE i.id = m.subject_id
-          AND m.category_id = #{categoryId}
+          <if test="categoryId != null">
+              AND m.category_id = #{categoryId}
+          </if>
           AND m.is_deleted = 0
           AND i.is_deleted = 0
           AND i.id <![CDATA[<]]> #{subjectId}
@@ -232,7 +234,9 @@
         SELECT i.id
         FROM subject_info i, subject_mapping m
         WHERE i.id = m.subject_id
-          AND m.category_id = #{categoryId}
+        <if test="categoryId != null">
+            AND m.category_id = #{categoryId}
+        </if>
           AND m.is_deleted = 0
           AND i.is_deleted = 0
           AND i.id <![CDATA[>]]> #{subjectId}
