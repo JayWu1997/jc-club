@@ -55,7 +55,7 @@ server:
 
 es:
   cluster[0]:
-    name: 19909d7eff80
+    name: cdb923573350
     addr[0]: localhost:9200
 
 xxl:

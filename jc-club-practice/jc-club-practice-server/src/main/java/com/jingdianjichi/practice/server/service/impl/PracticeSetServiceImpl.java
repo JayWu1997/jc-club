@@ -282,32 +282,104 @@ public class PracticeSetServiceImpl implements PracticeSetService {
     public GetSubjectsVO getSubjects(GetSubjectsReq req) {
         GetSubjectsVO resultVO = new GetSubjectsVO();
 
+        String timeUse;
+        String title;
+        List<PracticeSubjectDetailVO> subjectList;
+        Long practiceId;
+
         // 查询套题名称
         PracticeSet practiceSet = practiceSetDao.queryById(req.getSetId());
         ParamCheckUtil.checkNotNull(practiceSet, BusinessErrorEnum.PARAM_ERROR, "此套题不存在");
-        resultVO.setTitle(practiceSet.getSetName());
+        title = practiceSet.getSetName();
 
-        // 查询套题下的所有题目并注入subjectList
-        resultVO.setSubjectList(getSubjectList(req.getPracticeId(), req.getSetId()));
-
-        // 若practiceId不为空，表示该练习已存在，填充信息
-        if (ObjectUtil.isNotNull(req.getPracticeId())) {
-            updatePracticeSubmitTime(req);
-            PracticeInfo practiceInfoQuery = practiceInfoDao.queryById(req.getPracticeId());
-            resultVO.setTimeUse(practiceInfoQuery.getTimeUse());
-            resultVO.setPracticeId(req.getPracticeId());
+        // practiceId 为空，表示刚开始作答，则查询套题下的所有题目，并插入一条练习记录
+        if (ObjectUtil.isNull(req.getPracticeId())) {
+            subjectList = getSubjectsWhenPracticeIdIsNull(req);
+            practiceId = insertPracticeInfoAndGetPracticeId(req.getSetId());
+            timeUse = "00:00:00";
         }
-        // 若practiceId为空，表示刚开始练习，插入一条练习记录
+        // practiceId 不为空，表示已经作答过，则填充已作答题目和未作答题目
         else {
-            // 插入一条练习记录
-            resultVO.setPracticeId(insertPracticeInfoAndGetPracticeId(req.getSetId()));
+            subjectList = getSubjectsWhenPracticeIdNotNull(req);
+            // 更新提交时间
+            updatePracticeSubmitTime(req.getPracticeId());
+            // 查询用时
+            PracticeInfo practiceInfoQuery = practiceInfoDao.queryById(req.getPracticeId());
+            timeUse = practiceInfoQuery.getTimeUse();
+            practiceId = req.getPracticeId();
         }
+
+        resultVO.setTitle(title);
+        resultVO.setPracticeId(practiceId);
+        resultVO.setTimeUse(timeUse);
+        resultVO.setSubjectList(subjectList);
         return resultVO;
     }
 
-    private void updatePracticeSubmitTime(GetSubjectsReq req) {
+    private List<PracticeSubjectDetailVO> getSubjectsWhenPracticeIdNotNull(GetSubjectsReq req) {
+        List<PracticeSubjectDetailVO> subjectList;
+
+
+        PracticeDetail subjectQuery = new PracticeDetail();
+        subjectQuery.setPracticeId(req.getPracticeId());
+        subjectQuery.setCreatedBy(UserContextHolder.getUserContext().getUserName());
+        List<PracticeDetail> answeredSubList = practiceDetailDao.queryByPage(subjectQuery, 0, 100);
+        PracticeSetDetail allSubQuery = new PracticeSetDetail();
+        allSubQuery.setSetId(req.getSetId());
+        allSubQuery.setIsDeleted(0);
+        List<PracticeSetDetail> allSubList = practiceSetDetailDao.queryByPage(allSubQuery, 0, 100);
+        List<Long> answeredSubIds;
+        if (CollUtil.isEmpty(answeredSubList)) {
+            answeredSubList = Collections.emptyList();
+            answeredSubIds = Collections.emptyList();
+        } else {
+            answeredSubIds = answeredSubList.stream().map(PracticeDetail::getSubjectId).collect(Collectors.toList());
+        }
+        // 生成未作答的题目
+        allSubList.removeIf(item -> answeredSubIds.contains(item.getSubjectId()));
+        List<PracticeSubjectDetailVO> notAnsweredList = allSubList.stream().map(item -> {
+            PracticeSubjectDetailVO notAnsweredSub = new PracticeSubjectDetailVO();
+            notAnsweredSub.setSubjectId(item.getSubjectId());
+            notAnsweredSub.setSubjectType(item.getSubjectType());
+            notAnsweredSub.setIsAnswer(0);
+            return notAnsweredSub;
+        }).collect(Collectors.toList());
+        // 生成已作答的题目
+        List<PracticeSubjectDetailVO> answeredList = answeredSubList.stream().map(item -> {
+            PracticeSubjectDetailVO answeredSub = new PracticeSubjectDetailVO();
+            answeredSub.setSubjectId(item.getSubjectId());
+            answeredSub.setSubjectType(item.getSubjectType());
+            answeredSub.setIsAnswer(item.getAnswerStatus());
+            return answeredSub;
+        }).collect(Collectors.toList());
+
+        // 合并已作答和未作答的题目并返回
+        answeredList.addAll(notAnsweredList);
+        return answeredList;
+    }
+
+    private List<PracticeSubjectDetailVO> getSubjectsWhenPracticeIdIsNull(GetSubjectsReq req) {
+        List<PracticeSubjectDetailVO> subjectList;
+        PracticeSetDetail subjectQuery = new PracticeSetDetail();
+        subjectQuery.setSetId(req.getSetId());
+        subjectQuery.setIsDeleted(0);
+        List<PracticeSetDetail> detailList = practiceSetDetailDao.queryByPage(subjectQuery, 0, 100);
+        if (CollectionUtil.isNotEmpty(detailList)) {
+            subjectList = detailList.stream().map(detail -> {
+                PracticeSubjectDetailVO vo = new PracticeSubjectDetailVO();
+                vo.setSubjectId(detail.getSubjectId());
+                vo.setSubjectType(detail.getSubjectType());
+                return vo;
+            }).collect(Collectors.toList());
+        } else {
+            subjectList = new ArrayList<>();
+        }
+        return subjectList;
+    }
+
+    private void updatePracticeSubmitTime(Long practiceId) {
         PracticeInfo update = new PracticeInfo();
-        update.setId(req.getPracticeId());
+        update.setId(practiceId);
         update.setSubmitTime(new Date());
         practiceInfoDao.update(update);
     }
@@ -323,39 +395,8 @@ public class PracticeSetServiceImpl implements PracticeSetService {
     }
 
     private List<PracticeSubjectDetailVO> getSubjectList(Long practiceId, Long setId) {
-        // practiceId 为空，表示刚开始作答，则查询套题下的所有题目，并插入一条练习记录
-        List<PracticeSubjectDetailVO> subjectList = new ArrayList<>();
-        if (ObjectUtil.isNull(practiceId)) {
-            PracticeSetDetail subjectQuery = new PracticeSetDetail();
-            subjectQuery.setSetId(setId);
-            subjectQuery.setIsDeleted(0);
-            List<PracticeSetDetail> detailList = practiceSetDetailDao.queryByPage(subjectQuery, 0, 100);
-            if (CollectionUtil.isNotEmpty(detailList)) {
-                detailList.forEach(detail -> {
-                    PracticeSubjectDetailVO vo = new PracticeSubjectDetailVO();
-                    vo.setSubjectId(detail.getSubjectId());
-                    vo.setSubjectType(detail.getSubjectType());
-                    subjectList.add(vo);
-                });
-            }
-        }
-        // practiceId 不为空，表示已经作答过，则查询practiceDetail表
-        else {
-            PracticeDetail subjectQuery = new PracticeDetail();
-            subjectQuery.setPracticeId(practiceId);
-            subjectQuery.setCreatedBy(UserContextHolder.getUserContext().getUserName());
-            List<PracticeDetail> practiceDetails = practiceDetailDao.queryByPage(subjectQuery, 0, 100);
-            if (CollectionUtil.isNotEmpty(practiceDetails)) {
-                practiceDetails.forEach(detail -> {
-                    PracticeSubjectDetailVO vo = new PracticeSubjectDetailVO();
-                    vo.setSubjectId(detail.getSubjectId());
-                    vo.setSubjectType(detail.getSubjectType());
-                    vo.setIsAnswer(detail.getAnswerStatus());
-                    subjectList.add(vo);
-                });
-            }
-        }
-        return subjectList;
+
+        return null;
     }
 
     /**

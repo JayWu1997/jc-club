@@ -311,8 +311,19 @@ public class PracticeDetailServiceImpl implements PracticeDetailService {
                 practiceDetail.setAnswerStatus(0);
             }
         }
-        practiceDetailDao.insertOrUpdateBatch(Collections.singletonList(practiceDetail));
 
+        // 查询该题目是否已作答
+        PracticeDetail existQuery = new PracticeDetail();
+        existQuery.setPracticeId(practiceDetail.getPracticeId());
+        existQuery.setSubjectId(practiceDetail.getSubjectId());
+        existQuery.setIsDeleted(0);
+        List<PracticeDetail> existsEntity = practiceDetailDao.queryByPage(existQuery, 0, 10);
+        if (CollectionUtil.isNotEmpty(existsEntity)) {
+            practiceDetail.setId(existsEntity.get(0).getId());
+            practiceDetailDao.update(practiceDetail);
+        } else {
+            practiceDetailDao.insert(practiceDetail);
+        }
         return Boolean.TRUE;
     }
 
