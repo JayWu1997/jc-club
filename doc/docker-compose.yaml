@@ -15,7 +15,7 @@ volumes:
 
 services:
   mysql:
-    image: 'bitnami/mysql:latest'
+    image: 'bitnami/mysql:8.4.3'
     container_name: mysql
     environment:
       TZ: Asia/Shanghai # 设置时区
@@ -24,16 +24,16 @@ services:
     ports:
       - "3306:3306"
     volumes:
-      # 指定的mysql_data volume之前不存在，则会执行 /docker-entrypoint-initdb.d/ 目录下的sql
+      # 指定的 mysql_data volume 之前不存在，则会执行 /docker-entrypoint-initdb.d/ 目录下的sql
       - ./sql/:/docker-entrypoint-initdb.d/
       # 只要是创建容器都会执行 /docker-entrypoint-startdb.d/ 目录下的sql
       # - ./sql/:/docker-entrypoint-startdb.d
-      - mysql_data:/var/lib/mysql
+      - mysql_data:/bitnami/mysql/data
     networks:
       - backend
 
   nacos:
-    image: nacos/nacos-server:latest
+    image: nacos/nacos-server:v2.4.3
     container_name: nacos
     restart: always
     ports:
@@ -49,7 +49,7 @@ services:
       - backend
 
   redis:
-    image: bitnami/redis:latest
+    image: bitnami/redis:7.4.2
     container_name: redis # 容器名称
     restart: always # 重启方式
     environment:
@@ -59,7 +59,7 @@ services:
     ports:
       - '6379:6379'
     volumes:
-      - 'redis_data:/bitnami/redis/data'
+      - redis_data:/bitnami/redis/data
     networks:
       - backend
 
@@ -85,7 +85,7 @@ services:
       - mysql
 
   namesrv:
-    image: apache/rocketmq:latest
+    image: apache/rocketmq:5.3.1
     container_name: rmqnamesrv
     restart: always
     ports:
@@ -94,7 +94,7 @@ services:
       - backend
     command: sh mqnamesrv
   broker:
-    image: apache/rocketmq:latest
+    image: apache/rocketmq:5.3.1
     container_name: rmqbroker
     restart: always
     ports:
@@ -109,7 +109,7 @@ services:
       - backend
     command: sh mqbroker
   proxy:
-    image: apache/rocketmq:latest
+    image: apache/rocketmq:5.3.1
     container_name: rmqproxy
     restart: always
     depends_on:
@@ -125,25 +125,28 @@ services:
       - backend
 
   elasticsearch:
-    image: bitnami/elasticsearch:latest
+    image: bitnami/elasticsearch:7.5.2
     container_name: elasticsearch
     restart: always
     volumes:
-#      - ./es/etc/localtime:/etc/localtime
+      #      - ./es/etc/localtime:/etc/localtime
       - ./es/plugins:/opt/bitnami/elasticsearch/plugins #插件文件挂载
       - es_data:/bitnami/elasticsearch/data #数据文件挂载
       - es_logs:/opt/bitnami/elasticsearch/logs
+    privileged: true
     ports:
       - '9200:9200'
       - '9300:9300'
     environment:
+      - cluster.name=jc-club
+      - node.name=jc-club-node
       - ES_JAVA_OPTS=-Xms1024m -Xmx1024m #设置使用jvm内存大小
       - DB_BASE_DIR=/bitnami/elasticsearch
     networks:
       - backend
 
   minio:
-    image: 'bitnami/minio:latest'
+    image: bitnami/minio:2024.12.18
     container_name: minio
     ports:
       - '9000:9000'
@@ -157,22 +160,24 @@ services:
       - backend
 
   jenkins:
-    image: jenkins/jenkins:lts
+    image: jenkins/jenkins:2.493
     container_name: jenkins
     restart: always
-    volumes:    # 挂载目录  本地文件夹目录:容器文件夹目录
-     - jenkins_data:/var/jenkins_home
-#     - /var/run/docker.sock:/var/run/docker.sock
-#     - /usr/bin/docker:/usr/bin/docker
-#     - /usr/lib/x86_64-linux-gnu/libltdl.so.7:/usr/lib/x86_64-linux-gnu/libltdl.so.7
-    ports:  # 绑定端口
-     - "8080:8080"
-    expose:  # 暴露端口
-     - "8080"
-     - "50000"
+    volumes: # 挂载目录  本地文件夹目录:容器文件夹目录
+      - jenkins_data:/var/jenkins_home
+    #     - /var/run/docker.sock:/var/run/docker.sock
+    #     - /usr/bin/docker:/usr/bin/docker
+    #     - /usr/lib/x86_64-linux-gnu/libltdl.so.7:/usr/lib/x86_64-linux-gnu/libltdl.so.7
+    ports: # 绑定端口
+      - "8080:8080"
+    expose: # 暴露端口
+      - "8080"
+      - "50000"
     privileged: true
     user: root
     environment:
-     JAVA_OPTS: '-Djava.util.logging.config.file=/var/jenkins_home/log.properties'
+      JAVA_OPTS: '-Djava.util.logging.config.file=/var/jenkins_home/log.properties'
+      JENKINS_ADMIN_ID: root
+      JENKINS_ADMIN_PASSWORD: Wyj199751
     networks:
       - backend
