@@ -2,7 +2,7 @@ server:
   port: 4000
 minio:
   url: http://localhost:9000
-  accessKey: admin
+  accessKey: root
   secretKey: Wyj199751
 storage:
   service:

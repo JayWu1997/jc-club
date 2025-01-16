@@ -5,8 +5,10 @@ import io.minio.*;
 import io.minio.http.Method;
 import io.minio.messages.Bucket;
 import io.minio.messages.Item;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import java.io.InputStream;
 import java.util.LinkedList;
@@ -19,11 +21,47 @@ import java.util.stream.Collectors;
  * @author: ChickenWing
  * @date: 2023/10/11
  */
+@Slf4j
 @Component
 public class MinioUtil {
 
     @Resource
     private MinioClient minioClient;
+
+    @PostConstruct
+    public void init() {
+        try {
+            String bucketName = "user";
+            boolean exists = minioClient.bucketExists(BucketExistsArgs.builder().bucket(bucketName).build());
+            if (!exists) {
+                minioClient.makeBucket(MakeBucketArgs.builder().bucket(bucketName).build());
+                String accessPublicConfig =
+                        "{\n" +
+                                "\t\"Version\": \"2012-10-17\",\n" +
+                                "\t\"Statement\": [{\n" +
+                                "\t\t\"Effect\": \"Allow\",\n" +
+                                "\t\t\"Principal\": {\n" +
+                                "\t\t\t\"AWS\": [\"*\"]\n" +
+                                "\t\t},\n" +
+                                "\t\t\"Action\": [\"s3:GetBucketLocation\", \"s3:ListBucket\", \"s3:ListBucketMultipartUploads\"],\n" +
+                                "\t\t\"Resource\": [\"arn:aws:s3:::" + bucketName + "\"]\n" +
+                                "\t}, {\n" +
+                                "\t\t\"Effect\": \"Allow\",\n" +
+                                "\t\t\"Principal\": {\n" +
+                                "\t\t\t\"AWS\": [\"*\"]\n" +
+                                "\t\t},\n" +
+                                "\t\t\"Action\": [\"s3:AbortMultipartUpload\", \"s3:DeleteObject\", \"s3:GetObject\", \"s3:ListMultipartUploadParts\", \"s3:PutObject\"],\n" +
+                                "\t\t\"Resource\": [\"arn:aws:s3:::" + bucketName + "/*\"]\n" +
+                                "\t}]\n" +
+                                "}\n";
+                minioClient.setBucketPolicy(SetBucketPolicyArgs.builder().bucket(bucketName).config(accessPublicConfig).build());
+            }
+        } catch (Exception e) {
+            if (log.isErrorEnabled()) {
+                log.error("初始化minio失败", e);
+            }
+        }
+    }
 
     /**
      * 创建bucket桶
@@ -99,7 +137,7 @@ public class MinioUtil {
     /**
      * 获取文件url
      */
-    public String getPreviewFileUrl(String bucketName, String objectName) throws Exception{
+    public String getPreviewFileUrl(String bucketName, String objectName) throws Exception {
         GetPresignedObjectUrlArgs args = GetPresignedObjectUrlArgs.builder()
                 .method(Method.GET)
                 .bucket(bucketName).object(objectName).build();
