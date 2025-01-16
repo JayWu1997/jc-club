@@ -12,8 +12,13 @@ import com.jingdianjichi.subject.domain.entity.SubjectInfoBO;
 import com.jingdianjichi.subject.domain.service.SubjectInfoDomainService;
 import com.jingdianjichi.subject.infra.basic.entity.SubjectInfoEs;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.rocketmq.spring.core.RocketMQTemplate;
+import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -28,6 +33,9 @@ public class SubjectController {
 
     @Resource
     private SubjectInfoDomainService subjectInfoDomainService;
+
+    @Resource
+    private RocketMQTemplate rocketMQTemplate;
 
     /**
      * 新增题目信息
@@ -263,6 +271,12 @@ public class SubjectController {
             log.error("SubjectInfoController.queryByCondition.error:{}", e.getMessage(), e);
             return Result.fail(e.getMessage());
         }
+    }
+
+    @PostMapping("/pushMessage")
+    public Result<Boolean> testMQ(@Param("id") int id) {
+        rocketMQTemplate.convertAndSend("jc-club-topic", " id: " + id);
+        return Result.success(true);
     }
 
 }

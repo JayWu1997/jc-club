@@ -53,6 +53,7 @@
         <xxl-job-core.version>2.3.1</xxl-job-core.version>
         <spring-context.version>5.3.27</spring-context.version>
         <spring-boot-starter-json.sersion>2.3.8.RELEASE</spring-boot-starter-json.sersion>
+        <rocketmq-spring-boot-starter.version>2.3.1</rocketmq-spring-boot-starter.version>
     </properties>
 
     <dependencyManagement>
@@ -178,6 +179,12 @@
                 <artifactId>jackson-databind</artifactId>
                 <version>${jackson-databind.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.apache.rocketmq</groupId>
+                <artifactId>rocketmq-spring-boot-starter</artifactId>
+                <version>${rocketmq-spring-boot-starter.version}</version>
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
 

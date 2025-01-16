@@ -1,7 +1,10 @@
+version: '3.8'
+
 name: jc_club
 
 networks:
   backend:
+    driver: bridge
 
 volumes:
   mysql_data:
@@ -12,6 +15,9 @@ volumes:
   es_logs:
   minio_data:
   jenkins_data:
+  rmq_broker_logs:
+  rmq_broker_store:
+  rmq_dashboard_temp:
 
 services:
   mysql:
@@ -43,6 +49,9 @@ services:
       - 9848:9848
     environment:
       - MODE=standalone
+      - JVM_XMS=128m
+      - JVM_XMX=128m
+      - JVM_XMN=128m
     volumes:
       - nacos_logs:/home/nacos/logs
     networks:
@@ -85,44 +94,70 @@ services:
       - mysql
 
   namesrv:
-    image: apache/rocketmq:5.3.1
-    container_name: rmqnamesrv
+    image: apache/rocketmq:5.3.0
+    container_name: rmq-namesrv
     restart: always
     ports:
-      - 9876:9876
+      - "9876:9876"
     networks:
       - backend
+    environment:
+      - JAVA_OPTS=-Xms128m -Xmx128m
     command: sh mqnamesrv
+
   broker:
-    image: apache/rocketmq:5.3.1
-    container_name: rmqbroker
+    image: apache/rocketmq:5.3.0
+    container_name: rmq-broker
     restart: always
     ports:
-      - 10909:10909
-      - 10911:10911
-      - 10912:10912
+      - "10909:10909"
+      - "10911:10911"
+      - "10912:10912"
     environment:
-      - NAMESRV_ADDR=rmqnamesrv:9876
+      NAMESRV_ADDR: "namesrv:9876"
+      # 设置jvm内存大小，使用JAVA_OPTS配置不会生效
+      JAVA_OPT_EXT: "-server -Xms256m -Xmx256m -Xmn128m"
     depends_on:
       - namesrv
+    volumes:
+      - ./data/rocketmq/broker/conf/broker.conf:/home/rocketmq/conf/broker.conf
+#      - rmq_broker_logs:/home/rocketmq/logs
+#      - rmq_broker_store:/home/rocketmq/store
     networks:
       - backend
-    command: sh mqbroker
-  proxy:
-    image: apache/rocketmq:5.3.1
-    container_name: rmqproxy
+    command: sh mqbroker -c /home/rocketmq/conf/broker.conf
+
+#  proxy:
+#    image: apache/rocketmq:5.3.0
+#    container_name: rmqproxy
+#    networks:
+#      - rocketmq
+#    depends_on:
+#      - broker
+#      - namesrv
+#    ports:
+#      - 8080:8080
+#      - 8081:8081
+#    restart: on-failure
+#    environment:
+#      - NAMESRV_ADDR=rmqnamesrv:9876
+#    command: sh mqproxy
+
+  dashboard:
+    image: apacherocketmq/rocketmq-dashboard:latest
+    container_name: rmq-dashboard
     restart: always
-    depends_on:
-      - broker
-      - namesrv
     ports:
-      - 9800:8080
-      - 9801:8081
+      - "8080:8080"
     environment:
-      - NAMESRV_ADDR=rmqnamesrv:9876
-    command: sh mqproxy
+      JAVA_OPTS: "-Xms128m -Xmx128m -Drocketmq.namesrv.addr=namesrv:9876 -Dcom.rocketmq.sendMessageWithVIPChannel=false"
+    depends_on:
+      - namesrv
+    volumes:
+      - rmq_dashboard_temp:/tmp
     networks:
       - backend
+
 
   elasticsearch:
     image: bitnami/elasticsearch:7.5.2
@@ -130,7 +165,7 @@ services:
     restart: always
     volumes:
       #      - ./es/etc/localtime:/etc/localtime
-      - ./es/plugins:/opt/bitnami/elasticsearch/plugins #插件文件挂载
+      - ./data/es/plugins:/opt/bitnami/elasticsearch/plugins #插件文件挂载
       - es_data:/bitnami/elasticsearch/data #数据文件挂载
       - es_logs:/opt/bitnami/elasticsearch/logs
     privileged: true
@@ -140,7 +175,7 @@ services:
     environment:
       - cluster.name=jc-club
       - node.name=jc-club-node
-      - ES_JAVA_OPTS=-Xms1024m -Xmx1024m #设置使用jvm内存大小
+      - ES_JAVA_OPTS=-Xms128m -Xmx128m #设置使用jvm内存大小
       - DB_BASE_DIR=/bitnami/elasticsearch
     networks:
       - backend
@@ -148,6 +183,7 @@ services:
   minio:
     image: bitnami/minio:2024.12.18
     container_name: minio
+    restart: always
     ports:
       - '9000:9000'
       - '9001:9001'
@@ -169,14 +205,14 @@ services:
     #     - /usr/bin/docker:/usr/bin/docker
     #     - /usr/lib/x86_64-linux-gnu/libltdl.so.7:/usr/lib/x86_64-linux-gnu/libltdl.so.7
     ports: # 绑定端口
-      - "8080:8080"
+      - "9898:8080"
     expose: # 暴露端口
       - "8080"
       - "50000"
     privileged: true
     user: root
     environment:
-      JAVA_OPTS: '-Djava.util.logging.config.file=/var/jenkins_home/log.properties'
+      JAVA_OPTS: '-Xms128m -Xmx128m -Djava.util.logging.config.file=/var/jenkins_home/log.properties'
       JENKINS_ADMIN_ID: root
       JENKINS_ADMIN_PASSWORD: Wyj199751
     networks:
