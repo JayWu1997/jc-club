@@ -55,7 +55,7 @@ server:
 
 es:
   cluster[0]:
-    name: cdb923573350
+    name: jc-club
     addr[0]: localhost:9200
 
 xxl:

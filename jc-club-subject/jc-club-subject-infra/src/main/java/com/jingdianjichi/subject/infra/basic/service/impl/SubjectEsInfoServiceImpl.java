@@ -6,6 +6,7 @@ import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.jingdianjichi.subject.common.entity.PageResult;
 import com.jingdianjichi.subject.common.enums.SubjectInfoTypeEnum;
+import com.jingdianjichi.subject.common.enums.es.ESIndexNameEnum;
 import com.jingdianjichi.subject.infra.basic.dao.SubjectInfoDao;
 import com.jingdianjichi.subject.infra.basic.entity.EsSubjectFields;
 import com.jingdianjichi.subject.infra.basic.entity.SubjectInfo;
@@ -25,12 +26,16 @@ import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightField;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author jay
@@ -38,6 +43,9 @@ import java.util.*;
  */
 @Service
 public class SubjectEsInfoServiceImpl implements SubjectEsInfoService {
+
+    @Value("${es.cluster[0].name}")
+    private String indexName;
 
     @Resource
     private EsRestClient esRestClient;
@@ -197,8 +205,8 @@ public class SubjectEsInfoServiceImpl implements SubjectEsInfoService {
 
     private EsIndexInfo getEsIndexInfo() {
         EsIndexInfo esIndexInfo = new EsIndexInfo();
-        esIndexInfo.setClusterName("3baa79479703");
-        esIndexInfo.setIndexName("subject_index");
+        esIndexInfo.setClusterName(indexName);
+        esIndexInfo.setIndexName(ESIndexNameEnum.SUBJECT_INFO_ES.getIndexName());
         return esIndexInfo;
     }
 }

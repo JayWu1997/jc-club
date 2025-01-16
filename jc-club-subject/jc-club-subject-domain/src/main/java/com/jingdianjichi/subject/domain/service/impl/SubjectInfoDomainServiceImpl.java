@@ -29,6 +29,7 @@ import com.jingdianjichi.subject.infra.basic.service.SubjectMappingService;
 import com.jingdianjichi.subject.infra.basic.service.impl.SubjectLabelServiceImpl;
 import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.*;
@@ -69,6 +70,7 @@ public class SubjectInfoDomainServiceImpl implements SubjectInfoDomainService {
      * @param subjectInfoBO 题目信息
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void insert(SubjectInfoBO subjectInfoBO) {
         // 保存题目信息
         subjectInfoBO.setCreatedBy(UserContextHolder.getUserContext().getUserName());

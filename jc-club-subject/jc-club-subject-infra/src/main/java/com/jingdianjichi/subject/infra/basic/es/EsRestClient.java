@@ -62,21 +62,27 @@ public class EsRestClient {
         List<EsClusterConfigProperties.EsClusterInfo> esClusterInfos = esClusterConfigProperties.getCluster();
 
         esClusterInfos.forEach(esClusterInfo -> {
-            RestHighLevelClient client = initEsRestClient(esClusterInfo);
-            if (ObjectUtil.isNull(client)) {
+            try {
+                RestHighLevelClient client = initEsRestClient(esClusterInfo);
+                if (ObjectUtil.isNull(client)) {
+                    if (log.isErrorEnabled()) {
+                        log.error("初始化es客户端失败，cluster:{}", esClusterInfo);
+                    }
+                } else {
+                    if (log.isInfoEnabled()) {
+                        log.info("初始化es客户端成功，cluster:{}", esClusterInfo);
+                    }
+                    clientMap.put(esClusterInfo.getName(), client);
+                }
+            } catch (Exception e) {
                 if (log.isErrorEnabled()) {
-                    log.error("初始化es客户端失败，cluster:{}", esClusterInfo);
+                    log.error("初始化es客户端失败，cluster:{}", esClusterInfo, e);
                 }
-            } else {
-                if (log.isInfoEnabled()) {
-                    log.info("初始化es客户端成功，cluster:{}", esClusterInfo);
-                }
-                clientMap.put(esClusterInfo.getName(), client);
             }
         });
     }
 
-    private static RestHighLevelClient initEsRestClient(EsClusterConfigProperties.EsClusterInfo esClusterInfo) {
+    private static RestHighLevelClient initEsRestClient(EsClusterConfigProperties.EsClusterInfo esClusterInfo) throws IOException {
         List<HttpHost> httpHostList = new ArrayList<>(esClusterInfo.getAddr().length);
         String clusterName = esClusterInfo.getName();
         String[] clusterAddrs = esClusterInfo.getAddr();
@@ -89,7 +95,9 @@ public class EsRestClient {
             }
         }
         RestClientBuilder builder = RestClient.builder(httpHostList.toArray(new HttpHost[0]));
-        return new RestHighLevelClient(builder);
+        RestHighLevelClient client = new RestHighLevelClient(builder);
+        client.ping(RequestOptions.DEFAULT);
+        return client;
     }
 
     public Boolean insertDoc(EsIndexInfo indexInfo, EsSourceData sourceData) {
