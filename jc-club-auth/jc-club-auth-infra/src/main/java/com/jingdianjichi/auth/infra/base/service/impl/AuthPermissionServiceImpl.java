@@ -101,7 +101,7 @@ public class AuthPermissionServiceImpl implements AuthPermissionService {
      * @return 权限列表
      */
     @Override
-    public List<AuthPermission> queryByUserName(String userName) {
-        return authPermissionDao.queryByUserName(userName);
+    public List<AuthPermission> queryBatchByUserName(String userName) {
+        return authPermissionDao.queryBatchByUserName(userName);
     }
 }

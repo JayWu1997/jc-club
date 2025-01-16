@@ -1,5 +1,6 @@
 package com.jingdianjichi.auth.domain.service.impl;
 
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -7,6 +8,7 @@ import com.jingdianjichi.auth.common.enums.BusinessErrorEnum;
 import com.jingdianjichi.auth.common.enums.IsDeletedEnum;
 import com.jingdianjichi.auth.common.enums.PermissionShowEnum;
 import com.jingdianjichi.auth.common.enums.PermissionStatusEnum;
+import com.jingdianjichi.auth.common.exception.BusinessException;
 import com.jingdianjichi.auth.common.util.ParamCheckUtil;
 import com.jingdianjichi.auth.domain.converter.AuthPermissionBOConverter;
 import com.jingdianjichi.auth.domain.entity.AuthPermissionBO;
@@ -14,6 +16,9 @@ import com.jingdianjichi.auth.domain.redis.RedisUtil;
 import com.jingdianjichi.auth.domain.service.AuthPermissionDomainService;
 import com.jingdianjichi.auth.infra.base.entity.AuthPermission;
 import com.jingdianjichi.auth.infra.base.service.AuthPermissionService;
+import com.jingdianjichi.auth.infra.base.service.impl.AuthUserRoleServiceImpl;
+import com.jingdianjichi.auth.infra.base.service.impl.AuthUserServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -32,7 +37,7 @@ public class AuthPermissionDomainServiceImpl implements AuthPermissionDomainServ
 
     @Resource
     private AuthPermissionService permissionService;
-    
+
     @Resource
     private RedisUtil redisUtil;
 
@@ -42,6 +47,10 @@ public class AuthPermissionDomainServiceImpl implements AuthPermissionDomainServ
     private static final String REDIS_KEY_AUTH_PERMISSION_PREFIX = "auth.permission";
 
     private static final Gson GSON = new Gson();
+    @Autowired
+    private AuthUserServiceImpl authUserService;
+    @Autowired
+    private AuthUserRoleServiceImpl authUserRoleService;
 
     /**
      * 添加权限
@@ -126,13 +135,31 @@ public class AuthPermissionDomainServiceImpl implements AuthPermissionDomainServ
      */
     @Override
     public List<String> getPermission(String userName) {
+        List<String> permissionKeyList = Collections.emptyList();
         String permissionKey = redisUtil.buildKey(REDIS_KEY_AUTH_PERMISSION_PREFIX, userName);
         String permissionListJsonStr = redisUtil.get(permissionKey);
-        if(StrUtil.isEmpty(permissionListJsonStr)) {
-            return Collections.emptyList();
+        // redis 中若没有，则从数据库中获取
+        if (StrUtil.isEmpty(permissionListJsonStr)) {
+            permissionKeyList = getFromDBAndInsertIntoRedis(userName, permissionKey);
+        } else {
+            List<AuthPermission> permissionList = GSON.fromJson(permissionListJsonStr, new TypeToken<List<AuthPermission>>() {}.getType());
+            if (CollUtil.isEmpty(permissionList)) {
+                permissionKeyList = getFromDBAndInsertIntoRedis(userName, permissionKey);
+            } else {
+                permissionKeyList = permissionList.stream().map(AuthPermission::getPermissionKey).collect(Collectors.toList());
+            }
         }
-        List<AuthPermission> permissionList = GSON.fromJson(permissionListJsonStr, new TypeToken<List<AuthPermission>>() {
-        }.getType());
+
+        return permissionKeyList;
+    }
+
+    private List<String> getFromDBAndInsertIntoRedis(String userName, String permissionKey) {
+        redisUtil.del(permissionKey);
+        List<AuthPermission> permissionList = permissionService.queryBatchByUserName(userName);
+        if (CollUtil.isEmpty(permissionList)) {
+            throw new BusinessException(BusinessErrorEnum.FAIL, "用户权限列表为空！");
+        }
+        redisUtil.set(permissionKey, GSON.toJson(permissionList));
         return permissionList.stream().map(AuthPermission::getPermissionKey).collect(Collectors.toList());
     }
 }

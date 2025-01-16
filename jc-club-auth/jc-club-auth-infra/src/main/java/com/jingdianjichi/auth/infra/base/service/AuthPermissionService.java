@@ -73,5 +73,5 @@ public interface AuthPermissionService {
      * @param userName 用户名
      * @return 权限列表
      */
-    List<AuthPermission> queryByUserName(String userName);
+    List<AuthPermission> queryBatchByUserName(String userName);
 }

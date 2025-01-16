@@ -93,6 +93,6 @@ public interface AuthPermissionDao {
      * @param userName 用户名
      * @return 权限集合
      */
-    List<AuthPermission> queryByUserName(@Param("userName") String userName);
+    List<AuthPermission> queryBatchByUserName(@Param("userName") String userName);
 }
 

@@ -140,14 +140,16 @@
     </select>
 
     <!--  根据用户名查询权限集合  -->
-    <select id="queryByUserName" resultType="com.jingdianjichi.auth.infra.base.entity.AuthPermission">
-        select *
-        from auth_permission
-        where id in (select permission_id
-                     from auth_role_permission
-                     where role_id in (select role_id
-                                       from auth_user_role ur
-                                       where user_id = (select id from auth_user where user_name = #{userName})))
+    <select id="queryBatchByUserName" resultType="com.jingdianjichi.auth.infra.base.entity.AuthPermission">
+        select p.*
+        from auth_user u inner join auth_user_role ur on u.id = ur.user_id
+                         inner join auth_role_permission rp on ur.role_id = rp.role_id
+                         inner join auth_permission p on rp.permission_id = p.id
+        where u.user_name = #{userName}
+        and u.is_deleted = 0
+        and ur.is_deleted = 0
+        and rp.is_deleted = 0
+        and p.is_deleted = 0
     </select>
 
     <!--新增所有列-->
