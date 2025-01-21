@@ -5,6 +5,7 @@ import com.jingdianjichi.circle.api.resp.Result;
 import com.jingdianjichi.circle.application.controller.convert.ShareCircleDTOConverter;
 import com.jingdianjichi.circle.common.enums.BusinessErrorEnum;
 import com.jingdianjichi.circle.common.utils.ParamCheckUtil;
+import com.jingdianjichi.circle.domain.entity.ShareCircleBO;
 import com.jingdianjichi.circle.domain.service.ShareCircleDomainService;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -22,7 +23,7 @@ import javax.annotation.Resource;
  * @since 2025-01-21
  */
 @RestController
-@RequestMapping("/circle/share/circle")
+@RequestMapping("/share/circle")
 public class ShareCircleController {
 
     @Resource
@@ -31,7 +32,9 @@ public class ShareCircleController {
     @PostMapping(value = "/save")
     public Result<Boolean> save(@RequestBody ShareCircleDTO dto) {
         ParamCheckUtil.checkStrNotEmpty(dto.getCircleName(), BusinessErrorEnum.PARAM_ERROR, "圈子名称不能为空");
-        ParamCheckUtil.checkStrNotEmpty(dto.getCircleName(), BusinessErrorEnum.PARAM_ERROR, "父id不能为空");
-        return Result.success(shareCircleDomainService.save(ShareCircleDTOConverter.INSTANCE.convertDto2Bo(dto)));
+        ParamCheckUtil.checkNotNull(dto.getParentId(), BusinessErrorEnum.PARAM_ERROR, "父id不能为空");
+        ParamCheckUtil.checkStrNotEmpty(dto.getIcon(), BusinessErrorEnum.PARAM_ERROR, "圈子图标不能为空");
+        ShareCircleBO bo = ShareCircleDTOConverter.INSTANCE.convertDto2Bo(dto);
+        return Result.success(shareCircleDomainService.save(bo));
     }
 }

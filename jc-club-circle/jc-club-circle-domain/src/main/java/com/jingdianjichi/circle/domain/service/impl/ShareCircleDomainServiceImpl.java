@@ -1,6 +1,7 @@
 package com.jingdianjichi.circle.domain.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import cn.hutool.core.util.ObjUtil;
+import com.jingdianjichi.circle.common.context.UserContextHolder;
 import com.jingdianjichi.circle.common.enums.BusinessErrorEnum;
 import com.jingdianjichi.circle.common.enums.IsDeletedEnum;
 import com.jingdianjichi.circle.common.exception.BusinessException;
@@ -12,6 +13,7 @@ import com.jingdianjichi.circle.infra.mybatis.service.IShareCircleService;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.time.LocalDateTime;
 
 /**
  * @author jay
@@ -29,15 +31,17 @@ public class ShareCircleDomainServiceImpl implements ShareCircleDomainService {
      */
     @Override
     public Boolean save(ShareCircleBO bo) {
-        LambdaQueryWrapper<ShareCircle> existQuery = new LambdaQueryWrapper<>();
-        existQuery.eq(ShareCircle::getIsDeleted, IsDeletedEnum.NOT_DELETED.getCode());
-        existQuery.eq(ShareCircle::getId, bo.getParentId());
-        if (shareCircleService.exists(existQuery)) {
-            throw new BusinessException(BusinessErrorEnum.PARAM_ERROR, "父级圈子不存在!");
+        // 查询父级圈子是否存在
+        if (bo.getParentId() != -1) {
+            if (ObjUtil.isNull(shareCircleService.getById(bo.getParentId()))) {
+                throw new BusinessException(BusinessErrorEnum.PARAM_ERROR, "父级圈子不存在!");
+            }
         }
 
         ShareCircle entity = ShareCircleBOConverter.INSTANCE.convertBo2Entity(bo);
         entity.setIsDeleted(IsDeletedEnum.NOT_DELETED.getCode());
+        entity.setCreatedBy(UserContextHolder.getUserContext().getUserName());
+        entity.setCreatedTime(LocalDateTime.now());
         return shareCircleService.save(entity);
     }
 }
