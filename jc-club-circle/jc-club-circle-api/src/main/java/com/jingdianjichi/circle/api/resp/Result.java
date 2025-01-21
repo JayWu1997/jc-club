@@ -34,8 +34,8 @@ public class Result<T> {
         this.data = data;
     }
 
-    public static Result success() {
-        Result result = new Result(SUCCESS_CODE, "");
+    public static Result<Object> success() {
+        Result<Object> result = new Result<Object>(SUCCESS_CODE, "");
         result.setSuccess(true);
         return result;
     }
@@ -61,14 +61,14 @@ public class Result<T> {
         return result;
     }
 
-    public static Result fail() {
-        Result result = new Result(FAIL_CODE, FAIL_MSG);
+    public static Result<Object> fail() {
+        Result<Object> result = new Result<Object>(FAIL_CODE, FAIL_MSG);
         result.setSuccess(false);
         return result;
     }
 
-    public static Result fail(String message) {
-        Result result = fail();
+    public static Result<Object> fail(String message) {
+        Result<Object> result = fail();
         result.setMessage(message);
         return result;
     }

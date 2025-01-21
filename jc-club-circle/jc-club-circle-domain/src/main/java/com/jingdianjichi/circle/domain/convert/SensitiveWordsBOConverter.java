@@ -2,7 +2,7 @@ package com.jingdianjichi.circle.domain.convert;
 
 
 import com.jingdianjichi.circle.domain.entity.SensitiveWordsBO;
-import com.jingdianjichi.circle.infra.mybatis.entity.SensitiveWords;
+import com.jingdianjichi.circle.infra.mybatis.model.SensitiveWords;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 

@@ -1,7 +1,7 @@
 package com.jingdianjichi.circle.domain.convert;
 
 import com.jingdianjichi.circle.domain.entity.ShareCircleBO;
-import com.jingdianjichi.circle.infra.mybatis.entity.ShareCircle;
+import com.jingdianjichi.circle.infra.mybatis.model.ShareCircle;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
