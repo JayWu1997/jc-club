@@ -4,6 +4,7 @@ import lombok.Data;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 /**
  * 动态信息(ShareMoment)实体类DTO
@@ -14,6 +15,10 @@ import java.util.Date;
 @Data
 public class ShareMomentDTO implements Serializable {
     private static final long serialVersionUID = -62600190776512858L;
+    /**
+     * 图片路径List
+     */
+    private List<String> picUrlList;
     /**
      * 每页显示的记录数
      */
