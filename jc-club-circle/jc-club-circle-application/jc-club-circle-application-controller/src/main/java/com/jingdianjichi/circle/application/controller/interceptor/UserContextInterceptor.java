@@ -1,8 +1,11 @@
 package com.jingdianjichi.circle.application.controller.interceptor;
 
 
+import cn.hutool.core.util.StrUtil;
 import com.jingdianjichi.circle.common.context.UserContext;
 import com.jingdianjichi.circle.common.context.UserContextHolder;
+import com.jingdianjichi.circle.common.enums.BusinessErrorEnum;
+import com.jingdianjichi.circle.common.exception.BusinessException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.Nullable;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -21,6 +24,9 @@ public class UserContextInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         String loginId = request.getHeader("loginId");
+        if (StrUtil.isBlank(loginId)) {
+            throw new BusinessException(BusinessErrorEnum.PARAM_ERROR, "用户未登录");
+        }
         if(log.isInfoEnabled()){
             log.info("用户{}访问接口:{}", loginId, request.getRequestURI());
         }

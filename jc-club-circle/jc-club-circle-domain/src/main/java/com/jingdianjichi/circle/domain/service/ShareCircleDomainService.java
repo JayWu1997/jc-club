@@ -9,4 +9,6 @@ import com.jingdianjichi.circle.domain.entity.ShareCircleBO;
 public interface ShareCircleDomainService {
 
     Boolean save(ShareCircleBO dto);
+
+    Boolean update(ShareCircleBO bo);
 }

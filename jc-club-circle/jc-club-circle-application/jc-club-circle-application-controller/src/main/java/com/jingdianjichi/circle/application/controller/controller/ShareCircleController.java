@@ -37,4 +37,11 @@ public class ShareCircleController {
         ShareCircleBO bo = ShareCircleDTOConverter.INSTANCE.convertDto2Bo(dto);
         return Result.success(shareCircleDomainService.save(bo));
     }
+
+    @PostMapping(value = "/update")
+    public Result<Boolean> update(@RequestBody ShareCircleDTO dto) {
+        ParamCheckUtil.checkNotNull(dto.getId(), BusinessErrorEnum.PARAM_ERROR, "id不能为空");
+        ShareCircleBO bo = ShareCircleDTOConverter.INSTANCE.convertDto2Bo(dto);
+        return Result.success(shareCircleDomainService.update(bo));
+    }
 }

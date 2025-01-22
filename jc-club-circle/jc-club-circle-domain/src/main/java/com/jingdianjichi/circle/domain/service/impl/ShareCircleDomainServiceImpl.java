@@ -44,4 +44,23 @@ public class ShareCircleDomainServiceImpl implements ShareCircleDomainService {
         entity.setCreatedTime(LocalDateTime.now());
         return shareCircleService.save(entity);
     }
+
+    /**
+     * @param bo
+     * @return
+     */
+    @Override
+    public Boolean update(ShareCircleBO bo) {
+        // 查询父级圈子是否存在
+        Long parentId = bo.getParentId();
+        if (ObjUtil.isNotNull(parentId) && parentId != -1) {
+            if (ObjUtil.isNull(shareCircleService.getById(parentId))) {
+                throw new BusinessException(BusinessErrorEnum.PARAM_ERROR, "父级圈子不存在!");
+            }
+        }
+        ShareCircle entity = ShareCircleBOConverter.INSTANCE.convertBo2Entity(bo);
+        entity.setUpdateBy(UserContextHolder.getUserContext().getUserName());
+        entity.setUpdateTime(LocalDateTime.now());
+        return shareCircleService.updateById(entity);
+    }
 }
