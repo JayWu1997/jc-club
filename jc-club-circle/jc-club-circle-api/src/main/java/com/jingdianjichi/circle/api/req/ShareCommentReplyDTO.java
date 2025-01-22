@@ -4,6 +4,7 @@ import lombok.Data;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 /**
  * 评论及回复信息(ShareCommentReply)实体类DTO
@@ -14,6 +15,18 @@ import java.util.Date;
 @Data
 public class ShareCommentReplyDTO implements Serializable {
     private static final long serialVersionUID = -22406339019358682L;
+
+    private Long targetId;
+
+    private List<String> picUrlList;
+
+    private String userName;
+
+    private String avatar;
+
+    private String toName;
+
+    private String toAvatar;
     /**
      * 评论人id
      */
@@ -43,7 +56,7 @@ public class ShareCommentReplyDTO implements Serializable {
     /**
      * 评论目标id
      */
-    private Long toId;
+    private String toId;
     /**
      * 评论人
      */

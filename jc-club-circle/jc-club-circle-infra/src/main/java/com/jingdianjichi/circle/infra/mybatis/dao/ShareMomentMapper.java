@@ -2,7 +2,7 @@ package com.jingdianjichi.circle.infra.mybatis.dao;
 
 import com.jingdianjichi.circle.infra.mybatis.model.ShareMoment;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-
+import feign.Param;
 
 
 /**
@@ -15,4 +15,5 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  */
 public interface ShareMomentMapper extends BaseMapper<ShareMoment> {
 
+    Integer incrReplyCount(@Param("id") Long id);
 }

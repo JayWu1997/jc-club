@@ -94,7 +94,7 @@ public class ShareCommentReply implements Serializable {
     private String picUrls;
 
     @TableField("parent_id")
-    private Integer parentId;
+    private Long parentId;
 
     @TableField("leaf_node")
     private String leafNode;

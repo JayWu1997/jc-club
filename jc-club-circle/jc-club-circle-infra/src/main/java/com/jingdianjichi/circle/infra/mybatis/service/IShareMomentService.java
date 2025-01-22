@@ -13,4 +13,5 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface IShareMomentService extends IService<ShareMoment> {
 
+    void incrReplyCount(Integer momentId);
 }
