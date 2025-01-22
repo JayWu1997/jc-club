@@ -15,7 +15,14 @@ import java.util.List;
 @Data
 public class ShareMomentBO implements Serializable {
     private static final long serialVersionUID = -51069671808193426L;
-
+    /**
+     * 用户头像
+     */
+    private String userAvatar;
+    /**
+     * 用户昵称
+     */
+    private String userName;
     /**
      * 图片路径List
      */

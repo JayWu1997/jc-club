@@ -16,6 +16,18 @@ import java.util.List;
 public class ShareMomentDTO implements Serializable {
     private static final long serialVersionUID = -62600190776512858L;
     /**
+     * 用户头像
+     */
+    private String userAvatar;
+    /**
+     * 用户昵称
+     */
+    private String userName;
+    /**
+     * 分页信息
+     */
+    private PageInfo pageInfo;
+    /**
      * 图片路径List
      */
     private List<String> picUrlList;
