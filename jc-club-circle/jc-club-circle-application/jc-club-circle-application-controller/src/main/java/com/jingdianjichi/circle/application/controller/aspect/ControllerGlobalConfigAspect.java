@@ -17,7 +17,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Aspect //定义切面类
 @Component
-public class ControllerArgsRespLogAndExceptionHandleAspect {
+public class ControllerGlobalConfigAspect {
 
     /**
      * 定义切点
