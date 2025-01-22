@@ -218,3 +218,10 @@ services:
       JENKINS_ADMIN_PASSWORD: Wyj199751
     networks:
       - backend
+  frpc:
+    restart: always
+    network_mode: host
+    volumes:
+      - './data/frpc/frpc.toml:/etc/frp/frpc.toml'
+    container_name: frpc
+    image: snowdreamtech/frpc

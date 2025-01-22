@@ -1,0 +1,13 @@
+[common]
+# server_addr为FRPS服务器IP地址
+server_addr = 117.72.44.155
+# server_port为服务端监听端口，bind_port
+server_port = 7000
+# 身份验证
+token = 12345678
+
+[wx]
+type = tcp
+local_ip = 127.0.0.1
+local_port = 3012
+remote_port = 3012
