@@ -14,13 +14,17 @@ import java.util.Date;
 @Data
 public class ShareCommentReplyBO implements Serializable {
     private static final long serialVersionUID = -81236834719331558L;
-
+    /**
+     * 评论人id
+     */
+    private String fromId;
     /**
      * 每页显示的记录数
      */
     private Integer pageSize;
 
-    /**
+    /**proxy
+     *
      * 当前页码
      */
     private Integer pageNo;

@@ -15,6 +15,10 @@ import java.util.Date;
 public class ShareCommentReplyDTO implements Serializable {
     private static final long serialVersionUID = -22406339019358682L;
     /**
+     * 评论人id
+     */
+    private String fromId;
+    /**
      * 每页显示的记录数
      */
     private Integer pageSize;
