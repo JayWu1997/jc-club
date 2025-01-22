@@ -1,4 +1,4 @@
-package com.jingdianjichi.circle.application.controller.aspect;
+package com.jingdianjichi.circle.application.controller.config;
 
 import com.alibaba.fastjson.JSON;
 import com.jingdianjichi.circle.api.resp.Result;
