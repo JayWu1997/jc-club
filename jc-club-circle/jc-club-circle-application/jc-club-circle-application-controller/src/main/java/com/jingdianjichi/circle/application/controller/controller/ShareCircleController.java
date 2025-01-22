@@ -7,12 +7,10 @@ import com.jingdianjichi.circle.common.enums.BusinessErrorEnum;
 import com.jingdianjichi.circle.common.utils.ParamCheckUtil;
 import com.jingdianjichi.circle.domain.entity.ShareCircleBO;
 import com.jingdianjichi.circle.domain.service.ShareCircleDomainService;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * <p>
@@ -23,7 +21,7 @@ import javax.annotation.Resource;
  * @since 2025-01-21
  */
 @RestController
-@RequestMapping("/share/circle")
+@RequestMapping("/circle/share/circle")
 public class ShareCircleController {
 
     @Resource
@@ -43,5 +41,17 @@ public class ShareCircleController {
         ParamCheckUtil.checkNotNull(dto.getId(), BusinessErrorEnum.PARAM_ERROR, "id不能为空");
         ShareCircleBO bo = ShareCircleDTOConverter.INSTANCE.convertDto2Bo(dto);
         return Result.success(shareCircleDomainService.update(bo));
+    }
+
+    @PostMapping(value = "/remove")
+    public Result<Boolean> remove(@RequestBody ShareCircleDTO dto) {
+        ParamCheckUtil.checkNotNull(dto.getId(), BusinessErrorEnum.PARAM_ERROR, "id不能为空");
+        return Result.success(shareCircleDomainService.remove(dto.getId()));
+    }
+
+    @GetMapping(value = "/list")
+    public Result<List<ShareCircleDTO>> list() {
+        List<ShareCircleDTO> dtoList =  ShareCircleDTOConverter.INSTANCE.convertBo2Dto(shareCircleDomainService.list());
+        return Result.success(dtoList);
     }
 }

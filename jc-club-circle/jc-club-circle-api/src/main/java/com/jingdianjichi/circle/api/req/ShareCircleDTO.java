@@ -4,6 +4,7 @@ import lombok.Data;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 /**
  * 圈子信息(ShareCircle)实体类DTO
@@ -14,6 +15,8 @@ import java.util.Date;
 @Data
 public class ShareCircleDTO implements Serializable {
     private static final long serialVersionUID = -68786676605776444L;
+
+    private List<ShareCircleDTO> children;
     /**
      * 每页显示的记录数
      */
