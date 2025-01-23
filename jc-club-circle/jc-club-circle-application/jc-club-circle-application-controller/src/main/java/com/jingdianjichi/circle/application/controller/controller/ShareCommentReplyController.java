@@ -1,14 +1,16 @@
 package com.jingdianjichi.circle.application.controller.controller;
 
 import com.jingdianjichi.circle.api.req.ShareCommentReplyDTO;
-import com.jingdianjichi.circle.api.resp.PageResult;
 import com.jingdianjichi.circle.api.resp.Result;
 import com.jingdianjichi.circle.application.controller.convert.ShareCommentReplyDTOConverter;
 import com.jingdianjichi.circle.common.enums.BusinessErrorEnum;
 import com.jingdianjichi.circle.common.utils.ParamCheckUtil;
 import com.jingdianjichi.circle.domain.entity.ShareCommentReplyBO;
 import com.jingdianjichi.circle.domain.service.ShareCommentReplyDomainService;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -41,7 +43,6 @@ public class ShareCommentReplyController {
     @PostMapping(value = "/list")
     public Result<List<ShareCommentReplyDTO>> list(@RequestBody ShareCommentReplyDTO dto) {
         ParamCheckUtil.checkNotNull(dto.getId(), BusinessErrorEnum.PARAM_ERROR, "动态id不能为空");
-        ShareCommentReplyBO bo = ShareCommentReplyDTOConverter.INSTANCE.convertDto2Bo(dto);
         List<ShareCommentReplyBO> bolist = commentDomainService.getCommentReplyListByMomentId(dto.getId());
         return Result.success(ShareCommentReplyDTOConverter.INSTANCE.convertBo2Dto(bolist));
     }

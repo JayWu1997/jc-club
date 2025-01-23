@@ -90,7 +90,7 @@ public class ShareCommentReplyDTO implements Serializable {
 
     private String leafNode;
 
-    private String children;
+    private List<ShareCommentReplyDTO> children;
 
     private String rootNode;
     /**

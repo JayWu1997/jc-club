@@ -5,6 +5,7 @@ import com.jingdianjichi.circle.infra.mybatis.model.ShareCommentReply;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -27,6 +28,10 @@ public interface ShareCommentReplyBOConverter {
      */
     ShareCommentReply convertBo2Entity(ShareCommentReplyBO shareCommentReplyBO);
 
+    default String map(List<ShareCommentReplyBO> value) {
+        return "";
+    }
+
     /**
      * Entity转换为BO。
      *
@@ -35,6 +40,9 @@ public interface ShareCommentReplyBOConverter {
      */
     ShareCommentReplyBO convertEntity2Bo(ShareCommentReply shareCommentReply);
 
+    default List<ShareCommentReplyBO> map(String value) {
+        return Collections.emptyList();
+    }
     /**
      * 将Entity列表转换为BO列表。
      *

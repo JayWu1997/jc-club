@@ -1,6 +1,8 @@
 package com.jingdianjichi.circle.domain.entity;
 
-import lombok.Data;
+import com.jingdianjichi.circle.common.utils.TreeUtil;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -12,8 +14,9 @@ import java.util.List;
  * @author jay
  * @since 2025-01-21 18:17:08
  */
-@Data
-public class ShareCommentReplyBO implements Serializable {
+@Getter
+@Setter
+public class ShareCommentReplyBO extends TreeUtil.Node<Long, ShareCommentReplyBO> implements Serializable {
     private static final long serialVersionUID = -81236834719331558L;
 
     private Long targetId;
@@ -90,8 +93,6 @@ public class ShareCommentReplyBO implements Serializable {
     private Integer parentId;
 
     private String leafNode;
-
-    private String children;
 
     private String rootNode;
     /**

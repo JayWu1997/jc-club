@@ -12,6 +12,7 @@ import com.jingdianjichi.circle.common.context.UserContextHolder;
 import com.jingdianjichi.circle.common.enums.BusinessErrorEnum;
 import com.jingdianjichi.circle.common.enums.IsDeletedEnum;
 import com.jingdianjichi.circle.common.exception.BusinessException;
+import com.jingdianjichi.circle.common.utils.TreeUtil;
 import com.jingdianjichi.circle.domain.convert.ShareCommentReplyBOConverter;
 import com.jingdianjichi.circle.domain.entity.ShareCommentReplyBO;
 import com.jingdianjichi.circle.domain.service.ShareCommentReplyDomainService;
@@ -104,7 +105,6 @@ public class ShareCommentReplyDomainServiceImpl implements ShareCommentReplyDoma
 
         List<ShareCommentReplyBO> boList = ShareCommentReplyBOConverter.INSTANCE.convertEntity2Bo(list);
         List<String> userNameList = list.stream().map(ShareCommentReply::getCreatedBy).distinct().filter(Objects::nonNull).collect(Collectors.toList());
-        List<String> toUserNameList = list.stream().map(ShareCommentReply::getToUser).distinct().filter(Objects::nonNull).collect(Collectors.toList());
         AuthUserDTO userQuery = new AuthUserDTO();
         userQuery.setUserNameList(userNameList);
         Result<List<AuthUserDTO>> listResult = userFeignService.batchQueryByUserNames(userQuery);
@@ -134,6 +134,9 @@ public class ShareCommentReplyDomainServiceImpl implements ShareCommentReplyDoma
                 bo.setFromId(bo.getCreatedBy());
                 bo.setToId(bo.getToUser());
             }
+            // 设置节点id和父节点id ，用于构建评论树结构
+            bo.setNodeId(bo.getId());
+            bo.setPNodeId(bo.getParentId().longValue());
         });
 
         // 剔除boList中的item的 create update isDeleted 信息
@@ -143,6 +146,6 @@ public class ShareCommentReplyDomainServiceImpl implements ShareCommentReplyDoma
             bo.setUpdateTime(null);
             bo.setIsDeleted(null);
         });
-        return boList;
+        return TreeUtil.buildTrees(boList, -1L);
     }
 }
