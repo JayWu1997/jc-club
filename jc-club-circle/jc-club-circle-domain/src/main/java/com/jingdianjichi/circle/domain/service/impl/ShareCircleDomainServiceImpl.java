@@ -50,6 +50,12 @@ public class ShareCircleDomainServiceImpl implements ShareCircleDomainService {
      */
     @Override
     public Boolean save(ShareCircleBO bo) {
+        // 查询当前圈子名是否存在
+        if (shareCircleService.exists(Wrappers.<ShareCircle>lambdaQuery()
+                .eq(ShareCircle::getCircleName, bo.getCircleName())
+                .eq(ShareCircle::getIsDeleted, IsDeletedEnum.NOT_DELETED.getCode()))) {
+            throw new BusinessException(BusinessErrorEnum.PARAM_ERROR, "圈子名已存在!");
+        }
         // 查询父级圈子是否存在
         if (bo.getParentId() != -1) {
             if (ObjUtil.isNull(shareCircleService.getById(bo.getParentId()))) {
