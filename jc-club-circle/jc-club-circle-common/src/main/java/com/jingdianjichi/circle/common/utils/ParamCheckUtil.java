@@ -27,6 +27,42 @@ public class ParamCheckUtil {
             throw new BusinessException(businessErrorEnum, errorMsg);
         }
     }
+    
+    public static void checkIntegralNumberBiggerThan(Number number, Number min,BusinessErrorEnum businessErrorEnum, String errorMsg) {
+        if (ObjectUtil.isNull(number) || number.longValue() <= min.longValue()) {
+            throw new BusinessException(businessErrorEnum, errorMsg);
+        }
+    }
+
+    public static void checkIntegralNumberBiggerOrEqualThan(Number number, Number min,BusinessErrorEnum businessErrorEnum, String errorMsg) {
+        if (ObjectUtil.isNull(number) || number.longValue() < min.longValue()) {
+            throw new BusinessException(businessErrorEnum, errorMsg);
+        }
+    }
+
+    public static void checkIntegralNumberSmallerThan(Number number, Number max,BusinessErrorEnum businessErrorEnum, String errorMsg) {
+        if (ObjectUtil.isNull(number) || number.longValue() >= max.longValue()) {
+            throw new BusinessException(businessErrorEnum, errorMsg);
+        }
+    }
+
+    public static void checkIntegralNumberSmallerOrEqualThan(Number number, Number max,BusinessErrorEnum businessErrorEnum, String errorMsg) {
+        if (ObjectUtil.isNull(number) || number.longValue() > max.longValue()) {
+            throw new BusinessException(businessErrorEnum, errorMsg);
+        }
+    }
+
+    public static void checkIntegralNumberRangeExcludeBorder(Number number, Number min, Number max,BusinessErrorEnum businessErrorEnum, String errorMsg) {
+        if (ObjectUtil.isNull(number) || number.longValue() <= min.longValue() || number.longValue() >= max.longValue()) {
+            throw new BusinessException(businessErrorEnum, errorMsg);
+        }
+    }
+
+    public static void checkIntegralNumberRangeIncludeBorder(Number number, Number min, Number max,BusinessErrorEnum businessErrorEnum, String errorMsg) {
+        if (ObjectUtil.isNull(number) || number.longValue() < min.longValue() || number.longValue() > max.longValue()) {
+            throw new BusinessException(businessErrorEnum, errorMsg);
+        }
+    }
 
     /**
      * 检查字符串是否为空，为空则抛出异常
