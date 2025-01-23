@@ -11,4 +11,5 @@ import java.util.List;
 public interface ShareMomentDomainService {
     Boolean save(ShareMomentBO bo);
     List<ShareMomentBO> getMoments(ShareMomentBO shareMomentBO);
+    void cleanCache();
 }

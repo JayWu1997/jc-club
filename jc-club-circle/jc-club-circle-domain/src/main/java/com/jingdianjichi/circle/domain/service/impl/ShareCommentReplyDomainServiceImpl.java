@@ -15,6 +15,7 @@ import com.jingdianjichi.circle.common.exception.BusinessException;
 import com.jingdianjichi.circle.domain.convert.ShareCommentReplyBOConverter;
 import com.jingdianjichi.circle.domain.entity.ShareCommentReplyBO;
 import com.jingdianjichi.circle.domain.service.ShareCommentReplyDomainService;
+import com.jingdianjichi.circle.domain.service.ShareMomentDomainService;
 import com.jingdianjichi.circle.infra.mybatis.model.ShareCommentReply;
 import com.jingdianjichi.circle.infra.mybatis.model.ShareMoment;
 import com.jingdianjichi.circle.infra.mybatis.service.IShareCommentReplyService;
@@ -45,6 +46,9 @@ public class ShareCommentReplyDomainServiceImpl implements ShareCommentReplyDoma
 
     @Resource
     private UserFeignService userFeignService;
+
+    @Resource
+    private ShareMomentDomainService momentDomainService;
 
     /**
      * @param bo
@@ -83,6 +87,7 @@ public class ShareCommentReplyDomainServiceImpl implements ShareCommentReplyDoma
             entity.setPicUrls(JSON.toJSONString(bo.getPicUrlList()));
         }
         momentService.incrReplyCount(bo.getMomentId());
+        momentDomainService.cleanCache();
         return commentService.save(entity);
     }
 

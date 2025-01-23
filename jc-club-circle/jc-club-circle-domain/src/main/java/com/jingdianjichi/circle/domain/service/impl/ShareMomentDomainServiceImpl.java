@@ -124,4 +124,12 @@ public class ShareMomentDomainServiceImpl implements ShareMomentDomainService {
         cache.put(MOMENT_LIST_KEY, JSON.toJSONString(boList));
         return boList;
     }
+
+    /**
+     *
+     */
+    @Override
+    public void cleanCache() {
+        this.cache.invalidateAll();
+    }
 }
