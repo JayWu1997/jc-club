@@ -1,5 +1,3 @@
-version: '3.8'
-
 name: jc_club
 
 networks:
@@ -23,6 +21,7 @@ services:
   mysql:
     image: 'bitnami/mysql:8.4.3'
     container_name: mysql
+    mem_limit: 256m
     environment:
       TZ: Asia/Shanghai # 设置时区
       MYSQL_ROOT_PASSWORD: Wyj199751
@@ -41,6 +40,7 @@ services:
   nacos:
     image: nacos/nacos-server:v2.4.3
     container_name: nacos
+    mem_limit: 256m
     restart: always
     ports:
       # web 界面访问端口
@@ -60,6 +60,7 @@ services:
   redis:
     image: bitnami/redis:7.4.2
     container_name: redis # 容器名称
+    mem_limit: 256m
     restart: always # 重启方式
     environment:
       - TZ=Asia/Shanghai # 设置时区
@@ -75,6 +76,7 @@ services:
   xxl-job-admin:
     image: xuxueli/xxl-job-admin:2.3.0
     container_name: xxl-job-admin # 容器名称
+    mem_limit: 256m
     restart: always
     volumes:
       - xxl-job_logs:/data/applogs
@@ -97,6 +99,7 @@ services:
   namesrv:
     image: apache/rocketmq:5.3.0
     container_name: rmq-namesrv
+    mem_limit: 256m
     restart: always
     ports:
       - "9876:9876"
@@ -109,6 +112,7 @@ services:
   broker:
     image: apache/rocketmq:5.3.0
     container_name: rmq-broker
+    mem_limit: 512m
     restart: always
     ports:
       - "10909:10909"
@@ -128,28 +132,13 @@ services:
       - backend
     command: sh mqbroker -c /home/rocketmq/conf/broker.conf
 
-#  proxy:
-#    image: apache/rocketmq:5.3.0
-#    container_name: rmqproxy
-#    networks:
-#      - rocketmq
-#    depends_on:
-#      - broker
-#      - namesrv
-#    ports:
-#      - 8080:8080
-#      - 8081:8081
-#    restart: on-failure
-#    environment:
-#      - NAMESRV_ADDR=rmqnamesrv:9876
-#    command: sh mqproxy
-
   dashboard:
     image: apacherocketmq/rocketmq-dashboard:latest
     container_name: rmq-dashboard
+    mem_limit: 256m
     restart: always
     ports:
-      - "8080:8080"
+      - "8082:8082"
     environment:
       JAVA_OPTS: "-Xms128m -Xmx128m -Drocketmq.namesrv.addr=namesrv:9876 -Dcom.rocketmq.sendMessageWithVIPChannel=false"
     depends_on:
@@ -159,10 +148,10 @@ services:
     networks:
       - backend
 
-
   elasticsearch:
     image: bitnami/elasticsearch:7.5.2
     container_name: elasticsearch
+    mem_limit: 512m
     restart: always
     volumes:
       #      - ./es/etc/localtime:/etc/localtime
@@ -184,6 +173,7 @@ services:
   minio:
     image: bitnami/minio:2024.12.18
     container_name: minio
+    mem_limit: 256m
     restart: always
     ports:
       - '9000:9000'
@@ -199,6 +189,7 @@ services:
   jenkins:
     image: jenkins/jenkins:2.493
     container_name: jenkins
+    mem_limit: 256m
     restart: always
     volumes: # 挂载目录  本地文件夹目录:容器文件夹目录
       - jenkins_data:/var/jenkins_home
@@ -220,6 +211,7 @@ services:
       - backend
   frpc:
     restart: always
+    mem_limit: 256m
     network_mode: host
     volumes:
       - './data/frpc/frpc.toml:/etc/frp/frpc.toml'
